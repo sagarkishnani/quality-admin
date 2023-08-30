@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Layout } from "./common/components/Layout/Layout";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Login } from "./pages/Login/Login";
+import { AuthProvider, useAuth } from "./common/contexts/AuthContext";
+import PrivateRoute from "./common/guards/PrivateRoute";
+import { useEffect } from "react";
+import AppRouter from "./common/routers/AppRouter";
 
 function App() {
   const theme = createTheme({
@@ -24,12 +22,9 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <Routes>
-          <Route path="/*" element={<Layout />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Router>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

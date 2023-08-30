@@ -14,8 +14,16 @@ import { UserList } from "../../../pages/User/UserList/UserList";
 import { ConfigurationRegister } from "../../../pages/Configuration/ConfigurationRegister/ConfigurationRegister";
 import { ConfigurationView } from "../../../pages/Configuration/ConfigurationView/ConfigurationView";
 import { ConfigurationEdit } from "../../../pages/Configuration/ConfigurationEdit/ConfigurationEdit";
+import { UserRegister } from "../../../pages/User/UserRegister/UserRegister";
+import { useAuth } from "../../contexts/AuthContext";
+import { useEffect } from "react";
 
 export const Layout = () => {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
   return (
     <>
       <div className="grid grid-cols-[2.5rem,auto] lg:grid-cols-[18rem,auto]">
@@ -33,7 +41,7 @@ export const Layout = () => {
             </Route>
             <Route path="/usuarios" element={<User />}>
               <Route index element={<UserList />} />
-              <Route path="nuevo" element={<CompanyRegister />} />
+              <Route path="nuevo" element={<UserRegister />} />
             </Route>
             <Route path="/configuracion" element={<Configuration />}>
               <Route index element={<ConfigurationList />} />

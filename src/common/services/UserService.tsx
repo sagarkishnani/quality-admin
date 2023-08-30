@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { UserRegisterRequest } from "../interfaces/User.interface";
 
 const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY;
@@ -32,7 +33,7 @@ async function getUserById(IdUser: string) {
       console.warn(error);
       return null;
     } else if (data) {
-      return data;
+      return data[0];
     }
   } catch (error) {
     console.error("Error fetching items:", error);
@@ -40,39 +41,39 @@ async function getUserById(IdUser: string) {
   }
 }
 
-async function registerUser(email: string, password: string) {
+async function registerUser(request: UserRegisterRequest) {
   try {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+    const { data, error } = await supabase.functions.invoke("register-user", {
+      body: request,
     });
     if (error) {
       console.warn(error);
-      return null;
+      return error;
     } else if (data) {
       return data;
     }
   } catch (error) {
-    console.error("Error registering user:", error);
-    return [];
+    console.error("Error al registrar usuario:", error);
+    return error;
   }
 }
 
 async function loginUser(email: string, password: string) {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data: userAuth, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
     if (error) {
       console.warn(error);
-      return null;
-    } else if (data) {
+      return error;
+    } else if (userAuth) {
+      const data: any = await getUserById(userAuth.user.id);
       return data;
     }
   } catch (error) {
     console.error("Error logging in:", error);
-    return [];
+    return error;
   }
 }
 

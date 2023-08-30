@@ -12,13 +12,21 @@ import {
 import { BsWhatsapp } from "react-icons/bs";
 import { RouteLink } from "../../interfaces/RouteLink.interface";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { ConstantRoles } from "../../constants";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const { user } = useAuth();
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
+  };
+
+  const hasRole = (roles: string[]) => {
+    if (roles.includes(user.IdRole)) return true;
+    else false;
   };
 
   const routeLinks: RouteLink[] = [
@@ -27,30 +35,45 @@ export const Sidebar = () => {
       Name: "Tickets",
       Link: "tickets",
       Icon: <HiOutlineTicket className="inline" size={"20"} />,
+      Roles: [
+        ConstantRoles.ADMINISTRADOR_TI,
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.TECNICO,
+        ConstantRoles.USUARIO,
+      ],
     },
     {
       Id: 2,
       Name: "Mis datos",
       Link: "mis-datos",
       Icon: <HiOutlineUser className="inline" size={"20"} />,
+      Roles: [
+        ConstantRoles.ADMINISTRADOR_TI,
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.TECNICO,
+        ConstantRoles.USUARIO,
+      ],
     },
     {
       Id: 3,
       Name: "Empresas",
       Link: "empresas",
       Icon: <HiOutlineOfficeBuilding className="inline" size={"20"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL],
     },
     {
       Id: 4,
       Name: "Usuarios",
       Link: "usuarios",
       Icon: <HiOutlineUserGroup className="inline" size={"20"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL, ConstantRoles.ADMINISTRADOR_TI],
     },
     {
       Id: 5,
       Name: "Configuración",
       Link: "configuracion",
       Icon: <HiOutlineCog className="inline" size={"20"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL],
     },
   ];
 
@@ -98,7 +121,7 @@ export const Sidebar = () => {
           <div>
             <div className="justify-center text-center p-8">
               <div>
-                <h2 className="font-semibold text-lg">¡Hola, Omar!</h2>
+                <h2 className="font-semibold text-lg">¡Hola, {user?.Name}!</h2>
                 <p className="pt-4 m-auto max-w-xs text-sm font-medium">
                   Bienvenido a la mesa de ayuda
                 </p>
@@ -107,20 +130,22 @@ export const Sidebar = () => {
             <div className="p-6">
               {routeLinks.map((route) => (
                 <Link to={route.Link}>
-                  <div
-                    key={route.Id}
-                    className="pb-4 flex flex-row justify-between items-center"
-                  >
-                    <div className="basis-4/5">
-                      <h3 className="font-semibold">
-                        <span className="pr-2">{route.Icon}</span>
-                        {route.Name}
-                      </h3>
+                  {hasRole(route.Roles) && (
+                    <div
+                      key={route.Id}
+                      className="pb-4 flex flex-row justify-between items-center"
+                    >
+                      <div className="basis-4/5">
+                        <h3 className="font-semibold">
+                          <span className="pr-2">{route.Icon}</span>
+                          {route.Name}
+                        </h3>
+                      </div>
+                      <div className="basis-1/5">
+                        <HiChevronRight size={"20"} />
+                      </div>
                     </div>
-                    <div className="basis-1/5">
-                      <HiChevronRight size={"20"} />
-                    </div>
-                  </div>
+                  )}
                 </Link>
               ))}
             </div>

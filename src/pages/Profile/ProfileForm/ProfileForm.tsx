@@ -1,8 +1,11 @@
 import { TextField } from "@mui/material";
 import { Button } from "../../../common/components/Button/Button";
 import { useFormik } from "formik";
+import { useAuth } from "../../../common/contexts/AuthContext";
 
 export const ProfileForm = () => {
+  const { user } = useAuth();
+
   const formik = useFormik({
     initialValues: {
       Name: "",
@@ -18,7 +21,7 @@ export const ProfileForm = () => {
 
   return (
     <div className="p-8">
-      <div className="pb-12">
+      <div className="px-4 py-8">
         <h3 className="text-lg font-semibold mr-4">Mis datos</h3>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 justify-items-center">
@@ -39,7 +42,7 @@ export const ProfileForm = () => {
               className="w-full"
               id="Name"
               name="Name"
-              value={formik.values.Name}
+              value={user?.Name}
               label="Nombre"
             />
           </div>
@@ -49,7 +52,7 @@ export const ProfileForm = () => {
               className="w-full"
               id="Phone"
               name="Phone"
-              value={formik.values.Phone}
+              value={user?.PhoneNumber}
               label="Celular"
             />
           </div>
@@ -59,7 +62,7 @@ export const ProfileForm = () => {
               className="w-full"
               id="Email"
               name="Email"
-              value={formik.values.Email}
+              value={user?.email}
               label="Email"
             />
           </div>
@@ -70,7 +73,7 @@ export const ProfileForm = () => {
               id="Company"
               name="Company"
               label="Empresa"
-              value={formik.values.Company}
+              value={user?.IdCompany}
             />
           </div>
           <div className="mb-6">
@@ -80,7 +83,7 @@ export const ProfileForm = () => {
               id="Role"
               name="Role"
               label="Rol"
-              value={formik.values.Role}
+              value={user?.IdRole}
             />
           </div>
         </div>

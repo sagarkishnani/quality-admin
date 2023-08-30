@@ -13,10 +13,13 @@ interface UserListTableInterface {
 }
 
 interface Row {
-  IdMasterTable: string;
-  IdMasterTableParent: string;
+  IdUser: string;
+  Dni: number;
   Name: string;
-  Order: string;
+  email: string;
+  PhoneNumber: string;
+  IdRole: string;
+  IdCompany: string;
   RecordCreationDate: Date;
   RecordEditDate: Date;
 }
@@ -31,7 +34,6 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedId(id);
-    console.log(id);
   };
 
   const handleClose = () => {
@@ -41,14 +43,14 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
 
   const columns: GridColDef[] = [
     {
-      field: "IdMasterTable",
+      field: "IdUser",
       headerName: "Id",
       width: 180,
       disableColumnMenu: true,
     },
     {
-      field: "IdMasterTableParent",
-      headerName: "Id Padre",
+      field: "Dni",
+      headerName: "DNI",
       width: 180,
       disableColumnMenu: true,
     },
@@ -59,23 +61,41 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
       disableColumnMenu: true,
     },
     {
-      field: "Order",
-      headerName: "Orden",
+      field: "email",
+      headerName: "Correo",
       width: 180,
       disableColumnMenu: true,
     },
     {
-      field: "RecordCreationDate",
-      headerName: "Fecha de creación",
+      field: "PhoneNumber",
+      headerName: "Celular",
       width: 180,
       disableColumnMenu: true,
     },
-    {
-      field: "RecordEditDate",
-      headerName: "Fecha de edición",
-      width: 180,
-      disableColumnMenu: true,
-    },
+    // {
+    //   field: "IdRole",
+    //   headerName: "Rol",
+    //   width: 180,
+    //   disableColumnMenu: true,
+    // },
+    // {
+    //   field: "IdCompany",
+    //   headerName: "Empresa",
+    //   width: 180,
+    //   disableColumnMenu: true,
+    // },
+    // {
+    //   field: "RecordCreationDate",
+    //   headerName: "Fecha de creación",
+    //   width: 180,
+    //   disableColumnMenu: true,
+    // },
+    // {
+    //   field: "RecordEditDate",
+    //   headerName: "Fecha de edición",
+    //   width: 180,
+    //   disableColumnMenu: true,
+    // },
     {
       field: "Detail",
       headerName: "",
@@ -83,7 +103,7 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
       disableColumnMenu: true,
       renderCell: (params) => {
         const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-          handleClick(event, params.row.IdCompany);
+          handleClick(event, params.row.IdUser);
         };
 
         return (
@@ -110,7 +130,7 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
           <div className="flex-1">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
-                getRowId={(row) => row.IdMasterTable}
+                getRowId={(row) => row.IdUser}
                 rows={rows}
                 columns={columns}
                 initialState={{
@@ -148,15 +168,15 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
           >
             <MenuItem onClick={handleClose}>
               <HiOutlineEye size={"20"} className="mr-2" />
-              Ver item
+              Ver usuario
             </MenuItem>
             <MenuItem onClick={handleClose}>
               <HiPencil size={"20"} className="mr-2" />
-              Editar item
+              Editar usuario
             </MenuItem>
             <MenuItem onClick={handleClose}>
               <HiOutlineTrash size={"20"} className="mr-2" />
-              Eliminar item
+              Eliminar usuario
             </MenuItem>
           </Menu>
         </>

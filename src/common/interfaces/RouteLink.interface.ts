@@ -5,4 +5,5 @@ export interface RouteLink {
     Name: string;
     Link: string;
     Icon: ReactElement;
+    Roles: string[];
 }

@@ -5,31 +5,31 @@ import { Button } from "../../../../common/components/Button/Button";
 import { Skeleton } from "@mui/material";
 import { UserListTable } from "./UserListTable/UserListTable";
 import { HiSearch } from "react-icons/hi";
+import { UserService } from "../../../../common/services/UserService";
 
 export const UserListTableContainer = () => {
-  const [masterTableValues, setMasterTableValues] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
 
-  async function getMasterTableItems() {
-    const data = await MasterTableService.getMasterTableItems();
+  async function getUsers() {
+    const data = await UserService.getUsers();
     if (data) {
-      setMasterTableValues(data);
-      console.log(data);
+      setUsers(data);
     }
   }
 
   async function getAll() {
     setIsLoading(true);
-    await getMasterTableItems();
+    await getUsers();
     setIsLoading(false);
   }
 
-  const filteredMt = masterTableValues.filter((mt: any) => {
+  const filteredUsers = users.filter((user: any) => {
     const searchText = searchValue.toLowerCase();
     return (
-      mt?.Name.toLowerCase().includes(searchText) ||
-      mt?.IdMasterTable.toLowerCase().includes(searchText)
+      user?.Name.toLowerCase().includes(searchText) ||
+      (user?.Dni).toString().toLowerCase().includes(searchText)
     );
   });
 
@@ -42,14 +42,14 @@ export const UserListTableContainer = () => {
       <div className="px-4 py-8 flex justify-between">
         <div className="flex flex-row flex-wrap items-center">
           <div>
-            <h3 className="text-lg font-semibold mr-4">Configuración</h3>
+            <h3 className="text-lg font-semibold mr-4">Usuarios</h3>
           </div>
           <div className="flex flex-row items-center justify-center flex-wrap w-[28rem] rounded-full bg-qLightGray p-2 border-qGray border-2">
             <div className="w-8 flex justify-center">
               <HiSearch color="#989898" size={"16"} />
             </div>
             <input
-              placeholder="Busca por Id o Nombre"
+              placeholder="Busca por DNI o Nombre"
               className="flex-1 bg-transparent focus:outline-none text-sm"
               type="text"
               value={searchValue}
@@ -58,8 +58,8 @@ export const UserListTableContainer = () => {
           </div>
         </div>
         <div className="mr-6">
-          <Link to={"nueva"}>
-            <Button type="button" color="#74C947" label="Agregar item" />
+          <Link to={"nuevo"}>
+            <Button type="button" color="#74C947" label="Agregar usuario" />
           </Link>
         </div>
       </div>
@@ -76,7 +76,7 @@ export const UserListTableContainer = () => {
           <Skeleton height={40} animation="wave" />
         </div>
       )}
-      {!isLoading && <UserListTable rows={filteredMt} />}
+      {!isLoading && <UserListTable rows={filteredUsers} />}
     </div>
   );
 };
