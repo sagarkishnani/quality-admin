@@ -28,7 +28,7 @@ import {
   ConstantMessage,
   ConstantsMasterTable,
 } from "../../../../common/constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
   Name: yup.string().required("Nombre de empresa es obligatorio"),
@@ -74,6 +74,7 @@ export const CompanyRegisterContainer = () => {
   //TODO: Corregir el tema del modal y validaciones
   const [imgEvent, setImgEvent] = useState<any>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
   const [ubigeos, setUbigeos] = useState<any>([]);
   const [positions, setPositions] = useState<any>([]);
   const [currencies, setCurrencies] = useState<any>([]);
@@ -93,6 +94,8 @@ export const CompanyRegisterContainer = () => {
   const [showPurchaseFields, setShowPurchaseFields] = useState(false);
   const [showWarehouseFields, setShowWarehouseFields] = useState(false);
   const [showAfterSalesFields, setShowAfterSalesFields] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -183,6 +186,7 @@ export const CompanyRegisterContainer = () => {
     request: CompanyRegisterRequest,
     imageFile: any
   ) {
+    setIsLoadingAction(true);
     if (imageFile == undefined) {
       setIsModalOpen(true);
       setModalType("");
@@ -198,7 +202,13 @@ export const CompanyRegisterContainer = () => {
       setIsModalOpen(true);
       setModalType("success");
       setModalMessage(ConstantCompanyMessage.COMPANY_REGISTER_SUCCESS);
+
+      setIsLoadingAction(false);
+      setTimeout(() => {
+        navigate("/empresas");
+      }, 2000);
     } else {
+      setIsLoadingAction(false);
       setIsModalOpen(true);
       setModalType("error");
       setModalMessage(ConstantMessage.SERVICE_ERROR);
@@ -1357,7 +1367,8 @@ export const CompanyRegisterContainer = () => {
             <Button
               color="#74C947"
               label="Guardar registro"
-              disabled={!formik.isValid}
+              disabled={!formik.isValid || isLoadingAction}
+              isLoading={isLoadingAction}
               type="submit"
             />
           </div>

@@ -2,17 +2,14 @@ import { TextField } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useState } from "react";
-import secureLocalStorage from "react-secure-storage";
 import { useNavigate } from "react-router-dom";
 import logo from "../../../assets/logo/logo.jpg";
 import { Button } from "../../../common/components/Button/Button";
 import { UserService } from "../../../common/services/UserService";
 import { Modal } from "../../../common/components/Modal/Modal";
-import {
-  ConstantLocalStorage,
-  ConstantUserMessage,
-} from "../../../common/constants";
+import { ConstantUserMessage } from "../../../common/constants";
 import { useAuth } from "../../../common/contexts/AuthContext";
+import bgLogin from "../../../assets/images/login/bg_login.png";
 
 const validationSchema = yup.object({
   email: yup
@@ -27,7 +24,7 @@ const validationSchema = yup.object({
 
 export const LoginContainer = () => {
   const { setUser } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -69,18 +66,18 @@ export const LoginContainer = () => {
 
   return (
     <>
-      <div className="grid grid-cols-2 bg-white w-screen h-screen">
-        <div className="col-span-1 flex flex-col justify-center items-center h-full">
-          <div className="mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 bg-white w-screen h-screen">
+        <div className="col-span-1 flex flex-col justify-center h-full w-72 mx-auto">
+          <div className="mb-5">
             <img src={logo} alt="logo" />
           </div>
           <div>
-            <h2 className="font-semibold text-xl pb-2">Iniciar sesión</h2>
+            <h2 className="font-black text-xl mb-5">Iniciar sesión</h2>
           </div>
           <div>
             <form onSubmit={formik.handleSubmit} autoComplete="off">
               <div className="grid grid-cols-2">
-                <div className="col-span-6">
+                <div className="col-span-2 mb-5">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -95,7 +92,7 @@ export const LoginContainer = () => {
                     label="Correo electrónico"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-2 mb-5">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -115,12 +112,13 @@ export const LoginContainer = () => {
                     label="Contraseña"
                   />
                 </div>
-                <div className="mt-4">
+                <div className="col-span-2">
                   <Button
-                    className="w-full"
+                    className="w-full hover:bg-qDarkGreen"
                     color="#74C947"
                     label="Ingresar"
-                    disabled={!formik.isValid}
+                    disabled={!formik.isValid || isLoading}
+                    isLoading={isLoading}
                     type="submit"
                   />
                 </div>
@@ -128,7 +126,20 @@ export const LoginContainer = () => {
             </form>
           </div>
         </div>
-        <div className="col-span-1 bg-qGray"></div>
+        <div className="hidden md:col-span-1 bg-loginBg bg-cover bg-no-repeat bg-left-bottom md:flex flex-col justify-center md:p-20 lg:p-40">
+          <div>
+            <h2 className="text-white text-3xl font-semibold mb-5">
+              ¡Te damos la bienvenida!
+            </h2>
+          </div>
+          <div>
+            <p className="text-white">
+              Esta mesa de ayuda de Quality Sumprint te ayudará a recibir
+              atención técnica para tus impresoras y será una herramienta para
+              brindar soporte técnico ante cualquier eventualidad.
+            </p>
+          </div>
+        </div>
       </div>
       <Modal
         open={isModalOpen}

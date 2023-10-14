@@ -11,17 +11,17 @@ import {
 } from "react-icons/hi";
 import { BsWhatsapp } from "react-icons/bs";
 import { RouteLink } from "../../interfaces/RouteLink.interface";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useMatch } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { ConstantRoles } from "../../constants";
 
 export const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(true);
   const { user } = useAuth();
 
-  const handleToggle = () => {
-    setIsOpen(!isOpen);
+  const isActiveRoute = (route: string) => {
+    if (useMatch(route)) {
+      return 1;
+    } else 0;
   };
 
   const hasRole = (roles: string[]) => {
@@ -80,7 +80,7 @@ export const Sidebar = () => {
   return (
     <>
       {/* Mobile Sidebar */}
-      <div className={`h-full w-10 lg:hidden bg-qBlack text-white`}>
+      <div className={`h-full w-10 lg:hidden bg-qBlack fixed text-white`}>
         <div className="flex flex-col text-white">
           <div className="p-2">
             <img src={logo} alt="logo" />
@@ -89,16 +89,18 @@ export const Sidebar = () => {
             <div className="p-2">
               {routeLinks.map((route) => (
                 <Link to={route.Link}>
-                  <div
-                    key={route.Id}
-                    className="pb-4 flex flex-row justify-between items-center"
-                  >
-                    <div>
-                      <h3 className="font-semibold">
-                        <span>{route.Icon}</span>
-                      </h3>
+                  {hasRole(route.Roles) && (
+                    <div
+                      key={route.Id}
+                      className="pb-4 flex flex-row justify-between items-center"
+                    >
+                      <div>
+                        <h3 className="font-semibold">
+                          <span>{route.Icon}</span>
+                        </h3>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </Link>
               ))}
             </div>
@@ -113,7 +115,7 @@ export const Sidebar = () => {
         </div>
       </div>
       {/* Desktop Sidebar */}
-      <div className="bg-qBlack text-white hidden lg:block h-full">
+      <div className="bg-qBlack text-white hidden fixed lg:block h-full w-[18rem]">
         <div className="flex flex-col text-white">
           <div className="p-8">
             <img src={logo} alt="logo" />
@@ -133,15 +135,17 @@ export const Sidebar = () => {
                   {hasRole(route.Roles) && (
                     <div
                       key={route.Id}
-                      className="pb-4 flex flex-row justify-between items-center"
+                      className={`${
+                        isActiveRoute(route.Link) === 1 ? "text-qGreen" : " "
+                      } pb-4 flex flex-row justify-between items-center hover:text-qGreen`}
                     >
                       <div className="basis-4/5">
                         <h3 className="font-semibold">
-                          <span className="pr-2">{route.Icon}</span>
+                          <span className="pr-2 ">{route.Icon}</span>
                           {route.Name}
                         </h3>
                       </div>
-                      <div className="basis-1/5">
+                      <div className="basis-1/5 ">
                         <HiChevronRight size={"20"} />
                       </div>
                     </div>
@@ -151,7 +155,7 @@ export const Sidebar = () => {
             </div>
           </div>
           <div className="h-full p-6 mb-8">
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-row justify-between hover:text-qGreen cursor-pointer">
               <div className="basis-4/5">
                 <h3 className="font-semibold">
                   <span className="pr-2">

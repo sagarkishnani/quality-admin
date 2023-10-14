@@ -1,15 +1,23 @@
 import { Menu, MenuItem } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   HiOutlineDotsHorizontal,
   HiPencil,
   HiOutlineEye,
   HiOutlineTrash,
 } from "react-icons/hi";
+import secureLocalStorage from "react-secure-storage";
+import {
+  ConstantLocalStorage,
+  ConstantUserMessage,
+} from "../../../../../common/constants";
+import { Modal } from "../../../../../common/components/Modal/Modal";
+import { useNavigate } from "react-router-dom";
 
 interface UserListTableInterface {
   rows: Row[];
+  handleReload: () => void;
 }
 
 interface Row {
@@ -24,9 +32,19 @@ interface Row {
   RecordEditDate: Date;
 }
 
-export const UserListTable = ({ rows }: UserListTableInterface) => {
+export const UserListTable = ({
+  rows,
+  handleReload,
+}: UserListTableInterface) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<
+    "success" | "error" | "question" | "none"
+  >("none");
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalAction, setModalAction] = useState<string | null>("eliminar");
+  const navigate = useNavigate();
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -34,6 +52,47 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedId(id);
+    secureLocalStorage.setItem(ConstantLocalStorage.ID_USER, id);
+  };
+
+  const handleView = () => {
+    navigate("ver");
+  };
+
+  const handleEdit = () => {
+    navigate("editar");
+  };
+
+  const handleDelete = () => {
+    setIsModalOpen(true);
+    setModalType("question");
+    setModalMessage(ConstantUserMessage.USER_DELETE_QUESTION);
+    setModalAction("eliminar");
+  };
+
+  const handleDeleteBtn = async () => {
+    // const { status }: any = await MasterTableService.deleteMasterTable(
+    //   selectedId
+    // );
+    // if (status == ConstantHttpErrors.NO_CONTENT) {
+    //   setIsModalOpen(false);
+    //   setTimeout(() => {
+    //     setModalAction(null);
+    //     setIsModalOpen(true);
+    //     setModalType("success");
+    //     setModalMessage(ConstantMasterTableMessage.MT_DELETE_SUCCESS);
+    //   }, 1000);
+    //   setTimeout(() => {
+    //     handleReload();
+    //   }, 2500);
+    // } else {
+    //   setIsModalOpen(false);
+    //   setTimeout(() => {
+    //     setIsModalOpen(true);
+    //     setModalType("error");
+    //     setModalMessage(ConstantMasterTableMessage.MT_DELETE_ERROR);
+    //   }, 1000);
+    // }
   };
 
   const handleClose = () => {
@@ -41,13 +100,11 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
     setSelectedId(null);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   const columns: GridColDef[] = [
-    {
-      field: "IdUser",
-      headerName: "Id",
-      width: 180,
-      disableColumnMenu: true,
-    },
     {
       field: "Dni",
       headerName: "DNI",
@@ -72,18 +129,18 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
       width: 180,
       disableColumnMenu: true,
     },
-    // {
-    //   field: "IdRole",
-    //   headerName: "Rol",
-    //   width: 180,
-    //   disableColumnMenu: true,
-    // },
-    // {
-    //   field: "IdCompany",
-    //   headerName: "Empresa",
-    //   width: 180,
-    //   disableColumnMenu: true,
-    // },
+    {
+      field: "Role",
+      headerName: "Rol",
+      width: 180,
+      disableColumnMenu: true,
+    },
+    {
+      field: "Company",
+      headerName: "Empresa",
+      width: 180,
+      disableColumnMenu: true,
+    },
     // {
     //   field: "RecordCreationDate",
     //   headerName: "Fecha de creación",
@@ -130,6 +187,7 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
           <div className="flex-1">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
+                className="overflow-x-auto"
                 getRowId={(row) => row.IdUser}
                 rows={rows}
                 columns={columns}
@@ -166,19 +224,27 @@ export const UserListTable = ({ rows }: UserListTableInterface) => {
               "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleView}>
               <HiOutlineEye size={"20"} className="mr-2" />
               Ver usuario
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleEdit}>
               <HiPencil size={"20"} className="mr-2" />
               Editar usuario
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleDelete}>
               <HiOutlineTrash size={"20"} className="mr-2" />
               Eliminar usuario
             </MenuItem>
           </Menu>
+          <Modal
+            handleClose={handleCloseModal}
+            modalType={modalType}
+            title={modalMessage}
+            open={isModalOpen}
+            handleAction={handleDeleteBtn}
+            action={modalAction}
+          />
         </>
       )}
     </>

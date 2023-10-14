@@ -14,6 +14,9 @@ export default {
         qRed: "#C94F47",
         qDarkBlue: "#24272A",
       },
+      backgroundImage: {
+        loginBg: "url('./src/assets/images/login/bg_login.png')",
+      },
     },
   },
   plugins: [],

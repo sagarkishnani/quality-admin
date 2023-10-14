@@ -1,10 +1,43 @@
-import { TextField } from "@mui/material";
-import { Button } from "../../../common/components/Button/Button";
+import { Skeleton, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import { useAuth } from "../../../common/contexts/AuthContext";
+import { v4 as uuidv4 } from "uuid";
+import { useState, useEffect } from "react";
+import { UserService } from "../../../common/services/UserService";
+import { ConstantStorageBuckets } from "../../../common/constants";
 
 export const ProfileForm = () => {
-  const { user } = useAuth();
+  const supabaseImgUrl =
+    import.meta.env.VITE_REACT_APP_SUPABASE_STORAGE_URL +
+    ConstantStorageBuckets.USER;
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { user, setUser } = useAuth();
+  const [imgEvent, setImgEvent] = useState<any>();
+
+  const handleImageChange = async (e: any) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImgEvent(e.target.files[0]);
+    }
+  };
+
+  async function uploadUserPicture(imageFile: any) {
+    setIsLoading(true);
+    const dataImage: any = await UserService.uploadUserPicture(
+      uuidv4(),
+      imageFile
+    );
+    const imgId = dataImage?.path.slice(dataImage?.path.lastIndexOf("/") + 1);
+
+    await UserService.updatePicture(user!.IdUser, imgId);
+
+    if (user) {
+      const updatedUser = { ...user, ImageUrl: imgId };
+      setUser(updatedUser);
+      setIsLoading(false);
+    }
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -19,6 +52,12 @@ export const ProfileForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (imgEvent !== undefined) {
+      uploadUserPicture(imgEvent);
+    }
+  }, [imgEvent]);
+
   return (
     <div className="p-8">
       <div className="px-4 py-8">
@@ -26,13 +65,35 @@ export const ProfileForm = () => {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-7 gap-4 justify-items-center">
         <div className="col-span-3 flex justify-center flex-col">
-          <div className="w-52 h-52 rounded-full bg-qBlue"></div>
-          <Button
-            className="mt-3"
-            color="#74C947"
-            label="Subir una foto"
-            type="button"
+          {!isLoading && (
+            <div className="w-52 h-52 rounded-full bg-qBlue">
+              <img
+                className=" rounded-full w-full h-full object-cover"
+                src={supabaseUrl + supabaseImgUrl + "/" + user?.ImageUrl}
+                alt="perfil"
+              />
+            </div>
+          )}
+          {isLoading && (
+            <div>
+              <Skeleton variant="circular" width={208} height={208} />
+            </div>
+          )}
+
+          <input
+            className="hidden"
+            type="file"
+            name="ImgUrl"
+            id="ImgUrl"
+            onChange={handleImageChange}
+            accept="image/png, image/jpeg, image/jpg"
           />
+          <label
+            className="rounded-full px-6 py-2 bg-qGreen mt-4 text-white text-center font-medium cursor-pointer text-ellipsis whitespace-nowrap overflow-hidden text-sm hover:bg-qDarkGreen"
+            htmlFor="ImgUrl"
+          >
+            Cambiar perfil
+          </label>
         </div>
         <div className="col-span-3 w-full">
           <div className="mb-6">
@@ -73,7 +134,7 @@ export const ProfileForm = () => {
               id="Company"
               name="Company"
               label="Empresa"
-              value={user?.IdCompany}
+              value={user?.Company.Name}
             />
           </div>
           <div className="mb-6">
@@ -83,7 +144,7 @@ export const ProfileForm = () => {
               id="Role"
               name="Role"
               label="Rol"
-              value={user?.IdRole}
+              value={user?.Role.Name}
             />
           </div>
         </div>

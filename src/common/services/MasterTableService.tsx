@@ -153,22 +153,17 @@ async function deleteMasterTable(idMasterTable: string | null) {
   try {
     const { data, error, status } = await supabase
       .from("MasterTable")
-      .update([
-        {
-          RecordStatus: false,
-        },
-      ])
-      .eq("IdMasterTable", idMasterTable)
-      .select();
+      .delete()
+      .eq("IdMasterTable", idMasterTable);
 
     if (error) {
       console.warn(error);
       return { error, status };
-    } else if (data) {
+    } else if (data || status) {
       return { data, status };
     }
   } catch (error) {
-    console.error("Error updating master tables:", error);
+    console.error("Error al eliminar item", error);
     return error;
   }
 }

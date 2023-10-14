@@ -9,7 +9,7 @@ import {
   ConstantMasterTableMessage,
   ConstantMessage,
 } from "../../../../common/constants";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Skeleton, TextField } from "@mui/material";
 import { Button } from "../../../../common/components/Button/Button";
 import { Modal } from "../../../../common/components/Modal/Modal";
@@ -31,12 +31,14 @@ const validationSchema = yup.object({
 
 export const ConfigurationRegisterContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
   const [mtParents, setMtParents] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
   >("none");
   const [modalMessage, setModalMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -52,6 +54,8 @@ export const ConfigurationRegisterContainer = () => {
   }
 
   async function registerMt(request: MasterTableRegisterRequest) {
+    setIsLoadingAction(true);
+
     const { data, status }: any = await MasterTableService.registerMasterTable(
       request
     );
@@ -59,7 +63,18 @@ export const ConfigurationRegisterContainer = () => {
       setIsModalOpen(true);
       setModalType("success");
       setModalMessage(ConstantMasterTableMessage.MT_REGISTER_SUCCESS);
+
+      setIsLoadingAction(false);
+      setTimeout(() => {
+        navigate("/configuracion");
+      }, 2000);
+    } else if (status == ConstantHttpErrors.DUPLICATED) {
+      setIsLoadingAction(false);
+      setIsModalOpen(true);
+      setModalType("error");
+      setModalMessage(ConstantMessage.SERVICE_DUPLICATED);
     } else {
+      setIsLoadingAction(false);
       setIsModalOpen(true);
       setModalType("error");
       setModalMessage(ConstantMessage.SERVICE_ERROR);
@@ -214,7 +229,8 @@ export const ConfigurationRegisterContainer = () => {
             <Button
               color="#74C947"
               label="Guardar registro"
-              disabled={!formik.isValid}
+              disabled={!formik.isValid || isLoadingAction}
+              isLoading={isLoadingAction}
               type="submit"
             />
           </div>

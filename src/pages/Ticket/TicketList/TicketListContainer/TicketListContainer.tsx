@@ -1,5 +1,5 @@
-import { TicketListFilter } from "../TicketListFilter/TicketListFilter";
-import { TicketListTableContainer } from "../TicketListTableContainer/TicketListTableContainer";
+import { TicketListFilter } from "../TicketListFilter/TicketListFilter"
+import { TicketListTableContainer } from "../TicketListTableContainer/TicketListTableContainer"
 
 export const TicketListContainer = () => {
   return (
@@ -7,5 +7,5 @@ export const TicketListContainer = () => {
       <TicketListFilter />
       <TicketListTableContainer />
     </div>
-  );
-};
+  )
+}

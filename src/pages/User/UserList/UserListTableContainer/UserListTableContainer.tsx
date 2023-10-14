@@ -15,7 +15,16 @@ export const UserListTableContainer = () => {
   async function getUsers() {
     const data = await UserService.getUsers();
     if (data) {
-      setUsers(data);
+      const output_data = data.map((entry) => ({
+        IdUser: entry.IdUser,
+        Dni: entry.Dni,
+        Name: entry?.Name,
+        email: entry.email,
+        PhoneNumber: entry.PhoneNumber,
+        Company: entry?.Company.Name,
+        Role: entry?.Role.Name,
+      }));
+      setUsers(output_data);
     }
   }
 
@@ -76,7 +85,9 @@ export const UserListTableContainer = () => {
           <Skeleton height={40} animation="wave" />
         </div>
       )}
-      {!isLoading && <UserListTable rows={filteredUsers} />}
+      {!isLoading && (
+        <UserListTable rows={filteredUsers} handleReload={getAll} />
+      )}
     </div>
   );
 };

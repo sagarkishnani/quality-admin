@@ -1,12 +1,9 @@
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Layout } from "./common/components/Layout/Layout";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { Login } from "./pages/Login/Login";
-import { AuthProvider, useAuth } from "./common/contexts/AuthContext";
-import PrivateRoute from "./common/guards/PrivateRoute";
-import { useEffect } from "react";
-import AppRouter from "./common/routers/AppRouter";
+import "./App.css"
+import { ThemeProvider, createTheme } from "@mui/material/styles"
+import { AuthProvider, useAuth } from "./common/contexts/AuthContext"
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment"
+import AppRouter from "./common/routers/AppRouter"
+import { LocalizationProvider } from "@mui/x-date-pickers"
 
 function App() {
   const theme = createTheme({
@@ -18,15 +15,17 @@ function App() {
         main: "#00A0DF",
       },
     },
-  });
+  })
 
   return (
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <AppRouter />
-      </AuthProvider>
-    </ThemeProvider>
-  );
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
+  )
 }
 
-export default App;
+export default App

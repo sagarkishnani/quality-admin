@@ -29,6 +29,25 @@ async function getCompanies() {
   }
 }
 
+async function getCompanyById(idCompany: string) {
+  try {
+    const { data, error } = await supabase
+      .from("Company")
+      .select("*")
+      .eq("IdCompany", idCompany);
+
+    if (error) {
+      console.warn(error);
+      return error;
+    } else if (data) {
+      return data;
+    }
+  } catch (error) {
+    console.error("Error al traer la empresa:", error);
+    return error;
+  }
+}
+
 async function registerCompany(request: CompanyRegisterRequest) {
   try {
     const { data, error, status } = await supabase
@@ -115,4 +134,5 @@ export const CompanyService = {
   getCompanies,
   registerCompany,
   uploadCompanyLogo,
+  getCompanyById,
 };

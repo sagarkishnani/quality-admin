@@ -20,7 +20,7 @@ serve(async (req) => {
   }
   try {
     if (req.method === 'POST') {
-      const { email, password, Name, PhoneNumber, IdRole, IdCompany, Dni, ImageUrl } = await req.json();
+      const { email, password, Name, PhoneNumber, IdRole, IdCompany, Dni, ImageUrl, Position } = await req.json();
 
       const { data: user, error } = await supabase.auth.signUp({
         email,
@@ -49,7 +49,8 @@ serve(async (req) => {
             IdRole: IdRole,
             IdCompany: IdCompany,
             Dni: Dni,
-            ImageUrl: ImageUrl
+            ImageUrl: ImageUrl,
+            Position: Position
           }
         ]);
 

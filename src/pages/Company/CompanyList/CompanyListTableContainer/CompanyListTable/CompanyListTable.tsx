@@ -6,7 +6,10 @@ import {
   HiOutlineEye,
   HiOutlineTrash,
 } from "react-icons/hi";
+import secureLocalStorage from "react-secure-storage";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ConstantLocalStorage } from "../../../../../common/constants";
 
 interface TicketListTableInterface {
   rows: Row[];
@@ -25,6 +28,7 @@ interface Row {
 export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -32,7 +36,11 @@ export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
   ) => {
     setAnchorEl(event.currentTarget);
     setSelectedId(id);
-    console.log(id);
+    secureLocalStorage.setItem(ConstantLocalStorage.ID_COMPANY, id);
+  };
+
+  const handleView = () => {
+    navigate("ver");
   };
 
   const handleClose = () => {
@@ -153,7 +161,7 @@ export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
               "aria-labelledby": "basic-button",
             }}
           >
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleView}>
               <HiOutlineEye size={"20"} className="mr-2" />
               Ver empresa
             </MenuItem>

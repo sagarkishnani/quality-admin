@@ -75,7 +75,7 @@ export const ConfigurationListTable = ({
       selectedId
     );
 
-    if (status == ConstantHttpErrors.OK) {
+    if (status == ConstantHttpErrors.NO_CONTENT) {
       setIsModalOpen(false);
       setTimeout(() => {
         setModalAction(null);
