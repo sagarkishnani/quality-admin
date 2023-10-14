@@ -1,4 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/**
+ * eslint-disable @typescript-eslint/no-unused-vars
+ *
+ * @format
+ */
+
 import pattern from "../../../assets/patterns/pattern.svg";
 import logo from "../../../assets/logo/logo-white.svg";
 import {
@@ -25,7 +30,7 @@ export const Sidebar = () => {
   };
 
   const hasRole = (roles: string[]) => {
-    if (roles.includes(user.IdRole)) return true;
+    if (roles.includes(user!.IdRole)) return true;
     else false;
   };
 
@@ -169,7 +174,7 @@ export const Sidebar = () => {
               </div>
             </div>
           </div>
-          <div>
+          <div className="absolute bottom-0">
             <img src={pattern} alt="patrón" />
           </div>
         </div>
