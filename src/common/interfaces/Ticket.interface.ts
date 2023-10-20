@@ -1,3 +1,5 @@
+import { Moment } from "moment";
+
 export interface GetTicketsResponse {
     IdTicket: string;
     IdTicketStatus: string;
@@ -70,6 +72,7 @@ export interface UserRole {
 }
 
 export interface FilteredTicketsRequest {
+    IdTechnician: string | null;
     IdCompany: string | null;
     Pending: string | null;
     InProgress: string | null;
@@ -112,4 +115,19 @@ export interface TicketRegisterStepTwoRequest {
     IdTechnician: string;
     ScheduledAppointmentTime: Date;
     ScheduledAppointmentDate: Date;
+}
+
+export interface TicketRegisterStepThreeRequestFormOne {
+    ScheduledAppointmentInitTime: Moment;
+    ScheduledAppointmentEndTime: Moment;
+}
+
+export interface TicketRegisterStepThreeRequestFormTwo {
+    DeviceOne: string;
+    CounterOne: string;
+    GuideOne: string;
+    DeviceTwo: string;
+    CounterTwo: string;
+    GuideTwo: string;
+    FoundFailure: string;
 }

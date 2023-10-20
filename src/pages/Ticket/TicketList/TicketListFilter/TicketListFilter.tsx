@@ -1,9 +1,8 @@
 import { Checkbox, FormControlLabel } from "@mui/material"
 import { useFormik } from "formik"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "../../../../common/components/Button/Button"
 import {
-  ConstantHttpErrors,
   ConstantMessage,
   ConstantRoles,
   ConstantTicketStatus,
@@ -46,9 +45,12 @@ export const TicketListFilter = () => {
     const requestFilter: FilteredTicketsRequest = {
       IdCompany:
         user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
-        user?.IdRole === ConstantRoles.ADMINISTRADOR_TI
+        user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
+        user?.IdRole === ConstantRoles.TECNICO
           ? null
           : user?.IdCompany,
+      IdTechnician:
+        user?.IdRole === ConstantRoles.TECNICO ? user?.IdUser : null,
       Pending: pending,
       InProgress: enProgreso,
       Attended: atendido,

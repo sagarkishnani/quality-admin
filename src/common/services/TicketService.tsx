@@ -104,6 +104,7 @@ async function getTicketById(idTicket: string) {
 
 async function getFilteredTickets(request: FilteredTicketsRequest) {
   const idcompany = request.IdCompany
+  const idtechnician = request.IdTechnician
   const pending = request.Pending
   const inprogress = request.InProgress
   const attended = request.Attended
@@ -119,6 +120,7 @@ async function getFilteredTickets(request: FilteredTicketsRequest) {
       facturable,
       finished,
       idcompany,
+      idtechnician,
       inprogress,
       notfacturable,
       pending,

@@ -45,6 +45,7 @@ export const ConstantTicketMessage = {
     TICKET_REGISTER_SUCCESS: 'El ticket se registró correctamente',
     TICKET_ASSIGNED_SUCCESS: 'Se asignó a un técnico correctamente',
     TICKET_CANCEL_QUESTION: '¿Está seguro de cancelar el ticket?',
+    TICKET_FACTURABLE: 'El servicio técnico debe ser',
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
     TICKET_CANCEL_ERROR: 'Hubo un error al cancelar',
 }
@@ -63,7 +64,7 @@ export const ConstantUserMessage = {
 }
 
 export const ConstantsMasterTable = {
-    TICKET_STATUS: '00100',
+    DEVICES: '00100',
     TICKET_TYPES: '00200',
     AREAS: '00300',
     FLOORS: '00400',
@@ -79,6 +80,11 @@ export const ConstantLocalStorage = {
     ID_MASTER_TABLE: 'localStorageIdMasterTable',
     ID_TICKET: 'localStorageIdTicket',
     ID_USER: 'localStorageIdUser',
+    TICKET_STEP_THREE_FORM_ONE: 'localStorageTicketStepThreeFormOne',
+    TICKET_STEP_THREE_FORM_TWO: 'localStorageTicketStepThreeFormTwo',
+    TICKET_STEP_THREE_FORM_THREE: 'localStorageTicketStepThreeFormThree',
+    TICKET_STEP_THREE_FORM_FOUR: 'localStorageTicketStepThreeFormFour',
+    TICKET_STEP_THREE_FORM_FIVE: 'localStorageTicketStepThreeFormFive',
     USER: 'localStorageUser'
 }
 

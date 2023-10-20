@@ -1,5 +1,10 @@
+import { TicketProvider } from "../../../common/contexts/TicketContext"
 import { TicketRegisterContainerStepThree } from "./TicketRegisterStepThreeContainer/TicketRegisterContainerStepThree"
 
 export const TicketRegisterStepThree = () => {
-  return <TicketRegisterContainerStepThree />
+  return (
+    <TicketProvider>
+      <TicketRegisterContainerStepThree />
+    </TicketProvider>
+  )
 }

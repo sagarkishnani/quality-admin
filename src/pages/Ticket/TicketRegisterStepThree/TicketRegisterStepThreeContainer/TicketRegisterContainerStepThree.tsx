@@ -37,6 +37,12 @@ import {
 import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { UserService } from "../../../../common/services/UserService"
 import { TicketRegisterCompleteFormOne } from "./TicketRegisterCompleteFormOne/TicketRegisterCompleteFormOne"
+import { useTicket } from "../../../../common/contexts/TicketContext"
+import { TicketRegisterCompleteFormTwo } from "./TicketRegisterCompleteFormTwo/TicketRegisterCompleteFormTwo"
+import { TicketRegisterCompleteFormThree } from "./TicketRegisterCompleteFormThree/TicketRegisterCompleteFormThree"
+import { TicketRegisterCompleteFormFour } from "./TicketRegisterCompleteFormFour/TicketRegisterCompleteFormFour"
+import { TicketRegisterCompleteFormFive } from "./TicketRegisterCompleteFormFive/TicketRegisterCompleteFormFive"
+import { TicketRegisterCompleteFormSix } from "./TicketRegisterCompleteFormSix/TicketRegisterCompleteFormSix"
 
 const validationSchema = yup.object({
   // Dni: yup
@@ -81,6 +87,7 @@ export const TicketRegisterContainerStepThree = () => {
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const { user } = useAuth()
+  const { ticketStep } = useTicket()
   const navigate = useNavigate()
 
   const onChangePicture = (e: any) => {
@@ -99,6 +106,13 @@ export const TicketRegisterContainerStepThree = () => {
 
       reader.readAsDataURL(files[i])
     }
+  }
+
+  const handleRedirect = () => {
+    secureLocalStorage.removeItem(
+      ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
+    )
+    navigate("/tickets")
   }
 
   const handleCloseModal = () => {
@@ -153,6 +167,15 @@ export const TicketRegisterContainerStepThree = () => {
     if (data) {
       setTicket(data)
     }
+  }
+
+  function setStep(ticketStep: number) {
+    if (ticketStep === 1) return <TicketRegisterCompleteFormOne />
+    if (ticketStep === 2) return <TicketRegisterCompleteFormTwo />
+    if (ticketStep === 3) return <TicketRegisterCompleteFormThree />
+    if (ticketStep === 4) return <TicketRegisterCompleteFormFour />
+    if (ticketStep === 5) return <TicketRegisterCompleteFormFive />
+    if (ticketStep === 6) return <TicketRegisterCompleteFormSix />
   }
 
   async function getAll(idTicket: string) {
@@ -238,13 +261,14 @@ export const TicketRegisterContainerStepThree = () => {
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
       <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
-        <div className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center">
-          <Link to={"/tickets"}>
-            <HiChevronLeft size={"32"} />
-          </Link>
+        <div
+          onClick={handleRedirect}
+          className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center cursor-pointer"
+        >
+          <HiChevronLeft size={"32"} />
         </div>
         <div className="bg-white col-span-9 shadow-sm p-6">
-          {!isLoading && <TicketRegisterCompleteFormOne />}
+          {!isLoading && setStep(ticketStep)}
           {isLoading && (
             <>
               <div className="grid grid-cols-12 gap-4">
