@@ -1,63 +1,31 @@
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
-import {
-  ConstantLocalStorage,
-  ConstantsMasterTable,
-} from "../../../../../common/constants"
+import { ConstantLocalStorage } from "../../../../../common/constants"
 import { useFormik } from "formik"
-import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
+import {
+  GetTicketById,
+  TicketRegisterStepThreeRequestFormThree,
+} from "../../../../../common/interfaces/Ticket.interface"
 import { TicketService } from "../../../../../common/services/TicketService"
 import {
+  Alert,
   FormControl,
   FormControlLabel,
-  FormLabel,
-  InputLabel,
-  MenuItem,
   Radio,
   RadioGroup,
-  Select,
-  TextField,
+  Snackbar,
 } from "@mui/material"
-import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
-import { Button } from "../../../../../common/components/Button/Button"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
+import moment from "moment"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
+const validationSchema = yup.object({})
 
 export const TicketRegisterCompleteFormThree = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [open, setOpen] = useState(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [devices, setDevices] = useState<MasterTable[]>([])
-  const { user } = useAuth()
+  const [ticketFormThree, setTicketFormThree] = useState<any>()
   const { setTicketStep } = useTicket()
 
   async function getTicketById(idTicket: string) {
@@ -67,36 +35,69 @@ export const TicketRegisterCompleteFormThree = () => {
     }
   }
 
-  async function getDevices() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.DEVICES
-    )
-    if (data) {
-      setDevices(data)
-    }
-  }
-
   async function getAll(idTicket: string) {
     setIsLoading(true)
     await getTicketById(idTicket)
-    await getDevices()
     setIsLoading(false)
   }
 
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return
+    }
+
+    setOpen(false)
+  }
+
   function registerTicketStep(isNext: boolean) {
-    isNext ? setTicketStep(4) : setTicketStep(2)
+    const isFormValid = Object.values(formik.values).some(
+      (value) => value.trim() !== ""
+    )
+
+    if (isFormValid) {
+      const requestFormThree: TicketRegisterStepThreeRequestFormThree = {
+        BandejaUno: formik.values.BandejaUno,
+        BisagraEscaner: formik.values.BisagraEscaner,
+        BandejaDos: formik.values.BandejaDos,
+        BandejaADF: formik.values.BandejaADF,
+        BandejaSalida: formik.values.BandejaSalida,
+        CristalCamaPlana: formik.values.CristalCamaPlana,
+        ConectorUSB: formik.values.ConectorUSB,
+        Engranaje: formik.values.Engranaje,
+        ConectorRJ: formik.values.ConectorRJ,
+        LaminaTeplon: formik.values.LaminaTeplon,
+        PanelControl: formik.values.PanelControl,
+        RodilloPresion: formik.values.RodilloPresion,
+      }
+
+      secureLocalStorage.setItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE,
+        requestFormThree
+      )
+
+      isNext ? setTicketStep(4) : setTicketStep(2)
+    } else {
+      setOpen(true)
+    }
   }
 
   const formik = useFormik({
     initialValues: {
-      DeviceOne: "",
-      CounterOne: "",
-      GuideOne: "",
-      DeviceTwo: "",
-      CounterTwo: "",
-      GuideTwo: "",
-      ReportedFailure: "",
-      FoundFailure: "",
+      BandejaUno: "",
+      BisagraEscaner: "",
+      BandejaDos: "",
+      BandejaADF: "",
+      BandejaSalida: "",
+      CristalCamaPlana: "",
+      ConectorUSB: "",
+      Engranaje: "",
+      ConectorRJ: "",
+      LaminaTeplon: "",
+      PanelControl: "",
+      RodilloPresion: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {},
@@ -110,16 +111,25 @@ export const TicketRegisterCompleteFormThree = () => {
   }, [])
 
   useEffect(() => {
+    setTicketFormThree(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE
+      )
+    )
     if (ticket) {
       formik.setValues({
-        DeviceOne: "",
-        CounterOne: "",
-        GuideOne: "",
-        DeviceTwo: "",
-        CounterTwo: "",
-        GuideTwo: "",
-        ReportedFailure: ticket.ReportedFailure || "",
-        FoundFailure: "",
+        BandejaUno: ticketFormThree?.BandejaUno || "",
+        BisagraEscaner: ticketFormThree?.BisagraEscaner || "",
+        BandejaDos: ticketFormThree?.BandejaDos || "",
+        BandejaADF: ticketFormThree?.BandejaADF || "",
+        BandejaSalida: ticketFormThree?.BandejaSalida || "",
+        CristalCamaPlana: ticketFormThree?.CristalCamaPlana || "",
+        ConectorUSB: ticketFormThree?.ConectorUSB || "",
+        Engranaje: ticketFormThree?.Engranaje || "",
+        ConectorRJ: ticketFormThree?.ConectorRJ || "",
+        LaminaTeplon: ticketFormThree?.LaminaTeplon || "",
+        PanelControl: ticketFormThree?.PanelControl || "",
+        RodilloPresion: ticketFormThree?.RodilloPresion || "",
       })
     }
   }, [ticket])
@@ -142,8 +152,7 @@ export const TicketRegisterCompleteFormThree = () => {
         </div>
         <div className="col-span-12">
           <p className="font-semibold text-xs -mt-2">
-            B: BUEN ESTADO | L: LEVE DESGASTE | B: BUEN ESTADO | G: GASTADO | R:
-            ROTO
+            B: BUEN ESTADO | L: LEVE DESGASTE | G: GASTADO | R: ROTO
           </p>
         </div>
         <div className="col-span-2 flex items-center">
@@ -153,14 +162,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="BandejaUno"
+              name="BandejaUno"
+              value={formik.values.BandejaUno}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -171,14 +181,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="BisagraEscaner"
+              name="BisagraEscaner"
+              value={formik.values.BisagraEscaner}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -189,14 +200,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="BandejaDos"
+              name="BandejaDos"
+              value={formik.values.BandejaDos}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -207,14 +219,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="BandejaADF"
+              name="BandejaADF"
+              value={formik.values.BandejaADF}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -225,14 +238,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="BandejaSalida"
+              name="BandejaSalida"
+              value={formik.values.BandejaSalida}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -243,14 +257,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="CristalCamaPlana"
+              name="CristalCamaPlana"
+              value={formik.values.CristalCamaPlana}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -261,14 +276,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="ConectorUSB"
+              name="ConectorUSB"
+              value={formik.values.ConectorUSB}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -279,14 +295,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="Engranaje"
+              name="Engranaje"
+              value={formik.values.Engranaje}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -297,14 +314,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="ConectorRJ"
+              name="ConectorRJ"
+              value={formik.values.ConectorRJ}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -315,14 +333,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="LaminaTeplon"
+              name="LaminaTeplon"
+              value={formik.values.LaminaTeplon}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -333,14 +352,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="PanelControl"
+              name="PanelControl"
+              value={formik.values.PanelControl}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -351,14 +371,15 @@ export const TicketRegisterCompleteFormThree = () => {
           <FormControl>
             <RadioGroup
               row
-              name="controlled-radio-buttons-group"
-              //   value={value}
-              //   onChange={handleChange}
+              id="RodilloPresion"
+              name="RodilloPresion"
+              value={formik.values.RodilloPresion}
+              onChange={formik.handleChange}
             >
-              <FormControlLabel value="female" control={<Radio />} label="B" />
-              <FormControlLabel value="male" control={<Radio />} label="L" />
-              <FormControlLabel value="male" control={<Radio />} label="G" />
-              <FormControlLabel value="male" control={<Radio />} label="R" />
+              <FormControlLabel value="B" control={<Radio />} label="B" />
+              <FormControlLabel value="L" control={<Radio />} label="L" />
+              <FormControlLabel value="G" control={<Radio />} label="G" />
+              <FormControlLabel value="R" control={<Radio />} label="R" />
             </RadioGroup>
           </FormControl>
         </div>
@@ -366,20 +387,30 @@ export const TicketRegisterCompleteFormThree = () => {
 
       <div className="w-full mt-16 flex space-x-3 justify-end">
         <button
-          className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white`}
+          className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}
           type="button"
         >
           Anterior
         </button>
         <button
-          className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white`}
+          className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
           onClick={() => registerTicketStep(true)}
           type="button"
         >
           Siguiente
         </button>
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="warning" sx={{ width: "100%" }}>
+          Debe seleccionar por lo menos una opción
+        </Alert>
+      </Snackbar>
     </>
   )
 }

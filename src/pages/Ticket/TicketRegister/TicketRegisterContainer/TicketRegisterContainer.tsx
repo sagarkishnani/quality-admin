@@ -15,14 +15,11 @@ import { Button } from "../../../../common/components/Button/Button"
 import { Modal } from "../../../../common/components/Modal/Modal"
 import { useAuth } from "../../../../common/contexts/AuthContext"
 import { TicketService } from "../../../../common/services/TicketService"
-import secureLocalStorage from "react-secure-storage"
 import {
   ConstantHttpErrors,
-  ConstantLocalStorage,
   ConstantMessage,
   ConstantTicketMessage,
   ConstantTicketStatus,
-  ConstantTicketTypes,
   ConstantsMasterTable,
 } from "../../../../common/constants"
 import {
@@ -31,33 +28,16 @@ import {
 } from "../../../../common/interfaces/Ticket.interface"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
-import { getCurrentDate } from "../../../../common/utils"
 import { ImageModal } from "../../../../common/components/ImageModal/ImageModal"
 import moment from "moment"
 
 const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
+  CompanyFloor: yup.string().required(),
+  CompanyArea: yup.string().required(),
+  ReportedFailure: yup
+    .string()
+    .min(10, "Falla a reportar debe tener como mínimo 10 caracteres")
+    .required("Falla a reportar es obligatoria"),
 })
 
 export const TicketRegisterContainer = () => {
@@ -69,11 +49,9 @@ export const TicketRegisterContainer = () => {
   >("none")
   const [modalMessage, setModalMessage] = useState("")
   const [userData, setUserData] = useState<UserTicketResponse>(null)
-  const [positions, setPositions] = useState<MasterTable[]>([])
   const [areas, setAreas] = useState<MasterTable[]>([])
   const [floors, setFloors] = useState<MasterTable[]>([])
   const [pictures, setPictures] = useState<string[]>([])
-  const [imgData, setImgData] = useState("")
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const { user } = useAuth()
@@ -110,15 +88,6 @@ export const TicketRegisterContainer = () => {
     setIsImageModal(false)
   }
 
-  async function getPositions() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.POSITIONS
-    )
-    if (data) {
-      setPositions(data)
-    }
-  }
-
   async function getAreas() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.AREAS
@@ -147,7 +116,6 @@ export const TicketRegisterContainer = () => {
   async function getAll(idUser: string) {
     setIsLoading(true)
     await getTicketUserById(idUser)
-    await getPositions()
     await getAreas()
     await getFloors()
     setIsLoading(false)
@@ -159,9 +127,7 @@ export const TicketRegisterContainer = () => {
     request.IdTicketCompany = userData.Company.IdCompany
     request.IdUser = userData.IdUser
 
-    const { data, status }: any = await TicketService.registerTicketStepOne(
-      request
-    )
+    const { status }: any = await TicketService.registerTicketStepOne(request)
 
     if (status == ConstantHttpErrors.CREATED) {
       setIsModalOpen(true)
@@ -266,7 +232,9 @@ export const TicketRegisterContainer = () => {
               </div>
               <div className="col-span-6">
                 <FormControl fullWidth>
-                  <InputLabel id="FloorLabel">Piso</InputLabel>
+                  <InputLabel required id="FloorLabel">
+                    Piso
+                  </InputLabel>
                   <Select
                     labelId="FloorLabel"
                     id="CompanyFloor"
@@ -284,7 +252,9 @@ export const TicketRegisterContainer = () => {
               </div>
               <div className="col-span-6">
                 <FormControl fullWidth>
-                  <InputLabel id="AreaLabel">Área</InputLabel>
+                  <InputLabel required id="AreaLabel">
+                    Área
+                  </InputLabel>
                   <Select
                     labelId="AreaLabel"
                     id="CompanyArea"
@@ -313,28 +283,30 @@ export const TicketRegisterContainer = () => {
                 />
               </div>
               <div className="col-span-12">
-                <TextField
-                  color="primary"
-                  multiline
-                  minRows={5}
-                  className="w-full"
-                  type="text"
+                <textarea
+                  className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
                   required
-                  id="ReportedFailure"
                   name="ReportedFailure"
+                  id="ReportedFailure"
+                  rows={3}
                   value={formik.values.ReportedFailure}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.ReportedFailure &&
-                    Boolean(formik.errors.ReportedFailure)
-                  }
-                  helperText={
-                    formik.touched.ReportedFailure &&
-                    formik.errors.ReportedFailure
-                  }
-                  label="Falla a reportar"
-                />
+                  placeholder="Falla a reportar"
+                ></textarea>
+                <div className="flex justify-between">
+                  {formik.touched.ReportedFailure &&
+                  formik.errors.ReportedFailure ? (
+                    <p className="text-qRed text-sm">
+                      {formik.errors.ReportedFailure}
+                    </p>
+                  ) : (
+                    <div></div>
+                  )}
+                  <small className="text-right block">
+                    {formik.values.ReportedFailure.length}/100
+                  </small>
+                </div>
               </div>
               <div className="col-span-12">
                 <div className="flex flex-row space-x-2">

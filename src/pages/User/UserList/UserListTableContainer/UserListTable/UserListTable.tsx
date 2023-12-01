@@ -1,108 +1,108 @@
-import { Menu, MenuItem } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState, useEffect } from "react";
+import { Menu, MenuItem } from "@mui/material"
+import { DataGrid, GridColDef } from "@mui/x-data-grid"
+import { useState } from "react"
 import {
   HiOutlineDotsHorizontal,
   HiPencil,
   HiOutlineEye,
   HiOutlineTrash,
-} from "react-icons/hi";
-import secureLocalStorage from "react-secure-storage";
+} from "react-icons/hi"
+import secureLocalStorage from "react-secure-storage"
 import {
+  ConstantHttpErrors,
   ConstantLocalStorage,
   ConstantUserMessage,
-} from "../../../../../common/constants";
-import { Modal } from "../../../../../common/components/Modal/Modal";
-import { useNavigate } from "react-router-dom";
+} from "../../../../../common/constants"
+import { Modal } from "../../../../../common/components/Modal/Modal"
+import { useNavigate } from "react-router-dom"
+import { UserService } from "../../../../../common/services/UserService"
 
 interface UserListTableInterface {
-  rows: Row[];
-  handleReload: () => void;
+  rows: Row[]
+  handleReload: () => void
 }
 
 interface Row {
-  IdUser: string;
-  Dni: number;
-  Name: string;
-  email: string;
-  PhoneNumber: string;
-  IdRole: string;
-  IdCompany: string;
-  RecordCreationDate: Date;
-  RecordEditDate: Date;
+  IdUser: string
+  Dni: number
+  Name: string
+  email: string
+  PhoneNumber: string
+  IdRole: string
+  IdCompany: string
+  RecordCreationDate: Date
+  RecordEditDate: Date
 }
 
 export const UserListTable = ({
   rows,
   handleReload,
 }: UserListTableInterface) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const [modalAction, setModalAction] = useState<string | null>("eliminar");
-  const navigate = useNavigate();
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const [modalAction, setModalAction] = useState<string | null>("eliminar")
+  const navigate = useNavigate()
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedId(id);
-    secureLocalStorage.setItem(ConstantLocalStorage.ID_USER, id);
-  };
+    setAnchorEl(event.currentTarget)
+    setSelectedId(id)
+    secureLocalStorage.setItem(ConstantLocalStorage.ID_USER, id)
+  }
 
   const handleView = () => {
-    navigate("ver");
-  };
+    navigate("ver")
+  }
 
   const handleEdit = () => {
-    navigate("editar");
-  };
+    navigate("editar")
+  }
 
   const handleDelete = () => {
-    setIsModalOpen(true);
-    setModalType("question");
-    setModalMessage(ConstantUserMessage.USER_DELETE_QUESTION);
-    setModalAction("eliminar");
-  };
+    setIsModalOpen(true)
+    setModalType("question")
+    setModalMessage(ConstantUserMessage.USER_DELETE_QUESTION)
+    setModalAction("eliminar")
+  }
 
   const handleDeleteBtn = async () => {
-    // const { status }: any = await MasterTableService.deleteMasterTable(
-    //   selectedId
-    // );
-    // if (status == ConstantHttpErrors.NO_CONTENT) {
-    //   setIsModalOpen(false);
-    //   setTimeout(() => {
-    //     setModalAction(null);
-    //     setIsModalOpen(true);
-    //     setModalType("success");
-    //     setModalMessage(ConstantMasterTableMessage.MT_DELETE_SUCCESS);
-    //   }, 1000);
-    //   setTimeout(() => {
-    //     handleReload();
-    //   }, 2500);
-    // } else {
-    //   setIsModalOpen(false);
-    //   setTimeout(() => {
-    //     setIsModalOpen(true);
-    //     setModalType("error");
-    //     setModalMessage(ConstantMasterTableMessage.MT_DELETE_ERROR);
-    //   }, 1000);
-    // }
-  };
+    const { status } = await UserService.deleteUser(selectedId!)
+    if (status == ConstantHttpErrors.OK) {
+      setIsModalOpen(false)
+      setTimeout(() => {
+        setModalAction(null)
+        setIsModalOpen(true)
+        setModalType("success")
+        setModalMessage(ConstantUserMessage.USER_DELETE)
+      }, 1000)
+      setTimeout(() => {
+        handleReload()
+      }, 2500)
+    } else {
+      setIsModalOpen(false)
+      setTimeout(() => {
+        setIsModalOpen(true)
+        setModalType("error")
+        setModalMessage(ConstantUserMessage.USER_DELETE_ERROR)
+      }, 1000)
+    }
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-    setSelectedId(null);
-  };
+    setAnchorEl(null)
+    setSelectedId(null)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   const columns: GridColDef[] = [
     {
@@ -160,8 +160,8 @@ export const UserListTable = ({
       disableColumnMenu: true,
       renderCell: (params) => {
         const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-          handleClick(event, params.row.IdUser);
-        };
+          handleClick(event, params.row.IdUser)
+        }
 
         return (
           <>
@@ -172,10 +172,10 @@ export const UserListTable = ({
               <HiOutlineDotsHorizontal color="black" size={"30"} />
             </div>
           </>
-        );
+        )
       },
     },
-  ];
+  ]
 
   return (
     <>
@@ -248,5 +248,5 @@ export const UserListTable = ({
         </>
       )}
     </>
-  );
-};
+  )
+}

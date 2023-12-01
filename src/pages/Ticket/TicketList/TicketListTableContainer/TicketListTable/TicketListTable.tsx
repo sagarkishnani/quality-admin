@@ -4,6 +4,7 @@ import moment from "moment"
 import { useState, useEffect } from "react"
 import {
   HiBan,
+  HiOutlineClipboardCheck,
   HiOutlineDocumentText,
   HiOutlineDotsHorizontal,
   HiOutlineEye,
@@ -83,6 +84,10 @@ export const TicketListTable = ({
 
   const handleCompleteForm = () => {
     navigate("completar-formulario")
+  }
+
+  const handleFacturableForm = () => {
+    navigate("registrar-facturable")
   }
 
   const handleCancelTicket = () => {
@@ -239,14 +244,14 @@ export const TicketListTable = ({
       )}
       {rows.length !== 0 && (
         <>
-          <div className="flex-1 w-[80vw] lg:w-auto">
+          <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
                 rows={rows}
                 columns={columns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 8 },
+                    paginationModel: { page: 0, pageSize: 7 },
                   },
                   columns: {
                     columnVisibilityModel: {
@@ -254,7 +259,7 @@ export const TicketListTable = ({
                     },
                   },
                 }}
-                pageSizeOptions={[8, 12, 20]}
+                pageSizeOptions={[7, 12, 20]}
                 localeText={{
                   noRowsLabel: "No se ha encontrado datos.",
                   noResultsOverlayLabel: "No se ha encontrado ningún resultado",
@@ -296,13 +301,21 @@ export const TicketListTable = ({
                   Completar formulario
                 </MenuItem>
               )}
+            {user?.IdRole === ConstantRoles.LIDER_FUNCIONAL &&
+              selectedTicket?.Status === "Atendido" && (
+                <MenuItem onClick={handleFacturableForm}>
+                  <HiOutlineClipboardCheck size={"20"} className="mr-2" />
+                  Revisar formulario
+                </MenuItem>
+              )}
             {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
-              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) && (
-              <MenuItem onClick={handleCancelTicket}>
-                <HiBan size={"20"} className="mr-2" />
-                Cancelar ticket
-              </MenuItem>
-            )}
+              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+              selectedTicket?.Status !== "Finalizado" && (
+                <MenuItem onClick={handleCancelTicket}>
+                  <HiBan size={"20"} className="mr-2" />
+                  Cancelar ticket
+                </MenuItem>
+              )}
           </Menu>
           <Modal
             handleClose={handleCloseModal}

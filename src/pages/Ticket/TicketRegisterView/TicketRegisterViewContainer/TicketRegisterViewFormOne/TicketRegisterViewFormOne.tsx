@@ -7,29 +7,49 @@ import {
   GetTicketById,
   TicketRegisterStepThreeRequestFormOne,
 } from "../../../../../common/interfaces/Ticket.interface"
-import { InputLabel, TextField } from "@mui/material"
+import { useAuth } from "../../../../../common/contexts/AuthContext"
+import { Link, useNavigate } from "react-router-dom"
+import { TicketService } from "../../../../../common/services/TicketService"
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material"
 import moment from "moment"
 import { TimePicker } from "@mui/x-date-pickers"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
 
-interface TicketRegisterCompleteFormOneInterface {
-  ticket: GetTicketById
-}
+// const validationSchema = yup.object({
+//   ScheduledAppointmentInitTime: yup.required("Nombre es obligatorio"),
+//   ScheduledAppointmentEndTime: yup.required("Nombre es obligatorio"),
+// })
 
-const validationSchema = yup.object({
-  ScheduledAppointmentInitTime: yup
-    .date()
-    .required("Hora de inicio es obligatorio"),
-  ScheduledAppointmentEndTime: yup
-    .date()
-    .required("Hora de fin es obligatorio"),
-})
-
-export const TicketRegisterCompleteFormOne = ({
-  ticket,
-}: TicketRegisterCompleteFormOneInterface) => {
+export const TicketRegisterViewFormOne = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [ticket, setTicket] = useState<GetTicketById>(null)
   const [ticketFormOne, setTicketFormOne] = useState<any>()
+  const [pictures, setPictures] = useState<string[]>([])
+  const [imgData, setImgData] = useState("")
+  const [selectedImg, setSelectedImg] = useState("")
+  const [isImageModal, setIsImageModal] = useState<boolean>(false)
+  const { user } = useAuth()
   const { setTicketStep } = useTicket()
+  const navigate = useNavigate()
+
+  async function getTicketById(idTicket: string) {
+    const data = await TicketService.getTicketById(idTicket)
+    if (data) {
+      setTicket(data)
+    }
+  }
+
+  async function getAll(idTicket: string) {
+    setIsLoading(true)
+    await getTicketById(idTicket)
+    setIsLoading(false)
+  }
 
   function registerTicketStep() {
     if (formik.isValid) {
@@ -62,11 +82,18 @@ export const TicketRegisterCompleteFormOne = ({
       ScheduledAppointmentEndTime: moment(new Date()),
       ReportedFailure: "",
     },
-    validationSchema: validationSchema,
-    onSubmit: () => {
+    // validationSchema: validationSchema,
+    onSubmit: (values) => {
       registerTicketStep()
     },
   })
+
+  useEffect(() => {
+    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
+    if (idTicket !== null) {
+      getAll(idTicket)
+    }
+  }, [])
 
   useEffect(() => {
     setTicketFormOne(
@@ -185,9 +212,7 @@ export const TicketRegisterCompleteFormOne = ({
       <div className="w-full mt-4 flex justify-end">
         <button
           className={`px-10 py-2 font-medium rounded-full text-white ${
-            formik.isValid
-              ? "bg-qGreen hover:bg-qDarkGreen"
-              : "bg-qGray cursor-default"
+            formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
           }`}
           onClick={registerTicketStep}
           type="button"

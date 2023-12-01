@@ -4,8 +4,8 @@
  * @format
  */
 
-import pattern from "../../../assets/patterns/pattern.svg";
-import logo from "../../../assets/logo/logo-white.svg";
+import pattern from "../../../assets/patterns/pattern.svg"
+import logo from "../../../assets/logo/logo-white.svg"
 import {
   HiOutlineTicket,
   HiChevronRight,
@@ -13,26 +13,26 @@ import {
   HiOutlineOfficeBuilding,
   HiOutlineCog,
   HiOutlineUserGroup,
-} from "react-icons/hi";
-import { BsWhatsapp } from "react-icons/bs";
-import { RouteLink } from "../../interfaces/RouteLink.interface";
-import { Link, useMatch } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { ConstantRoles } from "../../constants";
+} from "react-icons/hi"
+import { BsWhatsapp } from "react-icons/bs"
+import { RouteLink } from "../../interfaces/RouteLink.interface"
+import { Link, useMatch } from "react-router-dom"
+import { useAuth } from "../../contexts/AuthContext"
+import { ConstantRoles } from "../../constants"
 
 export const Sidebar = () => {
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   const isActiveRoute = (route: string) => {
     if (useMatch(route)) {
-      return 1;
-    } else 0;
-  };
+      return 1
+    } else 0
+  }
 
   const hasRole = (roles: string[]) => {
-    if (roles.includes(user!.IdRole)) return true;
-    else false;
-  };
+    if (roles.includes(user!.IdRole)) return true
+    else false
+  }
 
   const routeLinks: RouteLink[] = [
     {
@@ -80,7 +80,7 @@ export const Sidebar = () => {
       Icon: <HiOutlineCog className="inline" size={"20"} />,
       Roles: [ConstantRoles.LIDER_FUNCIONAL],
     },
-  ];
+  ]
 
   return (
     <>
@@ -180,5 +180,5 @@ export const Sidebar = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

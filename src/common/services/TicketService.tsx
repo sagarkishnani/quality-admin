@@ -3,10 +3,11 @@ import {
   FilteredTicketsRequest,
   TicketRegisterAndUploadImage,
   TicketRegisterStepOneRequest,
+  TicketRegisterStepThreeRequest,
   TicketRegisterStepTwoRequest,
 } from "../interfaces/Ticket.interface"
 import moment from "moment"
-import { ConstantTicketStatus } from "../constants"
+import { ConstantTicketStatus, ConstantTicketTypes } from "../constants"
 
 const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY
@@ -218,6 +219,66 @@ async function registerTicketStepTwo(
   }
 }
 
+async function registerTicketStepThree(
+  request: TicketRegisterStepThreeRequest,
+  idTicket: string,
+  isFacturable: boolean
+) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Ticket")
+      .update({
+        IdTicketStatus: isFacturable
+          ? ConstantTicketStatus.ATENDIDO
+          : ConstantTicketStatus.FINALIZADO,
+        IdTicketType: isFacturable
+          ? ConstantTicketTypes.FACTURABLE
+          : ConstantTicketTypes.NO_FACTURABLE,
+        FoundFailure: request.FoundFailure,
+        Comment: request.Comment,
+        Recommendation: request.Recommendation,
+        AppointmentDate: request.AppointmentDate,
+      })
+      .eq("IdTicket", idTicket)
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar ticket", error)
+    return error
+  }
+}
+
+async function registerTicketStepFour(
+  // request: TicketRegisterStepTwoRequest,
+  idTicket: string
+) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Ticket")
+      .update({
+        IdTicketStatus: ConstantTicketStatus.FINALIZADO,
+      })
+      .eq("IdTicket", idTicket)
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar ticket", error)
+    return error
+  }
+}
+
 async function cancelTicket(idTicket: string) {
   try {
     const { data, error, status } = await supabase
@@ -293,6 +354,8 @@ export const TicketService = {
   getTicketUserById,
   registerTicketStepOne,
   registerTicketStepTwo,
+  registerTicketStepThree,
+  registerTicketStepFour,
   cancelTicket,
   ticketRegisterAndUploadImage,
 }

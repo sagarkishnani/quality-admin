@@ -8,9 +8,12 @@ import {
 import { useFormik } from "formik"
 import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
 import { useAuth } from "../../../../../common/contexts/AuthContext"
+import { Link, useNavigate } from "react-router-dom"
 import { TicketService } from "../../../../../common/services/TicketService"
-import { Checkbox, FormControlLabel } from "@mui/material"
+import { Checkbox, FormControl, FormControlLabel } from "@mui/material"
 import moment from "moment"
+import { TimePicker } from "@mui/x-date-pickers"
+import { Button } from "../../../../../common/components/Button/Button"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
 import { MasterTableService } from "../../../../../common/services/MasterTableService"
@@ -40,7 +43,7 @@ const validationSchema = yup.object({
   //   .required("Contraseña es obligatoria"),
 })
 
-export const TicketRegisterCompleteFormFive = () => {
+export const TicketRegisterViewFormFive = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [devices, setDevices] = useState<MasterTable[]>([])
@@ -131,25 +134,25 @@ export const TicketRegisterCompleteFormFive = () => {
           <div className="flex flex-col">
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox checked disabled />}
                 label="Uso de papel húmedo"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Uso de papel reciclado"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Uso de papel C grapas"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Uso de etiquetas"
               />
             </div>
@@ -159,25 +162,25 @@ export const TicketRegisterCompleteFormFive = () => {
           <div className="flex flex-col">
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Conectado a la pared"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Conectado a supresor"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Conectado a estabilizador"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Conectado a UPS"
               />
             </div>
@@ -185,25 +188,31 @@ export const TicketRegisterCompleteFormFive = () => {
         </div>
         <div className="col-span-3">
           <div className="flex flex-col">
-            <FormControlLabel control={<Checkbox />} label="Operativo" />
+            <FormControlLabel
+              control={<Checkbox disabled />}
+              label="Operativo"
+            />
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Pegado de etiqueta garantía"
               />
             </div>
             <div>
-              <FormControlLabel control={<Checkbox />} label="En observación" />
+              <FormControlLabel
+                control={<Checkbox disabled />}
+                label="En observación"
+              />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Equipo requiere cambio"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox disabled />}
                 label="Equipo requiere mantenimiento"
               />
             </div>
@@ -213,30 +222,42 @@ export const TicketRegisterCompleteFormFive = () => {
           <div className="flex flex-col">
             <FormControlLabel
               label="Cartucho otro proveedor"
-              control={<Checkbox />}
+              control={<Checkbox disabled />}
             />
-            <FormControlLabel label="Cartucho dañado" control={<Checkbox />} />
+            <FormControlLabel
+              label="Cartucho dañado"
+              control={<Checkbox disabled />}
+            />
           </div>
         </div>
         <div className="col-span-3">
-          <FormControlLabel label="Instalación" control={<Checkbox />} />
+          <FormControlLabel
+            label="Instalación"
+            control={<Checkbox disabled />}
+          />
         </div>
         <div className="col-span-3">
           <FormControlLabel
             label="Servicio de garantía"
-            control={<Checkbox />}
+            control={<Checkbox disabled />}
           />
         </div>
         <div className="col-span-3">
-          <FormControlLabel label="Negligencia" control={<Checkbox />} />
+          <FormControlLabel
+            label="Negligencia"
+            control={<Checkbox checked disabled />}
+          />
         </div>
         <div className="col-span-3">
           <div className="flex flex-col">
             <FormControlLabel
               label="Visita facturable"
-              control={<Checkbox />}
+              control={<Checkbox disabled />}
             />
-            <FormControlLabel label="Mantenimiento" control={<Checkbox />} />
+            <FormControlLabel
+              label="Mantenimiento"
+              control={<Checkbox disabled />}
+            />
           </div>
         </div>
       </div>

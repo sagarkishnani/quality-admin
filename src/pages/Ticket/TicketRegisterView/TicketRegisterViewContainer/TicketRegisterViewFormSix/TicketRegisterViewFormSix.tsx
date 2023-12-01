@@ -48,7 +48,7 @@ const validationSchema = yup.object({
   //   .required("Contraseña es obligatoria"),
 })
 
-export const TicketRegisterCompleteFormSix = () => {
+export const TicketRegisterViewFormSix = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
@@ -91,58 +91,8 @@ export const TicketRegisterCompleteFormSix = () => {
       : secondSignature?.current.clear()
   }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-  }
-
-  const handleCloseTicketModal = () => {
-    setIsModalTicketOpen(false)
-  }
-
-  async function registerTicketStepThree(isFacturable: boolean) {
-    setIsLoadingAction(true)
-
-    const { status }: any = await TicketService.registerTicketStepThree(
-      ticket.IdTicket,
-      isFacturable
-    )
-
-    if (status == ConstantHttpErrors.OK) {
-      setIsModalTicketOpen(false)
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(
-        isFacturable
-          ? ConstantTicketMessage.TICKET_ATTENDED_SUCCESS
-          : ConstantTicketMessage.TICKET_FINISHED_SUCCESS
-      )
-
-      setIsLoadingAction(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
-    } else {
-      setIsModalTicketOpen(false)
-      setIsLoadingAction(false)
-      setIsModalOpen(true)
-      setModalType("error")
-      setModalMessage(ConstantMessage.SERVICE_ERROR)
-    }
-  }
-
-  const handleFacturable = () => {
-    registerTicketStepThree(true)
-  }
-
-  const handleNoFacturable = () => {
-    registerTicketStepThree(false)
-  }
-
-  const handleForm = () => {
-    setIsModalTicketOpen(true)
-    setModalTicketType("question")
-    setModalTicketMessage(ConstantTicketMessage.TICKET_FACTURABLE)
-    setModalAction("cancelar")
+  function registerTicketStep(isNext: boolean) {
+    isNext ? setTicketStep(7) : setTicketStep(5)
   }
 
   const formik = useFormik({
@@ -201,26 +151,22 @@ export const TicketRegisterCompleteFormSix = () => {
           <label>Comentario</label>
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
-            required
+            disabled
             name="CounterOne"
             id="CounterOne"
             rows={1}
             value={formik.values.CounterOne}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
           ></textarea>
         </div>
         <div className="col-span-12">
           <label>Recomendaciones</label>
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
-            required
+            disabled
             name="GuideOne"
             id="GuideOne"
             rows={2}
             value={formik.values.GuideOne}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
           ></textarea>
         </div>
         <div className="col-span-5 border-gray-400 border-2 rounded-md">
@@ -263,70 +209,47 @@ export const TicketRegisterCompleteFormSix = () => {
         </div>
         <div className="col-span-5">
           <TextField
-            required
+            disabled
             color="primary"
             className="w-full"
             id="DeviceTwo"
             name="DeviceTwo"
             value={formik.values.DeviceTwo}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.DeviceTwo && Boolean(formik.errors.DeviceTwo)}
-            helperText={formik.touched.DeviceTwo && formik.errors.DeviceTwo}
             label="Nombre"
           />
         </div>
         <div className="col-span-2"></div>
         <div className="col-span-5">
           <TextField
-            required
+            disabled
             color="primary"
             className="w-full"
             id="CounterTwo"
             name="CounterTwo"
             value={formik.values.CounterTwo}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.CounterTwo && Boolean(formik.errors.CounterTwo)
-            }
-            helperText={formik.touched.CounterTwo && formik.errors.CounterTwo}
             label="Nombre técnico"
           />
         </div>
         <div className="col-span-5">
           <TextField
-            required
+            disabled
             color="primary"
             className="w-full"
             id="ReportedFailure"
             name="ReportedFailure"
             value={formik.values.ReportedFailure}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={
-              formik.touched.ReportedFailure &&
-              Boolean(formik.errors.ReportedFailure)
-            }
-            helperText={
-              formik.touched.ReportedFailure && formik.errors.ReportedFailure
-            }
             label="DNI"
           />
         </div>
         <div className="col-span-2"></div>
         <div className="col-span-5">
           <TextField
-            required
+            disabled
             color="primary"
             className="w-full"
             id="Extra"
             name="Extra"
             value={formik.values.Extra}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.Extra && Boolean(formik.errors.Extra)}
-            helperText={formik.touched.Extra && formik.errors.Extra}
             label="DNI"
           />
         </div>
@@ -335,7 +258,7 @@ export const TicketRegisterCompleteFormSix = () => {
       <div className="w-full mt-8 flex space-x-3 justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
-          onClick={previousStep}
+          onClick={() => registerTicketStep(false)}
           type="button"
         >
           Anterior
@@ -343,27 +266,11 @@ export const TicketRegisterCompleteFormSix = () => {
         <button
           className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
           type="button"
-          onClick={handleForm}
+          onClick={() => registerTicketStep(true)}
         >
-          Finalizar
+          Siguiente
         </button>
       </div>
-      <ModalTicket
-        handleClose={handleCloseTicketModal}
-        modalType={modalTicketType}
-        title={modalTicketMessage}
-        open={isModalTicketOpen}
-        handleActionOne={handleNoFacturable}
-        handleActionTwo={handleFacturable}
-        // handleAction={handleCancelBtn}
-        action={modalAction}
-      />
-      <Modal
-        modalType={modalType}
-        title={modalMessage}
-        open={isModalOpen}
-        handleClose={handleCloseModal}
-      />
     </>
   )
 }

@@ -44,6 +44,8 @@ export const ConstantCompanyMessage = {
 export const ConstantTicketMessage = {
     TICKET_REGISTER_SUCCESS: 'El ticket se registró correctamente',
     TICKET_ASSIGNED_SUCCESS: 'Se asignó a un técnico correctamente',
+    TICKET_ATTENDED_SUCCESS: 'El ticket fue atendido correctamente',
+    TICKET_FINISHED_SUCCESS: 'El ticket se finalizó correctamente',
     TICKET_CANCEL_QUESTION: '¿Está seguro de cancelar el ticket?',
     TICKET_FACTURABLE: 'El servicio técnico debe ser',
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
@@ -60,7 +62,9 @@ export const ConstantMasterTableMessage = {
 
 export const ConstantUserMessage = {
     USER_INCORRECT: 'El usuario o contraseña es incorrecto.',
-    USER_DELETE_QUESTION: '¿Está seguro de eliminar el usuario?'
+    USER_DELETE_QUESTION: '¿Está seguro de eliminar el usuario?',
+    USER_DELETE_ERROR: 'Hubo un error al eliminar',
+    USER_DELETE: 'El usuario se eliminó correctamente'
 }
 
 export const ConstantsMasterTable = {
@@ -72,7 +76,8 @@ export const ConstantsMasterTable = {
     CURRENCIES: '00600',
     PAYMENT_CONDITIONS: '00700',
     CE: '00800',
-    BANKS: '00900'
+    BANKS: '00900',
+    SERVICES: ''
 }
 
 export const ConstantLocalStorage = {

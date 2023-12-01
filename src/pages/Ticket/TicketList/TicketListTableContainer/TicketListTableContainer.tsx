@@ -90,13 +90,13 @@ export const TicketListTableContainer = () => {
   }, [filteredTickets])
 
   return (
-    <div className="flex-1">
-      <div className="px-4 py-8 flex justify-between">
-        <div className="flex flex-row flex-wrap items-center">
-          <div>
+    <div className="flex-1 lg:m-4 xl:m-0">
+      <div className="px-4 py-8 md:flex md:justify-between">
+        <div className="flex m-auto lg:m-0 flex-row flex-wrap items-center">
+          <div className="w-full md:w-auto text-center md:text-left mb-3 md:mb-0">
             <h3 className="text-lg font-semibold mr-4">Tickets</h3>
           </div>
-          <div className="flex flex-row items-center justify-center flex-wrap w-[28rem] rounded-full bg-qLightGray p-2 border-qGray border-2">
+          <div className="flex flex-row items-center justify-center flex-wrap w-full md:w-[28rem] rounded-full bg-qLightGray p-2 border-qGray border-2">
             <div className="w-8 flex justify-center">
               <HiSearch color="#989898" size={"16"} />
             </div>

@@ -74,6 +74,14 @@ body {
   border-radius: 20px !important;
 }
 
+.date-filter {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+textarea {
+  resize: none;
+}
+
 @layer base {
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {

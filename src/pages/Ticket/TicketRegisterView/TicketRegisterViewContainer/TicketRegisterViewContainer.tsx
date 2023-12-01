@@ -1,46 +1,33 @@
 import * as yup from "yup"
-import { HiChevronLeft } from "react-icons/hi"
-import { useFormik } from "formik"
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
+import { useTicket } from "../../../../common/contexts/TicketContext"
 import { useNavigate } from "react-router-dom"
-import { Skeleton } from "@mui/material"
+import { GetTicketById } from "../../../../common/interfaces/Ticket.interface"
+import { TicketRegisterViewFormOne } from "./TicketRegisterViewFormOne/TicketRegisterViewFormOne"
+import { TicketRegisterFacturable } from "../../TicketRegisterStepFour/TicketRegisterStepFourContainer/TicketRegisterFacturable/TicketRegisterFacturable"
 import { TicketService } from "../../../../common/services/TicketService"
+import { useFormik } from "formik"
 import secureLocalStorage from "react-secure-storage"
 import { ConstantLocalStorage } from "../../../../common/constants"
-import { GetTicketById } from "../../../../common/interfaces/Ticket.interface"
-import { TicketRegisterCompleteFormOne } from "./TicketRegisterCompleteFormOne/TicketRegisterCompleteFormOne"
-import { useTicket } from "../../../../common/contexts/TicketContext"
-import { TicketRegisterCompleteFormTwo } from "./TicketRegisterCompleteFormTwo/TicketRegisterCompleteFormTwo"
-import { TicketRegisterCompleteFormThree } from "./TicketRegisterCompleteFormThree/TicketRegisterCompleteFormThree"
-import { TicketRegisterCompleteFormFour } from "./TicketRegisterCompleteFormFour/TicketRegisterCompleteFormFour"
-import { TicketRegisterCompleteFormFive } from "./TicketRegisterCompleteFormFive/TicketRegisterCompleteFormFive"
-import { TicketRegisterCompleteFormSix } from "./TicketRegisterCompleteFormSix/TicketRegisterCompleteFormSix"
+import { HiChevronLeft } from "react-icons/hi"
+import { Skeleton } from "@mui/material"
 
 const validationSchema = yup.object({})
 
-export const TicketRegisterContainerStepThree = () => {
+export const TicketRegisterViewContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
   const { ticketStep } = useTicket()
+  const [ticket, setTicket] = useState<GetTicketById>(null)
   const navigate = useNavigate()
 
-  const handleRedirect = () => {
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_TWO
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_FOUR
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_FIVE
-    )
-    navigate("/tickets")
+  function setStep(ticketStep: number) {
+    if (ticketStep === 1) return <TicketRegisterViewFormOne />
+    if (ticketStep === 2) return <TicketRegisterViewFormOne />
+    if (ticketStep === 3) return <TicketRegisterViewFormOne />
+    if (ticketStep === 4) return <TicketRegisterViewFormOne />
+    if (ticketStep === 5) return <TicketRegisterViewFormOne />
+    if (ticketStep === 6) return <TicketRegisterViewFormOne />
+    if (ticketStep === 7) return <TicketRegisterFacturable />
   }
 
   async function getTicketById(idTicket: string) {
@@ -48,26 +35,6 @@ export const TicketRegisterContainerStepThree = () => {
     if (data) {
       setTicket(data)
     }
-  }
-
-  const handleFormTwoLoadingChange = (newLoadingState: boolean) => {
-    setIsLoading(newLoadingState)
-  }
-
-  function setStep(ticketStep: number) {
-    if (ticketStep === 1)
-      return <TicketRegisterCompleteFormOne ticket={ticket} />
-    if (ticketStep === 2)
-      return (
-        <TicketRegisterCompleteFormTwo
-          ticket={ticket}
-          onLoadingChange={handleFormTwoLoadingChange}
-        />
-      )
-    if (ticketStep === 3) return <TicketRegisterCompleteFormThree />
-    if (ticketStep === 4) return <TicketRegisterCompleteFormFour />
-    if (ticketStep === 5) return <TicketRegisterCompleteFormFive />
-    if (ticketStep === 6) return <TicketRegisterCompleteFormSix />
   }
 
   async function getAll(idTicket: string) {
@@ -91,8 +58,14 @@ export const TicketRegisterContainerStepThree = () => {
       ReportedFailure: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      // registerTicketStepTwo(values)
+    },
   })
+
+  const handleRedirect = () => {
+    navigate("/tickets")
+  }
 
   useEffect(() => {
     const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)

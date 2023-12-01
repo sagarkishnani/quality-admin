@@ -176,99 +176,106 @@ export const TicketListFilter = () => {
   })
 
   return (
-    <div className="shadow-gray-300 shadow-sm h-full w-3/12 p-8 flex flex-col">
-      <form onSubmit={formik.handleSubmit} autoComplete="off">
-        <div>
-          <h2 className="font-semibold text-lg pb-2">Filtros</h2>
-        </div>
-        <div>
-          <h4 className="text-qGreen font-medium pb-2">Estado del ticket</h4>
-          <div className="grid grid-cols-2 text-sm pb-2">
-            <FormControlLabel
-              className="!text-xs"
-              control={<Checkbox />}
-              id="Pending"
-              name="Pending"
-              value={formik.values.Pending}
-              onChange={formik.handleChange}
-              label="Pendiente"
-            />
-            <FormControlLabel
-              control={<Checkbox />}
-              label="En progreso"
-              id="InProgress"
-              value={formik.values.InProgress}
-              onChange={formik.handleChange}
-              name="InProgress"
-            />
-            <FormControlLabel
-              control={<Checkbox />}
-              label="Atendido"
-              id="Attended"
-              value={formik.values.Attended}
-              onChange={formik.handleChange}
-              name="Attended"
-            />
-            <FormControlLabel
-              control={<Checkbox />}
-              label="Finalizado"
-              id="Finished"
-              value={formik.values.Finished}
-              onChange={formik.handleChange}
-              name="Finished"
-            />
-            <FormControlLabel
-              control={<Checkbox />}
-              label="Cancelado"
-              id="Cancelled"
-              value={formik.values.Cancelled}
-              onChange={formik.handleChange}
-              name="Cancelled"
+    <div className="shadow-gray-300 shadow-sm w-full md:h-full xl:w-3/12 p-8 flex flex-row xl:flex-col">
+      <form
+        className="w-full"
+        onSubmit={formik.handleSubmit}
+        autoComplete="off"
+      >
+        <div className="grid grid-cols-4">
+          <div className="col-span-4">
+            <h2 className="font-semibold text-lg pb-2">Filtros</h2>
+          </div>
+          <div className="col-span-4 md:col-span-2 xl:col-span-4">
+            <h4 className="text-qGreen font-medium pb-2">Estado del ticket</h4>
+            <div className="grid grid-cols-2 text-sm pb-2">
+              <FormControlLabel
+                className="!text-xs"
+                control={<Checkbox />}
+                id="Pending"
+                name="Pending"
+                value={formik.values.Pending}
+                onChange={formik.handleChange}
+                label="Pendiente"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="En progreso"
+                id="InProgress"
+                value={formik.values.InProgress}
+                onChange={formik.handleChange}
+                name="InProgress"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Atendido"
+                id="Attended"
+                value={formik.values.Attended}
+                onChange={formik.handleChange}
+                name="Attended"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Finalizado"
+                id="Finished"
+                value={formik.values.Finished}
+                onChange={formik.handleChange}
+                name="Finished"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Cancelado"
+                id="Cancelled"
+                value={formik.values.Cancelled}
+                onChange={formik.handleChange}
+                name="Cancelled"
+              />
+            </div>
+          </div>
+          <div className="col-span-2 xl:col-span-4">
+            <h4 className="text-qGreen font-medium pb-2">Fecha de registro</h4>
+            <div className="text-sm pb-2">
+              <DatePicker
+                className="date-filter"
+                format="DD/MM/YYYY"
+                value={moment(formik.values.RecordCreationDate)}
+                onChange={(value) =>
+                  formik.setFieldValue("RecordCreationDate", value, true)
+                }
+              />
+            </div>
+          </div>
+          <div className="col-span-4 md:col-span-2 xl:col-span-4">
+            <h4 className="text-qGreen font-medium pb-2">Tipo</h4>
+            <div className="grid grid-cols-2 text-sm">
+              <FormControlLabel
+                id="Facturable"
+                name="Facturable"
+                control={<Checkbox />}
+                value={formik.values.Facturable}
+                onChange={formik.handleChange}
+                label="Facturable"
+              />
+              <FormControlLabel
+                id="NotFacturable"
+                name="NotFacturable"
+                control={<Checkbox />}
+                value={formik.values.NotFacturable}
+                onChange={formik.handleChange}
+                label="No facturable"
+              />
+            </div>
+          </div>
+          <div className="flex justify-center mt-8 col-span-4">
+            <Button
+              className="md:w-40 xl:w-3/4"
+              color="#74C947"
+              label="Aplicar filtros"
+              disabled={isLoadingAction}
+              isLoading={isLoadingAction}
+              type="submit"
             />
           </div>
-        </div>
-        <div>
-          <h4 className="text-qGreen font-medium pb-2">Fecha de registro</h4>
-          <div className="text-sm pb-2">
-            <DatePicker
-              format="DD/MM/YYYY"
-              value={moment(formik.values.RecordCreationDate)}
-              onChange={(value) =>
-                formik.setFieldValue("RecordCreationDate", value, true)
-              }
-            />
-          </div>
-        </div>
-        <div>
-          <h4 className="text-qGreen font-medium pb-2">Tipo</h4>
-          <div className="grid grid-cols-2 text-sm">
-            <FormControlLabel
-              id="Facturable"
-              name="Facturable"
-              control={<Checkbox />}
-              value={formik.values.Facturable}
-              onChange={formik.handleChange}
-              label="Facturable"
-            />
-            <FormControlLabel
-              id="NotFacturable"
-              name="NotFacturable"
-              control={<Checkbox />}
-              value={formik.values.NotFacturable}
-              onChange={formik.handleChange}
-              label="No facturable"
-            />
-          </div>
-        </div>
-        <div className="flex justify-center mt-8">
-          <Button
-            className="w-3/4"
-            color="#74C947"
-            label="Aplicar filtros"
-            disabled={isLoadingAction}
-            isLoading={isLoadingAction}
-            type="submit"
-          />
         </div>
       </form>
       <Modal

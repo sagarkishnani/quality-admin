@@ -23,6 +23,7 @@ import { TicketList } from "../../../pages/Ticket/TicketList/TicketList"
 import { TicketRegister } from "../../../pages/Ticket/TicketRegister/TicketRegister"
 import { TicketRegisterStepTwo } from "../../../pages/Ticket/TicketRegisterStepTwo/TicketRegisterStepTwo"
 import { TicketRegisterStepThree } from "../../../pages/Ticket/TicketRegisterStepThree/TicketRegisterStepThree"
+import { TicketRegisterStepFour } from "../../../pages/Ticket/TicketRegisterStepFour/TicketRegisterStepFour"
 
 export const Layout = () => {
   const { user } = useAuth()
@@ -44,6 +45,10 @@ export const Layout = () => {
               <Route
                 path="completar-formulario"
                 element={<TicketRegisterStepThree />}
+              />
+              <Route
+                path="registrar-facturable"
+                element={<TicketRegisterStepFour />}
               />
             </Route>
             <Route path="/mis-datos" element={<Profile />}>

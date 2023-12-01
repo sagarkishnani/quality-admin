@@ -131,3 +131,58 @@ export interface TicketRegisterStepThreeRequestFormTwo {
     GuideTwo: string;
     FoundFailure: string;
 }
+
+export interface TicketRegisterStepThreeRequestFormThree {
+    BandejaUno: string | null;
+    BisagraEscaner: string | null;
+    BandejaDos: string | null;
+    BandejaADF: string | null;
+    BandejaSalida: string | null;
+    CristalCamaPlana: string | null;
+    ConectorUSB: string | null;
+    Engranaje: string | null;
+    ConectorRJ: string | null;
+    LaminaTeplon: string | null;
+    PanelControl: string | null;
+    RodilloPresion: string | null;
+}
+
+export interface TicketRegisterStepThreeRequestFormFour {
+    Instalacion: boolean | null;
+    Retiro: boolean | null;
+    Reparacion: boolean | null;
+    ActualFirmware: boolean | null;
+    EtiquetaFusor: boolean | null;
+    EtiquetaFusorTeflon: boolean | null;
+    CambioCartucho: boolean | null;
+    CambioFusor: boolean | null;
+    CambioImagen: boolean | null;
+    CambioRodillo: boolean | null;
+    CambioTeflon: boolean | null;
+    CambioRodilloBUno: boolean | null;
+    CambioRodilloBDos: boolean | null;
+    CambioSeparador: boolean | null;
+    CambioDrive: boolean | null;
+    CambioSwing: boolean | null;
+    CambioAOF: boolean | null;
+    CambioDC: boolean | null;
+    MantImpresora: boolean | null;
+    MantOptico: boolean | null;
+    MantOpticoEscaner: boolean | null;
+    MantSistema: boolean | null;
+    RevCartucho: boolean | null;
+    RevFusor: boolean | null;
+    RevImagen: boolean | null;
+    RevADF: boolean | null;
+    RevRodilloBUno: boolean | null;
+    RevRodilloBDos: boolean | null;
+    RevSeparador: boolean | null;
+    RevDuplex: boolean | null;
+}
+
+export interface TicketRegisterStepThreeRequest {
+    FoundFailure: string;
+    Comment: string;
+    Recommendation: string;
+    AppointmentDate: Date;
+}
