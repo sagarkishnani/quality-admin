@@ -1,115 +1,14 @@
 import { useEffect, useState } from "react"
-import * as yup from "yup"
-import secureLocalStorage from "react-secure-storage"
-import {
-  ConstantLocalStorage,
-  ConstantsMasterTable,
-} from "../../../../../common/constants"
 import { useFormik } from "formik"
-import {
-  GetTicketById,
-  TicketRegisterStepThreeRequestFormThree,
-} from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
-import { TicketService } from "../../../../../common/services/TicketService"
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  InputLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-} from "@mui/material"
+import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material"
 import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
-import { Button } from "../../../../../common/components/Button/Button"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
-
-export const TicketRegisterViewFormThree = () => {
+export const TicketRegisterViewFormThree = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [ticketFormThree, setTicketFormThree] = useState<any>()
-  const [devices, setDevices] = useState<MasterTable[]>([])
-  const { user } = useAuth()
   const { setTicketStep } = useTicket()
 
-  async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
-    if (data) {
-      setTicket(data)
-    }
-  }
-
-  async function getDevices() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.DEVICES
-    )
-    if (data) {
-      setDevices(data)
-    }
-  }
-
-  async function getAll(idTicket: string) {
-    setIsLoading(true)
-    await getTicketById(idTicket)
-    await getDevices()
-    setIsLoading(false)
-  }
-
   function registerTicketStep(isNext: boolean) {
-    const requestFormThree: TicketRegisterStepThreeRequestFormThree = {
-      BandejaUno: formik.values.BandejaUno,
-      BisagraEscaner: formik.values.BisagraEscaner,
-      BandejaDos: formik.values.BandejaDos,
-      BandejaADF: formik.values.BandejaADF,
-      BandejaSalida: formik.values.BandejaSalida,
-      CristalCamaPlana: formik.values.CristalCamaPlana,
-      ConectorUSB: formik.values.ConectorUSB,
-      Engranaje: formik.values.Engranaje,
-      ConectorRJ: formik.values.ConectorRJ,
-      LaminaTeplon: formik.values.LaminaTeplon,
-      PanelControl: formik.values.PanelControl,
-      RodilloPresion: formik.values.RodilloPresion,
-    }
-
-    console.log(requestFormThree)
-
-    secureLocalStorage.setItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE,
-      requestFormThree
-    )
-
     isNext ? setTicketStep(4) : setTicketStep(2)
   }
 
@@ -128,41 +27,28 @@ export const TicketRegisterViewFormThree = () => {
       PanelControl: "",
       RodilloPresion: "",
     },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values.BandejaUno)
-    },
+    onSubmit: (values) => {},
   })
 
   useEffect(() => {
-    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
-    if (idTicket !== null) {
-      getAll(idTicket)
-    }
-  }, [])
-
-  useEffect(() => {
-    setTicketFormThree(
-      secureLocalStorage.getItem(
-        ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE
-      )
-    )
+    setIsLoading(true)
     if (ticket) {
       formik.setValues({
-        BandejaUno: ticketFormThree?.BandejaUno || "",
-        BisagraEscaner: ticketFormThree?.BisagraEscaner || "",
-        BandejaDos: ticketFormThree?.BandejaDos || "",
-        BandejaADF: ticketFormThree?.BandejaADF || "",
-        BandejaSalida: ticketFormThree?.BandejaSalida || "",
-        CristalCamaPlana: ticketFormThree?.CristalCamaPlana || "",
-        ConectorUSB: ticketFormThree?.ConectorUSB || "",
-        Engranaje: ticketFormThree?.Engranaje || "",
-        ConectorRJ: ticketFormThree?.ConectorRJ || "",
-        LaminaTeplon: ticketFormThree?.LaminaTeplon || "",
-        PanelControl: ticketFormThree?.PanelControl || "",
-        RodilloPresion: ticketFormThree?.RodilloPresion || "",
+        BandejaUno: ticket?.TicketAnswer?.BandejaUno || "",
+        BisagraEscaner: ticket?.TicketAnswer?.BisagraEscaner || "",
+        BandejaDos: ticket?.TicketAnswer?.BandejaDos || "",
+        BandejaADF: ticket?.TicketAnswer?.BandejaADF || "",
+        BandejaSalida: ticket?.TicketAnswer?.BandejaSalida || "",
+        CristalCamaPlana: ticket?.TicketAnswer?.CristalCamaPlana || "",
+        ConectorUSB: ticket?.TicketAnswer?.ConectorUSB || "",
+        Engranaje: ticket?.TicketAnswer?.Engranaje || "",
+        ConectorRJ: ticket?.TicketAnswer?.ConectorRJ || "",
+        LaminaTeplon: ticket?.TicketAnswer?.LaminaTeplon || "",
+        PanelControl: ticket?.TicketAnswer?.PanelControl || "",
+        RodilloPresion: ticket?.TicketAnswer?.RodilloPresion || "",
       })
     }
+    setIsLoading(false)
   }, [ticket])
 
   return (
@@ -183,8 +69,7 @@ export const TicketRegisterViewFormThree = () => {
         </div>
         <div className="col-span-12">
           <p className="font-semibold text-xs -mt-2">
-            B: BUEN ESTADO | L: LEVE DESGASTE | B: BUEN ESTADO | G: GASTADO | R:
-            ROTO
+            B: BUEN ESTADO | L: LEVE DESGASTE | G: GASTADO | R: ROTO
           </p>
         </div>
         <div className="col-span-2 flex items-center">

@@ -49,12 +49,12 @@ export const TicketRegisterStepFourContainer = () => {
   const navigate = useNavigate()
 
   function setStep(ticketStep: number) {
-    if (ticketStep === 1) return <TicketRegisterViewFormOne />
-    if (ticketStep === 2) return <TicketRegisterViewFormTwo />
-    if (ticketStep === 3) return <TicketRegisterViewFormThree />
-    if (ticketStep === 4) return <TicketRegisterViewFormFour />
-    if (ticketStep === 5) return <TicketRegisterViewFormFive />
-    if (ticketStep === 6) return <TicketRegisterViewFormSix />
+    if (ticketStep === 1) return <TicketRegisterViewFormOne ticket={ticket} />
+    if (ticketStep === 2) return <TicketRegisterViewFormTwo ticket={ticket} />
+    if (ticketStep === 3) return <TicketRegisterViewFormThree ticket={ticket} />
+    if (ticketStep === 4) return <TicketRegisterViewFormFour ticket={ticket} />
+    if (ticketStep === 5) return <TicketRegisterViewFormFive ticket={ticket} />
+    if (ticketStep === 6) return <TicketRegisterViewFormSix ticket={ticket} />
     if (ticketStep === 7) return <TicketRegisterFacturable />
   }
 
@@ -62,6 +62,7 @@ export const TicketRegisterStepFourContainer = () => {
     const data = await TicketService.getTicketById(idTicket)
     if (data) {
       setTicket(data)
+      console.log(data)
     }
   }
 

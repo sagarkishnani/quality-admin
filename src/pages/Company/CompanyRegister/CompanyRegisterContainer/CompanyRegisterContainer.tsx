@@ -10,25 +10,25 @@ import {
   OutlinedInput,
   Select,
   TextField,
-} from "@mui/material";
-import { useState, useEffect } from "react";
-import { Button } from "../../../../common/components/Button/Button";
-import * as yup from "yup";
-import { HiChevronLeft } from "react-icons/hi";
-import { useFormik } from "formik";
-import { CompanyService } from "../../../../common/services/CompanyService";
-import { CompanyRegisterRequest } from "../../../../common/interfaces/Company.interface";
-import { v4 as uuidv4 } from "uuid";
-import { Modal } from "../../../../common/components/Modal/Modal";
-import { UbigeoService } from "../../../../common/services/UbigeoService";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
+} from "@mui/material"
+import { useState, useEffect } from "react"
+import { Button } from "../../../../common/components/Button/Button"
+import * as yup from "yup"
+import { HiChevronLeft } from "react-icons/hi"
+import { useFormik } from "formik"
+import { CompanyService } from "../../../../common/services/CompanyService"
+import { CompanyRegisterRequest } from "../../../../common/interfaces/Company.interface"
+import { v4 as uuidv4 } from "uuid"
+import { Modal } from "../../../../common/components/Modal/Modal"
+import { UbigeoService } from "../../../../common/services/UbigeoService"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
 import {
   ConstantCompanyMessage,
   ConstantHttpErrors,
   ConstantMessage,
   ConstantsMasterTable,
-} from "../../../../common/constants";
-import { Link, useNavigate } from "react-router-dom";
+} from "../../../../common/constants"
+import { Link, useNavigate } from "react-router-dom"
 
 const validationSchema = yup.object({
   Name: yup.string().required("Nombre de empresa es obligatorio"),
@@ -68,150 +68,150 @@ const validationSchema = yup.object({
   // MainContactBanks: yup
   //   .string()
   //   .required("Banco de contacto principal es obligatorio"),
-});
+})
 
 export const CompanyRegisterContainer = () => {
   //TODO: Corregir el tema del modal y validaciones
-  const [imgEvent, setImgEvent] = useState<any>();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
-  const [ubigeos, setUbigeos] = useState<any>([]);
-  const [positions, setPositions] = useState<any>([]);
-  const [currencies, setCurrencies] = useState<any>([]);
-  const [paymentConditions, setPaymentConditions] = useState<any>([]);
-  const [ce, setCe] = useState<any>([]);
-  const [banks, setBanks] = useState<any>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imgEvent, setImgEvent] = useState<any>()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const [ubigeos, setUbigeos] = useState<any>([])
+  const [positions, setPositions] = useState<any>([])
+  const [currencies, setCurrencies] = useState<any>([])
+  const [paymentConditions, setPaymentConditions] = useState<any>([])
+  const [ce, setCe] = useState<any>([])
+  const [banks, setBanks] = useState<any>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const [selectedCurrencies, setSelectedCurrencies] = useState([]);
-  const [selectedBanks, setSelectedBanks] = useState([]);
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const [selectedCurrencies, setSelectedCurrencies] = useState([])
+  const [selectedBanks, setSelectedBanks] = useState([])
 
-  const [showBillingFields, setShowBillingFields] = useState(false);
-  const [showReportFields, setShowReportFields] = useState(false);
-  const [showPurchaseFields, setShowPurchaseFields] = useState(false);
-  const [showWarehouseFields, setShowWarehouseFields] = useState(false);
-  const [showAfterSalesFields, setShowAfterSalesFields] = useState(false);
+  const [showBillingFields, setShowBillingFields] = useState(false)
+  const [showReportFields, setShowReportFields] = useState(false)
+  const [showPurchaseFields, setShowPurchaseFields] = useState(false)
+  const [showWarehouseFields, setShowWarehouseFields] = useState(false)
+  const [showAfterSalesFields, setShowAfterSalesFields] = useState(false)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   const handleCurrencyChange = (event) => {
-    setSelectedCurrencies(event.target.value);
-  };
+    setSelectedCurrencies(event.target.value)
+  }
 
   const handleBankChange = (event) => {
-    setSelectedBanks(event.target.value);
-  };
+    setSelectedBanks(event.target.value)
+  }
 
   const handleImageChange = (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImgEvent(e.target.files[0]);
+      setImgEvent(e.target.files[0])
     }
-  };
+  }
 
   async function getAll() {
-    setIsLoading(true);
-    await getUbigeos();
-    await getPositions();
-    await getCurrencies();
-    await getPaymentConditions();
-    await getCE();
-    await getBanks();
-    setIsLoading(false);
+    setIsLoading(true)
+    await getUbigeos()
+    await getPositions()
+    await getCurrencies()
+    await getPaymentConditions()
+    await getCE()
+    await getBanks()
+    setIsLoading(false)
   }
 
   async function getUbigeos() {
-    const data = await UbigeoService.getUbigeo();
+    const data = await UbigeoService.getUbigeo()
     if (data) {
-      setUbigeos(data);
+      setUbigeos(data)
     }
   }
 
   async function getPositions() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.POSITIONS
-    );
+    )
     if (data) {
-      setPositions(data);
+      setPositions(data)
     }
   }
 
   async function getCurrencies() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.CURRENCIES
-    );
+    )
     if (data) {
-      setCurrencies(data);
+      setCurrencies(data)
     }
   }
 
   async function getPaymentConditions() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.PAYMENT_CONDITIONS
-    );
+    )
     if (data) {
-      setPaymentConditions(data);
+      setPaymentConditions(data)
     }
   }
 
   async function getCE() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.CE
-    );
+    )
     if (data) {
-      setCe(data);
+      setCe(data)
     }
   }
 
   async function getBanks() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.BANKS
-    );
+    )
     if (data) {
-      setBanks(data);
+      setBanks(data)
     }
   }
 
   useEffect(() => {
-    getAll();
-  }, []);
+    getAll()
+  }, [])
 
   async function registerCompany(
     request: CompanyRegisterRequest,
     imageFile: any
   ) {
-    setIsLoadingAction(true);
+    setIsLoadingAction(true)
     if (imageFile == undefined) {
-      setIsModalOpen(true);
-      setModalType("");
-      setModalMessage(ConstantCompanyMessage.COMPANY_LOGO_NOT_UPLOADED);
-      return;
+      setIsModalOpen(true)
+      setModalType("")
+      setModalMessage(ConstantCompanyMessage.COMPANY_LOGO_NOT_UPLOADED)
+      return
     }
-    const { data, status }: any = await CompanyService.registerCompany(request);
+    const { data, status }: any = await CompanyService.registerCompany(request)
     const dataImage = await CompanyService.uploadCompanyLogo(
       request.ImgUrl,
       imageFile
-    );
+    )
     if (status == ConstantHttpErrors.CREATED && dataImage) {
-      setIsModalOpen(true);
-      setModalType("success");
-      setModalMessage(ConstantCompanyMessage.COMPANY_REGISTER_SUCCESS);
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantCompanyMessage.COMPANY_REGISTER_SUCCESS)
 
-      setIsLoadingAction(false);
+      setIsLoadingAction(false)
       setTimeout(() => {
-        navigate("/empresas");
-      }, 2000);
+        navigate("/empresas")
+      }, 2000)
     } else {
-      setIsLoadingAction(false);
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_ERROR);
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_ERROR)
     }
   }
 
@@ -262,14 +262,13 @@ export const CompanyRegisterContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      values.ImgUrl = uuidv4();
-      values.Ubigeo = values.Ubigeo.id_ubigeo;
-      values.MainContactCurrency = selectedCurrencies.join(", ");
-      values.MainContactBanks = selectedBanks.join(", ");
-      registerCompany(values, imgEvent);
-      console.log(values);
+      values.ImgUrl = uuidv4()
+      values.Ubigeo = values.Ubigeo.id_ubigeo
+      values.MainContactCurrency = selectedCurrencies.join(", ")
+      values.MainContactBanks = selectedBanks.join(", ")
+      registerCompany(values, imgEvent)
     },
-  });
+  })
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
@@ -326,12 +325,12 @@ export const CompanyRegisterContainer = () => {
                 onChange={(event, newValue) => {
                   if (newValue) {
                     if (typeof newValue === "string") {
-                      formik.setFieldValue("Ubigeo", newValue);
+                      formik.setFieldValue("Ubigeo", newValue)
                     } else {
-                      formik.setFieldValue("Ubigeo", newValue);
+                      formik.setFieldValue("Ubigeo", newValue)
                     }
                   } else {
-                    formik.setFieldValue("Ubigeo", "");
+                    formik.setFieldValue("Ubigeo", "")
                   }
                 }}
                 value={formik.values.Ubigeo}
@@ -555,13 +554,13 @@ export const CompanyRegisterContainer = () => {
                       {selectedCurrencies.map((currencyId: string) => {
                         const currency = currencies.find(
                           (c: any) => c.IdMasterTable === currencyId
-                        );
+                        )
                         return (
                           <Chip
                             key={currency.IdMasterTable}
                             label={currency.Name}
                           />
-                        );
+                        )
                       })}
                     </Box>
                   )}
@@ -617,10 +616,10 @@ export const CompanyRegisterContainer = () => {
                       {selectedBanks.map((bankId: string) => {
                         const bank = banks.find(
                           (c: any) => c.IdMasterTable === bankId
-                        );
+                        )
                         return (
                           <Chip key={bank.IdMasterTable} label={bank.Name} />
-                        );
+                        )
                       })}
                     </Box>
                   )}
@@ -1269,9 +1268,9 @@ export const CompanyRegisterContainer = () => {
                           BillingContactEmail: "",
                           BillingContactPhone: "",
                           BillingContactCellphone: "",
-                        });
+                        })
                       }
-                      setShowBillingFields(!showBillingFields);
+                      setShowBillingFields(!showBillingFields)
                     }}
                   />
                 }
@@ -1290,9 +1289,9 @@ export const CompanyRegisterContainer = () => {
                           ReportContactEmail: "",
                           ReportContactPhone: "",
                           ReportContactCellphone: "",
-                        });
+                        })
                       }
-                      setShowReportFields(!showReportFields);
+                      setShowReportFields(!showReportFields)
                     }}
                   />
                 }
@@ -1311,9 +1310,9 @@ export const CompanyRegisterContainer = () => {
                           PurchaseContactEmail: "",
                           PurchaseContactPhone: "",
                           PurchaseContactCellphone: "",
-                        });
+                        })
                       }
-                      setShowPurchaseFields(!showPurchaseFields);
+                      setShowPurchaseFields(!showPurchaseFields)
                     }}
                   />
                 }
@@ -1332,9 +1331,9 @@ export const CompanyRegisterContainer = () => {
                           WarehouseContactEmail: "",
                           WarehouseContactPhone: "",
                           WarehouseContactCellphone: "",
-                        });
+                        })
                       }
-                      setShowWarehouseFields(!showWarehouseFields);
+                      setShowWarehouseFields(!showWarehouseFields)
                     }}
                   />
                 }
@@ -1353,9 +1352,9 @@ export const CompanyRegisterContainer = () => {
                           AfterSalesContactEmail: "",
                           AfterSalesContactPhone: "",
                           AfterSalesContactCellphone: "",
-                        });
+                        })
                       }
-                      setShowAfterSalesFields(!showAfterSalesFields);
+                      setShowAfterSalesFields(!showAfterSalesFields)
                     }}
                   />
                 }
@@ -1381,5 +1380,5 @@ export const CompanyRegisterContainer = () => {
         handleClose={handleCloseModal}
       />
     </form>
-  );
-};
+  )
+}

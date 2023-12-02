@@ -180,9 +180,44 @@ export interface TicketRegisterStepThreeRequestFormFour {
     RevDuplex: boolean | null;
 }
 
-export interface TicketRegisterStepThreeRequest {
-    FoundFailure: string;
+export interface TicketRegisterStepThreeRequestFormFive {
+    UsoPapelHumedo: boolean | null;
+    UsoPapelReciclado: boolean | null;
+    UsoPapelGrapas: boolean | null;
+    UsoEtiquetas: boolean | null;
+    ConectadoPared: boolean | null;
+    ConectadoSupresor: boolean | null;
+    ConectadoEstabilizador: boolean | null;
+    ConectadoUPS: boolean | null;
+    Operativo: boolean | null;
+    PegadoEtiquetaGarantia: boolean | null;
+    EnObservacion: boolean | null;
+    EquipoRequiereCambio: boolean | null;
+    EquipoRequiereMantenimiento: boolean | null;
+    CartuchoOtroProveedor: boolean | null;
+    CartuchoDanado: boolean | null;
+    Instalacion: boolean | null;
+    ServicioGarantia: boolean | null;
+    Negligencia: boolean | null;
+    Mantenimiento: boolean | null;
+    Retiro: boolean | null;
+    Reparacion: boolean | null;
+}
+
+export interface TicketRegisterStepThreeRequestFormSix {
     Comment: string;
     Recommendation: string;
-    AppointmentDate: Date;
+    ResponsibleName: string;
+    ResponsibleDni: string;
+    TechnicianName: string;
+    TechnicianDni: string;
+}
+
+export interface TicketRegisterStepThreeRequest {
+    StepOne: TicketRegisterStepThreeRequestFormOne;
+    StepTwo: TicketRegisterStepThreeRequestFormTwo;
+    StepThree: TicketRegisterStepThreeRequestFormThree;
+    StepFour: TicketRegisterStepThreeRequestFormFour;
+    StepFive: TicketRegisterStepThreeRequestFormFive;
+    StepSix: TicketRegisterStepThreeRequestFormSix;
 }

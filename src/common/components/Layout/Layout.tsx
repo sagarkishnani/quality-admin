@@ -24,6 +24,7 @@ import { TicketRegister } from "../../../pages/Ticket/TicketRegister/TicketRegis
 import { TicketRegisterStepTwo } from "../../../pages/Ticket/TicketRegisterStepTwo/TicketRegisterStepTwo"
 import { TicketRegisterStepThree } from "../../../pages/Ticket/TicketRegisterStepThree/TicketRegisterStepThree"
 import { TicketRegisterStepFour } from "../../../pages/Ticket/TicketRegisterStepFour/TicketRegisterStepFour"
+import { TicketRegisterView } from "../../../pages/Ticket/TicketRegisterView/TicketRegisterView"
 
 export const Layout = () => {
   const { user } = useAuth()
@@ -38,6 +39,7 @@ export const Layout = () => {
             <Route path="/tickets" element={<Ticket />}>
               <Route index element={<TicketList />} />
               <Route path="nuevo" element={<TicketRegister />} />
+              <Route path="ver" element={<TicketRegisterView />} />
               <Route
                 path="asignar-tecnico"
                 element={<TicketRegisterStepTwo />}

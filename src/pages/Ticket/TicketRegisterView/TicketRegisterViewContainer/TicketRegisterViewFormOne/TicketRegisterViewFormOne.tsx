@@ -1,71 +1,16 @@
 import { useEffect, useState } from "react"
-import * as yup from "yup"
-import secureLocalStorage from "react-secure-storage"
-import { ConstantLocalStorage } from "../../../../../common/constants"
 import { useFormik } from "formik"
-import {
-  GetTicketById,
-  TicketRegisterStepThreeRequestFormOne,
-} from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
-import { TicketService } from "../../../../../common/services/TicketService"
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material"
+import { InputLabel, TextField } from "@mui/material"
 import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
+import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
 
-// const validationSchema = yup.object({
-//   ScheduledAppointmentInitTime: yup.required("Nombre es obligatorio"),
-//   ScheduledAppointmentEndTime: yup.required("Nombre es obligatorio"),
-// })
-
-export const TicketRegisterViewFormOne = () => {
+export const TicketRegisterViewFormOne = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [ticketFormOne, setTicketFormOne] = useState<any>()
-  const [pictures, setPictures] = useState<string[]>([])
-  const [imgData, setImgData] = useState("")
-  const [selectedImg, setSelectedImg] = useState("")
-  const [isImageModal, setIsImageModal] = useState<boolean>(false)
-  const { user } = useAuth()
   const { setTicketStep } = useTicket()
-  const navigate = useNavigate()
-
-  async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
-    if (data) {
-      setTicket(data)
-    }
-  }
-
-  async function getAll(idTicket: string) {
-    setIsLoading(true)
-    await getTicketById(idTicket)
-    setIsLoading(false)
-  }
 
   function registerTicketStep() {
-    if (formik.isValid) {
-      const requestFormOne: TicketRegisterStepThreeRequestFormOne = {
-        ScheduledAppointmentInitTime:
-          formik.values.ScheduledAppointmentInitTime,
-        ScheduledAppointmentEndTime: formik.values.ScheduledAppointmentEndTime,
-      }
-
-      secureLocalStorage.setItem(
-        ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE,
-        requestFormOne
-      )
-
-      setTicketStep(2)
-    }
+    setTicketStep(2)
   }
 
   const formik = useFormik({
@@ -80,28 +25,18 @@ export const TicketRegisterViewFormOne = () => {
       IdUser: "",
       ScheduledAppointmentInitTime: moment(new Date()),
       ScheduledAppointmentEndTime: moment(new Date()),
+      ScheduledAppointmentDate: moment(new Date()),
+      ScheduledAppointmentTime: moment(new Date()),
       ReportedFailure: "",
     },
-    // validationSchema: validationSchema,
     onSubmit: (values) => {
       registerTicketStep()
     },
   })
 
   useEffect(() => {
-    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
-    if (idTicket !== null) {
-      getAll(idTicket)
-    }
-  }, [])
-
-  useEffect(() => {
-    setTicketFormOne(
-      secureLocalStorage.getItem(
-        ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
-      )
-    )
-
+    setIsLoading(true)
+    console.log(ticket)
     if (ticket) {
       formik.setValues({
         IdTicketStatus: ticket.IdTicketStatus || "",
@@ -110,14 +45,16 @@ export const TicketRegisterViewFormOne = () => {
         Address: ticket.Company.Address || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
-        IdUser: "",
+        IdUser: ticket?.User.Name || "",
         IdTechnician: "",
-        ScheduledAppointmentInitTime:
-          ticketFormOne?.ScheduledAppointmentInitTime,
-        ScheduledAppointmentEndTime: ticketFormOne?.ScheduledAppointmentEndTime,
+        ScheduledAppointmentInitTime: ticket?.ScheduledAppointmentInitTime,
+        ScheduledAppointmentEndTime: ticket?.ScheduledAppointmentEndTime,
+        ScheduledAppointmentDate: ticket?.ScheduledAppointmentDate,
+        ScheduledAppointmentTime: ticket?.ScheduledAppointmentTime,
         ReportedFailure: ticket.ReportedFailure || "",
       })
     }
+    setIsLoading(false)
   }, [ticket])
 
   return (
@@ -133,26 +70,56 @@ export const TicketRegisterViewFormOne = () => {
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
         </div>
-        <div className="col-span-6">
-          <InputLabel id="ScheduledAppointmentInitTime">Hora inicio</InputLabel>
-          <TimePicker
-            className="w-full"
-            value={moment(formik.values.ScheduledAppointmentInitTime)}
-            onChange={(value) =>
-              formik.setFieldValue("ScheduledAppointmentInitTime", value, true)
-            }
-          />
-        </div>
-        <div className="col-span-6">
-          <InputLabel id="ScheduledAppointmentEndTime">Hora fin</InputLabel>
-          <TimePicker
-            className="w-full"
-            value={moment(formik.values.ScheduledAppointmentEndTime)}
-            onChange={(value) =>
-              formik.setFieldValue("ScheduledAppointmentEndTime", value, true)
-            }
-          />
-        </div>
+        {ticket?.TicketStatus?.Name !== "Pendiente" &&
+          ticket?.TicketStatus?.Name !== "En progreso" && (
+            <>
+              <div className="col-span-6">
+                <InputLabel id="ScheduledAppointmentInitTime">
+                  Hora inicio
+                </InputLabel>
+                <TimePicker
+                  disabled
+                  className="w-full"
+                  value={moment(formik.values.ScheduledAppointmentInitTime)}
+                />
+              </div>
+              <div className="col-span-6">
+                <InputLabel id="ScheduledAppointmentEndTime">
+                  Hora fin
+                </InputLabel>
+                <TimePicker
+                  disabled
+                  className="w-full"
+                  value={moment(formik.values.ScheduledAppointmentEndTime)}
+                />
+              </div>
+            </>
+          )}
+        {ticket?.TicketStatus?.Name == "Pendiente" ||
+          (ticket?.TicketStatus?.Name == "En progreso" && (
+            <>
+              <div className="col-span-6">
+                <InputLabel id="ScheduledAppointmentDate">
+                  Fecha programada de inicio
+                </InputLabel>
+                <DatePicker
+                  disabled
+                  className="w-full"
+                  value={moment(formik.values.ScheduledAppointmentDate)}
+                />
+              </div>
+              <div className="col-span-6">
+                <InputLabel id="ScheduledAppointmentTime">
+                  Hora programada de inicio
+                </InputLabel>
+                <TimePicker
+                  disabled
+                  className="w-full"
+                  value={moment(formik.values.ScheduledAppointmentTime)}
+                />
+              </div>
+            </>
+          ))}
         <div className="col-span-6">
           <TextField
             disabled
@@ -208,18 +175,34 @@ export const TicketRegisterViewFormOne = () => {
             label="Usuario"
           />
         </div>
+        {ticket?.TicketStatus?.Name == "En progreso" && (
+          <div className="col-span-12">
+            <TextField
+              disabled
+              color="primary"
+              className="w-full"
+              id="IdTechnician"
+              name="IdTechnician"
+              value={formik.values.IdTechnician}
+              label="Técnico"
+            />
+          </div>
+        )}
       </div>
-      <div className="w-full mt-4 flex justify-end">
-        <button
-          className={`px-10 py-2 font-medium rounded-full text-white ${
-            formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
-          }`}
-          onClick={registerTicketStep}
-          type="button"
-        >
-          Siguiente
-        </button>
-      </div>
+      {ticket?.TicketStatus?.Name !== "Pendiente" &&
+        ticket?.TicketStatus?.Name !== "En progreso" && (
+          <div className="w-full mt-4 flex justify-end">
+            <button
+              className={`px-10 py-2 font-medium rounded-full text-white ${
+                formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
+              }`}
+              onClick={registerTicketStep}
+              type="button"
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
     </>
   )
 }

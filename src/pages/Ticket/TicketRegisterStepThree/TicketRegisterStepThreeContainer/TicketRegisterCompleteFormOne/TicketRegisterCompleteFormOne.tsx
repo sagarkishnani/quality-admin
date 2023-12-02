@@ -83,7 +83,7 @@ export const TicketRegisterCompleteFormOne = ({
         Address: ticket.Company.Address || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
-        IdUser: "",
+        IdUser: ticket?.User?.Name || "",
         IdTechnician: "",
         ScheduledAppointmentInitTime:
           ticketFormOne?.ScheduledAppointmentInitTime,

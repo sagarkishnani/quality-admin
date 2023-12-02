@@ -1,92 +1,16 @@
 import { useEffect, useState } from "react"
-import * as yup from "yup"
-import secureLocalStorage from "react-secure-storage"
-import {
-  ConstantLocalStorage,
-  ConstantsMasterTable,
-} from "../../../../../common/constants"
 import { useFormik } from "formik"
-import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
-import { TicketService } from "../../../../../common/services/TicketService"
-import {
-  Checkbox,
-  Collapse,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  InputLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-} from "@mui/material"
+import { Checkbox, Collapse, FormControlLabel } from "@mui/material"
 import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
 import { HiChevronRight, HiChevronDown } from "react-icons/hi"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
-
-export const TicketRegisterViewFormFour = () => {
+export const TicketRegisterViewFormFour = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [devices, setDevices] = useState<MasterTable[]>([])
-  const { user } = useAuth()
   const { setTicketStep } = useTicket()
   const [isCollapsedCambio, setIsCollapsedCambio] = useState(true)
   const [isCollapsedMantenimiento, setIsCollapsedMantenimiento] = useState(true)
   const [isCollapsedRevision, setIsCollapsedRevision] = useState(true)
-
-  async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
-    if (data) {
-      setTicket(data)
-    }
-  }
-
-  async function getDevices() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.DEVICES
-    )
-    if (data) {
-      setDevices(data)
-    }
-  }
-
-  async function getAll(idTicket: string) {
-    setIsLoading(true)
-    await getTicketById(idTicket)
-    await getDevices()
-    setIsLoading(false)
-  }
 
   function registerTicketStep(isNext: boolean) {
     isNext ? setTicketStep(5) : setTicketStep(3)
@@ -94,6 +18,12 @@ export const TicketRegisterViewFormFour = () => {
 
   const formik = useFormik({
     initialValues: {
+      Instalacion: false,
+      Retiro: false,
+      Reparacion: false,
+      ActualFirmware: false,
+      EtiquetaFusor: false,
+      EtiquetaFusorTeflon: false,
       Cambio: false,
       CambioCartucho: false,
       CambioFusor: false,
@@ -122,31 +52,50 @@ export const TicketRegisterViewFormFour = () => {
       RevSeparador: false,
       RevDuplex: false,
     },
-    validationSchema: validationSchema,
     onSubmit: (values) => {},
   })
 
   useEffect(() => {
-    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
-    if (idTicket !== null) {
-      getAll(idTicket)
+    setIsLoading(true)
+    if (ticket) {
+      formik.setValues({
+        Instalacion: ticket?.TicketAnswer?.Instalacion || false,
+        Retiro: ticket?.TicketAnswer?.Retiro || false,
+        Reparacion: ticket?.TicketAnswer?.Reparacion || false,
+        ActualFirmware: ticket?.TicketAnswer?.ActualFirmware || false,
+        EtiquetaFusor: ticket?.TicketAnswer?.EtiquetaFusor || false,
+        EtiquetaFusorTeflon: ticket?.TicketAnswer?.EtiquetaFusorTeflon || false,
+        Cambio: ticket?.TicketAnswer?.Cambio || false,
+        CambioCartucho: ticket?.TicketAnswer?.CambioCartucho || false,
+        CambioFusor: ticket?.TicketAnswer?.CambioFusor || false,
+        CambioImagen: ticket?.TicketAnswer?.CambioImagen || false,
+        CambioRodillo: ticket?.TicketAnswer?.CambioRodillo || false,
+        CambioTeflon: ticket?.TicketAnswer?.CambioTeflon || false,
+        CambioRodilloBUno: ticket?.TicketAnswer?.CambioRodilloBUno || false,
+        CambioRodilloBDos: ticket?.TicketAnswer?.CambioRodilloBDos || false,
+        CambioSeparador: ticket?.TicketAnswer?.CambioSeparador || false,
+        CambioDrive: ticket?.TicketAnswer?.CambioDrive || false,
+        CambioSwing: ticket?.TicketAnswer?.CambioSwing || false,
+        CambioAOF: ticket?.TicketAnswer?.CambioAOF || false,
+        CambioDC: ticket?.TicketAnswer?.CambioDC || false,
+        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento || false,
+        MantImpresora: ticket?.TicketAnswer?.MantImpresora || false,
+        MantOptico: ticket?.TicketAnswer?.MantOptico || false,
+        MantOpticoEscaner: ticket?.TicketAnswer?.MantOpticoEscaner || false,
+        MantSistema: ticket?.TicketAnswer?.MantSistema || false,
+        Revision: ticket?.TicketAnswer?.Revision || false,
+        RevCartucho: ticket?.TicketAnswer?.RevCartucho || false,
+        RevFusor: ticket?.TicketAnswer?.RevFusor || false,
+        RevImagen: ticket?.TicketAnswer?.RevImagen || false,
+        RevADF: ticket?.TicketAnswer?.RevADF || false,
+        RevRodilloBUno: ticket?.TicketAnswer?.RevRodilloBUno || false,
+        RevRodilloBDos: ticket?.TicketAnswer?.RevRodilloBDos || false,
+        RevSeparador: ticket?.TicketAnswer?.RevSeparador || false,
+        RevDuplex: ticket?.TicketAnswer?.RevDuplex || false,
+      })
     }
-  }, [])
-
-  const handleCambioChange = (isChecked) => {
-    formik.setFieldValue("CambioCartucho", isChecked)
-    formik.setFieldValue("CambioFusor", isChecked)
-  }
-
-  const handleMantenimientoChange = (isChecked) => {
-    formik.setFieldValue("CambioCartucho", isChecked)
-    formik.setFieldValue("CambioFusor", isChecked)
-  }
-
-  const handleRevisionChange = (isChecked) => {
-    formik.setFieldValue("CambioCartucho", isChecked)
-    formik.setFieldValue("CambioFusor", isChecked)
-  }
+    setIsLoading(false)
+  }, [ticket])
 
   return (
     <>
@@ -168,37 +117,62 @@ export const TicketRegisterViewFormFour = () => {
           <div className="flex flex-col">
             <div>
               <FormControlLabel
-                control={<Checkbox disabled checked />}
+                id="Instalacion"
+                name="Instalacion"
+                control={
+                  <Checkbox checked={formik.values.Instalacion} disabled />
+                }
                 label="Instalación"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled checked />}
+                id="Retiro"
+                name="Retiro"
+                control={<Checkbox checked={formik.values.Retiro} disabled />}
                 label="Retiro"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                id="Reparacion"
+                name="Reparacion"
+                control={
+                  <Checkbox checked={formik.values.Reparacion} disabled />
+                }
                 label="Reparación"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
-                label="Actual Firmware"
+                id="ActualFirmware"
+                name="ActualFirmware"
+                control={
+                  <Checkbox checked={formik.values.ActualFirmware} disabled />
+                }
+                label="Actual. Firmware"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                id="EtiquetaFusor"
+                name="EtiquetaFusor"
+                control={
+                  <Checkbox checked={formik.values.EtiquetaFusor} disabled />
+                }
                 label="Etiqueta en fusor"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                id="EtiquetaFusorTeflon"
+                name="EtiquetaFusorTeflon"
+                control={
+                  <Checkbox
+                    checked={formik.values.EtiquetaFusorTeflon}
+                    disabled
+                  />
+                }
                 label="Etiqueta en fusor - teflón"
               />
             </div>
@@ -230,7 +204,6 @@ export const TicketRegisterViewFormFour = () => {
                       (formik.values.CambioCartucho ||
                         formik.values.CambioFusor)
                     }
-                    onChange={(e) => handleCambioChange(e.target.checked)}
                   />
                 }
               />
@@ -244,6 +217,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="CambioCartucho"
                     name="CambioCartucho"
+                    checked={formik.values.CambioCartucho}
                     disabled
                   />
                 }
@@ -251,25 +225,45 @@ export const TicketRegisterViewFormFour = () => {
               <FormControlLabel
                 label="Cambio de fusor"
                 control={
-                  <Checkbox id="CambioFusor" name="CambioFusor" disabled />
+                  <Checkbox
+                    id="CambioFusor"
+                    name="CambioFusor"
+                    checked={formik.values.CambioFusor}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="Cambio de U imagen"
                 control={
-                  <Checkbox id="CambioImagen" name="CambioImagen" disabled />
+                  <Checkbox
+                    id="CambioImagen"
+                    name="CambioImagen"
+                    checked={formik.values.CambioImagen}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="Cambio de rodillo"
                 control={
-                  <Checkbox id="CambioRodillo" name="CambioRodillo" disabled />
+                  <Checkbox
+                    id="CambioRodillo"
+                    name="CambioRodillo"
+                    checked={formik.values.CambioRodillo}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="Cambio de teflón"
                 control={
-                  <Checkbox id="CambioTeflon" name="CambioTeflon" disabled />
+                  <Checkbox
+                    id="CambioTeflon"
+                    name="CambioTeflon"
+                    checked={formik.values.CambioTeflon}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
@@ -278,6 +272,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="CambioRodilloBUno"
                     name="CambioRodilloBUno"
+                    checked={formik.values.CambioRodilloBUno}
                     disabled
                   />
                 }
@@ -288,6 +283,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="CambioRodilloBDos"
                     name="CambioRodilloBDos"
+                    checked={formik.values.CambioRodilloBDos}
                     disabled
                   />
                 }
@@ -298,6 +294,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="CambioSeparador"
                     name="CambioSeparador"
+                    checked={formik.values.CambioSeparador}
                     disabled
                   />
                 }
@@ -305,22 +302,46 @@ export const TicketRegisterViewFormFour = () => {
               <FormControlLabel
                 label="Cambio drive assembly"
                 control={
-                  <Checkbox id="CambioDrive" name="CambioDrive" disabled />
+                  <Checkbox
+                    id="CambioDrive"
+                    name="CambioDrive"
+                    checked={formik.values.CambioDrive}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="Cambio de swing place"
                 control={
-                  <Checkbox id="CambioSwing" name="CambioSwing" disabled />
+                  <Checkbox
+                    id="CambioSwing"
+                    name="CambioSwing"
+                    checked={formik.values.CambioSwing}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="Cambio de AOF"
-                control={<Checkbox id="CambioAOF" name="CambioAOF" disabled />}
+                control={
+                  <Checkbox
+                    id="CambioAOF"
+                    name="CambioAOF"
+                    checked={formik.values.CambioAOF}
+                    disabled
+                  />
+                }
               />
               <FormControlLabel
                 label="Cambio DC"
-                control={<Checkbox id="CambioDC" name="CambioDC" disabled />}
+                control={
+                  <Checkbox
+                    id="CambioDC"
+                    name="CambioDC"
+                    checked={formik.values.CambioDC}
+                    disabled
+                  />
+                }
               />
             </div>
           </Collapse>
@@ -363,13 +384,23 @@ export const TicketRegisterViewFormFour = () => {
               <FormControlLabel
                 label="Mant. Impresora"
                 control={
-                  <Checkbox id="MantImpresora" name="MantImpresora" disabled />
+                  <Checkbox
+                    id="MantImpresora"
+                    name="MantImpresora"
+                    checked={formik.values.MantImpresora}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="Mant. Óptico Impresora"
                 control={
-                  <Checkbox id="MantOptico" name="MantOptico" disabled />
+                  <Checkbox
+                    id="MantOptico"
+                    name="MantOptico"
+                    checked={formik.values.MantOptico}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
@@ -378,6 +409,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="MantOpticoEscaner"
                     name="MantOpticoEscaner"
+                    checked={formik.values.MantOpticoEscaner}
                     disabled
                   />
                 }
@@ -385,7 +417,12 @@ export const TicketRegisterViewFormFour = () => {
               <FormControlLabel
                 label="Mant. Sistema ADF"
                 control={
-                  <Checkbox id="MantSistema" name="MantSistema" disabled />
+                  <Checkbox
+                    id="MantSistema"
+                    name="MantSistema"
+                    checked={formik.values.MantSistema}
+                    disabled
+                  />
                 }
               />
             </div>
@@ -428,7 +465,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="RevCartucho"
                     name="RevCartucho"
-                    checked
+                    checked={formik.values.RevCartucho}
                     disabled
                   />
                 }
@@ -436,18 +473,35 @@ export const TicketRegisterViewFormFour = () => {
               <FormControlLabel
                 label="REV/MANT Fusor"
                 control={
-                  <Checkbox id="RevFusor" name="RevFusor" checked disabled />
+                  <Checkbox
+                    id="RevFusor"
+                    name="RevFusor"
+                    checked={formik.values.RevFusor}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="REV/MANT U Imagen"
                 control={
-                  <Checkbox id="RevImagen" name="RevImagen" checked disabled />
+                  <Checkbox
+                    id="RevImagen"
+                    name="RevImagen"
+                    checked={formik.values.RevImagen}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="REV/MANT ADF"
-                control={<Checkbox id="RevADF" name="RevADF" disabled />}
+                control={
+                  <Checkbox
+                    id="RevADF"
+                    name="RevADF"
+                    checked={formik.values.RevADF}
+                    disabled
+                  />
+                }
               />
               <FormControlLabel
                 label="REV/MANT Rodillo B1 / B3"
@@ -455,6 +509,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="RevRodilloBUno"
                     name="RevRodilloBUno"
+                    checked={formik.values.RevRodilloBUno}
                     disabled
                   />
                 }
@@ -465,6 +520,7 @@ export const TicketRegisterViewFormFour = () => {
                   <Checkbox
                     id="RevRodilloBDos"
                     name="RevRodilloBDos"
+                    checked={formik.values.RevRodilloBDos}
                     disabled
                   />
                 }
@@ -472,12 +528,24 @@ export const TicketRegisterViewFormFour = () => {
               <FormControlLabel
                 label="REV/MANT Separador"
                 control={
-                  <Checkbox id="RevSeparador" name="RevSeparador" disabled />
+                  <Checkbox
+                    id="RevSeparador"
+                    name="RevSeparador"
+                    checked={formik.values.RevSeparador}
+                    disabled
+                  />
                 }
               />
               <FormControlLabel
                 label="REV/MANT U. Dúplex"
-                control={<Checkbox id="RevDuplex" name="RevDuplex" disabled />}
+                control={
+                  <Checkbox
+                    id="RevDuplex"
+                    name="RevDuplex"
+                    checked={formik.values.RevDuplex}
+                    disabled
+                  />
+                }
               />
             </div>
           </Collapse>

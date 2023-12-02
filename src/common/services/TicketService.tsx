@@ -38,7 +38,7 @@ async function getTicketById(idTicket: string) {
     const { data, error } = await supabase
       .from("Ticket")
       .select(
-        "IdTicket, CodeTicket, IdTicketStatus, IdTicketCompany, IdTicketType, ReportedFailure, CompanyFloor, CompanyArea, IdTechnician, RecordCreationDate, AppointmentDate, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name)"
+        "*, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name), User (Name), TicketAnswer(*)"
       )
       .eq("IdTicket", idTicket)
 
@@ -234,13 +234,23 @@ async function registerTicketStepThree(
         IdTicketType: isFacturable
           ? ConstantTicketTypes.FACTURABLE
           : ConstantTicketTypes.NO_FACTURABLE,
-        FoundFailure: request.FoundFailure,
-        Comment: request.Comment,
-        Recommendation: request.Recommendation,
-        AppointmentDate: request.AppointmentDate,
+        AppointmentDate: request.StepOne.ScheduledAppointmentInitTime,
+        FoundFailure: request.StepTwo.FoundFailure,
+        DeviceOne: request.StepTwo.DeviceOne,
+        CounterOne: request.StepTwo.CounterOne,
+        GuideOne: request.StepTwo.GuideOne,
+        DeviceTwo: request.StepTwo.DeviceTwo,
+        CounterTwo: request.StepTwo.CounterTwo,
+        GuideTwo: request.StepTwo.GuideTwo,
+        Comment: request.StepSix.Comment,
+        Recommendation: request.StepSix.Recommendation,
+        ResponsibleName: request.StepSix.ResponsibleName,
+        ResponsibleDni: request.StepSix.ResponsibleDni,
+        TechnicianName: request.StepSix.TechnicianName,
+        TechnicianDni: request.StepSix.TechnicianDni,
       })
       .eq("IdTicket", idTicket)
-      .select()
+      .select("IdTicket")
 
     if (error) {
       console.warn(error)

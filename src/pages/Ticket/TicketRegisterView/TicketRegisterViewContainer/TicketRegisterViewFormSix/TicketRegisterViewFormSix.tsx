@@ -1,89 +1,20 @@
 import { useEffect, useState, useRef } from "react"
-import * as yup from "yup"
-import secureLocalStorage from "react-secure-storage"
-import {
-  ConstantHttpErrors,
-  ConstantLocalStorage,
-  ConstantMessage,
-  ConstantTicketMessage,
-  ConstantsMasterTable,
-} from "../../../../../common/constants"
 import { useFormik } from "formik"
 import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
-import { TicketService } from "../../../../../common/services/TicketService"
 import { TextField } from "@mui/material"
 import moment from "moment"
 import CanvasDraw from "react-canvas-draw"
 import { AiOutlineClear } from "react-icons/ai"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
-import { Modal } from "../../../../../common/components/Modal/Modal"
-import { ModalTicket } from "./ModalTicket/ModalTicket"
+import { useAuth } from "../../../../../common/contexts/AuthContext"
+import { ConstantRoles } from "../../../../../common/constants"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
-
-export const TicketRegisterViewFormSix = () => {
+export const TicketRegisterViewFormSix = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [isModalTicketOpen, setIsModalTicketOpen] = useState(false)
-  const [modalTicketType, setModalTicketType] = useState<
-    "success" | "error" | "question" | "none"
-  >("none")
-  const [modalTicketMessage, setModalTicketMessage] = useState("")
-  const [modalAction, setModalAction] = useState<string | null>("cancelar")
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalType, setModalType] = useState<
-    "success" | "error" | "question" | "none"
-  >("none")
-  const [modalMessage, setModalMessage] = useState("")
+  const { user } = useAuth()
   const firstSignature = useRef(null)
   const secondSignature = useRef(null)
-  const navigate = useNavigate()
   const { setTicketStep } = useTicket()
-
-  async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
-    if (data) {
-      setTicket(data)
-    }
-  }
-
-  async function getAll(idTicket: string) {
-    setIsLoading(true)
-    await getTicketById(idTicket)
-    setIsLoading(false)
-  }
-
-  function previousStep() {
-    setTicketStep(5)
-  }
 
   function clearSignature(signature: number) {
     signature == 1
@@ -97,41 +28,29 @@ export const TicketRegisterViewFormSix = () => {
 
   const formik = useFormik({
     initialValues: {
-      DeviceOne: "",
-      CounterOne: "",
-      GuideOne: "",
-      DeviceTwo: "",
-      CounterTwo: "",
-      GuideTwo: "",
-      ReportedFailure: "",
-      FoundFailure: "",
-      Extra: "",
+      Comment: "",
+      Recommendation: "",
+      ResponsibleName: "",
+      ResponsibleDni: "",
+      TechnicianName: "",
+      TechnicianDni: "",
     },
-    validationSchema: validationSchema,
     onSubmit: (values) => {},
   })
 
   useEffect(() => {
-    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
-    if (idTicket !== null) {
-      getAll(idTicket)
-    }
-  }, [])
-
-  useEffect(() => {
+    setIsLoading(true)
     if (ticket) {
       formik.setValues({
-        DeviceOne: "",
-        CounterOne: "",
-        GuideOne: "",
-        DeviceTwo: "",
-        CounterTwo: "",
-        GuideTwo: "",
-        ReportedFailure: "",
-        FoundFailure: "",
-        Extra: "",
+        Comment: ticket?.Comment || "",
+        Recommendation: ticket?.Recommendation || "",
+        ResponsibleName: ticket?.ResponsibleName || "",
+        ResponsibleDni: ticket?.ResponsibleDni || "",
+        TechnicianName: ticket?.TechnicianName || "",
+        TechnicianDni: ticket?.TechnicianDni || "",
       })
     }
+    setIsLoading(false)
   }, [ticket])
 
   return (
@@ -152,10 +71,10 @@ export const TicketRegisterViewFormSix = () => {
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
             disabled
-            name="CounterOne"
-            id="CounterOne"
-            rows={1}
-            value={formik.values.CounterOne}
+            name="Comment"
+            id="Comment"
+            rows={2}
+            value={formik.values.Comment}
           ></textarea>
         </div>
         <div className="col-span-12">
@@ -163,10 +82,10 @@ export const TicketRegisterViewFormSix = () => {
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
             disabled
-            name="GuideOne"
-            id="GuideOne"
+            name="Recommendation"
+            id="Recommendation"
             rows={2}
-            value={formik.values.GuideOne}
+            value={formik.values.Recommendation}
           ></textarea>
         </div>
         <div className="col-span-5 border-gray-400 border-2 rounded-md">
@@ -212,9 +131,9 @@ export const TicketRegisterViewFormSix = () => {
             disabled
             color="primary"
             className="w-full"
-            id="DeviceTwo"
-            name="DeviceTwo"
-            value={formik.values.DeviceTwo}
+            id="ResponsibleName"
+            name="ResponsibleName"
+            value={formik.values.ResponsibleName}
             label="Nombre"
           />
         </div>
@@ -224,9 +143,9 @@ export const TicketRegisterViewFormSix = () => {
             disabled
             color="primary"
             className="w-full"
-            id="CounterTwo"
-            name="CounterTwo"
-            value={formik.values.CounterTwo}
+            id="TechnicianName"
+            name="TechnicianName"
+            value={formik.values.TechnicianName}
             label="Nombre técnico"
           />
         </div>
@@ -235,9 +154,9 @@ export const TicketRegisterViewFormSix = () => {
             disabled
             color="primary"
             className="w-full"
-            id="ReportedFailure"
-            name="ReportedFailure"
-            value={formik.values.ReportedFailure}
+            id="ResponsibleDni"
+            name="ResponsibleDni"
+            value={formik.values.ResponsibleDni}
             label="DNI"
           />
         </div>
@@ -247,9 +166,9 @@ export const TicketRegisterViewFormSix = () => {
             disabled
             color="primary"
             className="w-full"
-            id="Extra"
-            name="Extra"
-            value={formik.values.Extra}
+            id="TechnicianDni"
+            name="TechnicianDni"
+            value={formik.values.TechnicianDni}
             label="DNI"
           />
         </div>
@@ -263,13 +182,19 @@ export const TicketRegisterViewFormSix = () => {
         >
           Anterior
         </button>
-        <button
-          className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
-          type="button"
-          onClick={() => registerTicketStep(true)}
-        >
-          Siguiente
-        </button>
+        {
+          /* {ticket?.TicketStatus?.Name == "Finalizado" && */ user?.IdRole ==
+            ConstantRoles.LIDER_FUNCIONAL &&
+            ticket?.TicketType?.Name == "Facturable" && (
+              <button
+                className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
+                type="button"
+                onClick={() => registerTicketStep(true)}
+              >
+                Siguiente
+              </button>
+            )
+        }
       </div>
     </>
   )

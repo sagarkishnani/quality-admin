@@ -1,4 +1,3 @@
-import * as yup from "yup"
 import { useState, useEffect } from "react"
 import { useTicket } from "../../../../common/contexts/TicketContext"
 import { useNavigate } from "react-router-dom"
@@ -6,13 +5,15 @@ import { GetTicketById } from "../../../../common/interfaces/Ticket.interface"
 import { TicketRegisterViewFormOne } from "./TicketRegisterViewFormOne/TicketRegisterViewFormOne"
 import { TicketRegisterFacturable } from "../../TicketRegisterStepFour/TicketRegisterStepFourContainer/TicketRegisterFacturable/TicketRegisterFacturable"
 import { TicketService } from "../../../../common/services/TicketService"
-import { useFormik } from "formik"
 import secureLocalStorage from "react-secure-storage"
 import { ConstantLocalStorage } from "../../../../common/constants"
 import { HiChevronLeft } from "react-icons/hi"
 import { Skeleton } from "@mui/material"
-
-const validationSchema = yup.object({})
+import { TicketRegisterViewFormTwo } from "./TicketRegisterViewFormTwo/TicketRegisterViewFormTwo"
+import { TicketRegisterViewFormThree } from "./TicketRegisterViewFormThree/TicketRegisterViewFormThree"
+import { TicketRegisterViewFormFour } from "./TicketRegisterViewFormFour/TicketRegisterViewFormFour"
+import { TicketRegisterViewFormFive } from "./TicketRegisterViewFormFive/TicketRegisterViewFormFive"
+import { TicketRegisterViewFormSix } from "./TicketRegisterViewFormSix/TicketRegisterViewFormSix"
 
 export const TicketRegisterViewContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -21,12 +22,12 @@ export const TicketRegisterViewContainer = () => {
   const navigate = useNavigate()
 
   function setStep(ticketStep: number) {
-    if (ticketStep === 1) return <TicketRegisterViewFormOne />
-    if (ticketStep === 2) return <TicketRegisterViewFormOne />
-    if (ticketStep === 3) return <TicketRegisterViewFormOne />
-    if (ticketStep === 4) return <TicketRegisterViewFormOne />
-    if (ticketStep === 5) return <TicketRegisterViewFormOne />
-    if (ticketStep === 6) return <TicketRegisterViewFormOne />
+    if (ticketStep === 1) return <TicketRegisterViewFormOne ticket={ticket} />
+    if (ticketStep === 2) return <TicketRegisterViewFormTwo ticket={ticket} />
+    if (ticketStep === 3) return <TicketRegisterViewFormThree ticket={ticket} />
+    if (ticketStep === 4) return <TicketRegisterViewFormFour ticket={ticket} />
+    if (ticketStep === 5) return <TicketRegisterViewFormFive ticket={ticket} />
+    if (ticketStep === 6) return <TicketRegisterViewFormSix ticket={ticket} />
     if (ticketStep === 7) return <TicketRegisterFacturable />
   }
 
@@ -43,26 +44,6 @@ export const TicketRegisterViewContainer = () => {
     setIsLoading(false)
   }
 
-  const formik = useFormik({
-    initialValues: {
-      IdTicketStatus: "",
-      IdTicketCompany: "",
-      IdTicketType: "",
-      Address: "",
-      CompanyFloor: "",
-      CompanyArea: "",
-      IdTechnician: "",
-      IdUser: "",
-      ScheduledAppointmentTime: new Date(),
-      ScheduledAppointmentDate: new Date(),
-      ReportedFailure: "",
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      // registerTicketStepTwo(values)
-    },
-  })
-
   const handleRedirect = () => {
     navigate("/tickets")
   }
@@ -75,40 +56,38 @@ export const TicketRegisterViewContainer = () => {
   }, [])
 
   return (
-    <form onSubmit={formik.handleSubmit} autoComplete="off">
-      <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
-        <div
-          onClick={handleRedirect}
-          className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center cursor-pointer"
-        >
-          <HiChevronLeft size={"32"} />
-        </div>
-        <div className="bg-white col-span-9 shadow-sm p-6">
-          {!isLoading && setStep(ticketStep)}
-          {isLoading && (
-            <>
-              <div className="grid grid-cols-12 gap-4">
-                <div className="col-span-8">
-                  <h2 className="font-semibold text-xl pb-2">
-                    Reporte de servicio técnico
-                  </h2>
-                </div>
-                <div className="col-span-4 justify-end flex"></div>
-              </div>
-              <div className="p-4 grid grid-cols-12 gap-4">
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-              </div>
-            </>
-          )}
-        </div>
+    <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
+      <div
+        onClick={handleRedirect}
+        className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center cursor-pointer"
+      >
+        <HiChevronLeft size={"32"} />
       </div>
-    </form>
+      <div className="bg-white col-span-9 shadow-sm p-6">
+        {!isLoading && setStep(ticketStep)}
+        {isLoading && (
+          <>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-8">
+                <h2 className="font-semibold text-xl pb-2">
+                  Reporte de servicio técnico
+                </h2>
+              </div>
+              <div className="col-span-4 justify-end flex"></div>
+            </div>
+            <div className="p-4 grid grid-cols-12 gap-4">
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+              <Skeleton className="col-span-6" height={40} animation="wave" />
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   )
 }

@@ -11,61 +11,24 @@ import {
   TicketRegisterStepThreeRequestFormFour,
 } from "../../../../../common/interfaces/Ticket.interface"
 import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
 import { TicketService } from "../../../../../common/services/TicketService"
 import {
   Alert,
   Checkbox,
   Collapse,
-  FormControl,
   FormControlLabel,
-  FormLabel,
-  InputLabel,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
   Snackbar,
-  TextField,
 } from "@mui/material"
 import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
 import { HiChevronRight, HiChevronDown } from "react-icons/hi"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
+const validationSchema = yup.object({})
 
 export const TicketRegisterCompleteFormFour = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [devices, setDevices] = useState<MasterTable[]>([])
   const [open, setOpen] = useState(false)
-  const { user } = useAuth()
   const [ticketFormFour, setTicketFormFour] = useState<any>()
   const { setTicketStep } = useTicket()
   const [isCollapsedCambio, setIsCollapsedCambio] = useState(true)
@@ -79,19 +42,9 @@ export const TicketRegisterCompleteFormFour = () => {
     }
   }
 
-  async function getDevices() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.DEVICES
-    )
-    if (data) {
-      setDevices(data)
-    }
-  }
-
   async function getAll(idTicket: string) {
     setIsLoading(true)
     await getTicketById(idTicket)
-    await getDevices()
     setIsLoading(false)
   }
 
@@ -107,7 +60,6 @@ export const TicketRegisterCompleteFormFour = () => {
   }
 
   function registerTicketStep(isNext: boolean) {
-    debugger
     const isFormValid = Object.values(formik.values).some(
       (value) => value !== false
     )
@@ -284,6 +236,7 @@ export const TicketRegisterCompleteFormFour = () => {
           <div className="flex flex-col">
             <div>
               <FormControlLabel
+                checked={formik.values.Instalacion}
                 onChange={() =>
                   formik.setFieldValue(
                     "Instalacion",
@@ -296,6 +249,7 @@ export const TicketRegisterCompleteFormFour = () => {
             </div>
             <div>
               <FormControlLabel
+                checked={formik.values.Retiro}
                 onChange={() =>
                   formik.setFieldValue("Retiro", !formik.values.Retiro)
                 }
@@ -305,6 +259,7 @@ export const TicketRegisterCompleteFormFour = () => {
             </div>
             <div>
               <FormControlLabel
+                checked={formik.values.Reparacion}
                 onChange={() =>
                   formik.setFieldValue("Reparacion", !formik.values.Reparacion)
                 }
@@ -314,6 +269,7 @@ export const TicketRegisterCompleteFormFour = () => {
             </div>
             <div>
               <FormControlLabel
+                checked={formik.values.ActualFirmware}
                 onChange={() =>
                   formik.setFieldValue(
                     "ActualFirmware",
@@ -326,6 +282,7 @@ export const TicketRegisterCompleteFormFour = () => {
             </div>
             <div>
               <FormControlLabel
+                checked={formik.values.EtiquetaFusor}
                 onChange={() =>
                   formik.setFieldValue(
                     "EtiquetaFusor",
@@ -338,6 +295,7 @@ export const TicketRegisterCompleteFormFour = () => {
             </div>
             <div>
               <FormControlLabel
+                checked={formik.values.EtiquetaFusorTeflon}
                 onChange={() =>
                   formik.setFieldValue(
                     "EtiquetaFusorTeflon",
@@ -389,6 +347,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioCartucho"
                     name="CambioCartucho"
+                    checked={formik.values.CambioCartucho}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioCartucho",
@@ -404,6 +363,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioFusor"
                     name="CambioFusor"
+                    checked={formik.values.CambioFusor}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioFusor",
@@ -419,6 +379,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioImagen"
                     name="CambioImagen"
+                    checked={formik.values.CambioImagen}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioImagen",
@@ -434,6 +395,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioRodillo"
                     name="CambioRodillo"
+                    checked={formik.values.CambioRodillo}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioRodillo",
@@ -449,6 +411,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioTeflon"
                     name="CambioTeflon"
+                    checked={formik.values.CambioTeflon}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioTeflon",
@@ -464,6 +427,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioRodilloBUno"
                     name="CambioRodilloBUno"
+                    checked={formik.values.CambioRodilloBUno}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioRodilloBUno",
@@ -479,6 +443,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioRodilloBDos"
                     name="CambioRodilloBDos"
+                    checked={formik.values.CambioRodilloBDos}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioRodilloBDos",
@@ -494,6 +459,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioSeparador"
                     name="CambioSeparador"
+                    checked={formik.values.CambioSeparador}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioSeparador",
@@ -509,6 +475,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioDrive"
                     name="CambioDrive"
+                    checked={formik.values.CambioDrive}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioDrive",
@@ -524,6 +491,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioSwing"
                     name="CambioSwing"
+                    checked={formik.values.CambioSwing}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioSwing",
@@ -539,6 +507,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioAOF"
                     name="CambioAOF"
+                    checked={formik.values.CambioAOF}
                     onChange={() =>
                       formik.setFieldValue(
                         "CambioAOF",
@@ -554,6 +523,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="CambioDC"
                     name="CambioDC"
+                    checked={formik.values.CambioDC}
                     onChange={() =>
                       formik.setFieldValue("CambioDC", !formik.values.CambioDC)
                     }
@@ -611,6 +581,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="MantImpresora"
                     name="MantImpresora"
+                    checked={formik.values.MantImpresora}
                     onChange={() =>
                       formik.setFieldValue(
                         "MantImpresora",
@@ -626,6 +597,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="MantOptico"
                     name="MantOptico"
+                    checked={formik.values.MantOptico}
                     onChange={() =>
                       formik.setFieldValue(
                         "MantOptico",
@@ -641,6 +613,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="MantOpticoEscaner"
                     name="MantOpticoEscaner"
+                    checked={formik.values.MantOpticoEscaner}
                     onChange={() =>
                       formik.setFieldValue(
                         "MantOpticoEscaner",
@@ -656,6 +629,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="MantSistema"
                     name="MantSistema"
+                    checked={formik.values.MantSistema}
                     onChange={() =>
                       formik.setFieldValue(
                         "MantSistema",
@@ -719,6 +693,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevCartucho"
                     name="RevCartucho"
+                    checked={formik.values.RevCartucho}
                     onChange={() =>
                       formik.setFieldValue(
                         "RevCartucho",
@@ -734,6 +709,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevFusor"
                     name="RevFusor"
+                    checked={formik.values.RevFusor}
                     onChange={() =>
                       formik.setFieldValue("RevFusor", !formik.values.RevFusor)
                     }
@@ -746,6 +722,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevImagen"
                     name="RevImagen"
+                    checked={formik.values.RevImagen}
                     onChange={() =>
                       formik.setFieldValue(
                         "RevImagen",
@@ -761,6 +738,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevADF"
                     name="RevADF"
+                    checked={formik.values.RevADF}
                     onChange={() =>
                       formik.setFieldValue("RevADF", !formik.values.RevADF)
                     }
@@ -773,6 +751,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevRodilloBUno"
                     name="RevRodilloBUno"
+                    checked={formik.values.RevRodilloBUno}
                     onChange={() =>
                       formik.setFieldValue(
                         "RevRodilloBUno",
@@ -788,6 +767,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevRodilloBDos"
                     name="RevRodilloBDos"
+                    checked={formik.values.RevRodilloBDos}
                     onChange={() =>
                       formik.setFieldValue(
                         "RevRodilloBDos",
@@ -803,6 +783,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevSeparador"
                     name="RevSeparador"
+                    checked={formik.values.RevSeparador}
                     onChange={() =>
                       formik.setFieldValue(
                         "RevSeparador",
@@ -818,6 +799,7 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="RevDuplex"
                     name="RevDuplex"
+                    checked={formik.values.RevDuplex}
                     onChange={() =>
                       formik.setFieldValue(
                         "RevDuplex",

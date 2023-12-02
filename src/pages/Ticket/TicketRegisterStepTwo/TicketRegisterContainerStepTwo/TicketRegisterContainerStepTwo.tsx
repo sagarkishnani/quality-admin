@@ -196,7 +196,7 @@ export const TicketRegisterContainerStepTwo = () => {
         Address: ticket.Company.Address || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
-        IdUser: "",
+        IdUser: ticket?.User?.Name || "",
         IdTechnician: "",
         ScheduledAppointmentTime: new Date(),
         ScheduledAppointmentDate: new Date(),

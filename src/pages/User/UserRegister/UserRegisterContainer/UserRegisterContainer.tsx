@@ -8,9 +8,12 @@ import {
 } from "../../../../common/constants"
 import { Link, useNavigate } from "react-router-dom"
 import {
+  Box,
+  Chip,
   FormControl,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   Skeleton,
   TextField,
@@ -56,6 +59,9 @@ export const UserRegisterContainer = () => {
   const [companies, setCompanies] = useState<GetCompaniesResponse[]>([])
   const [roles, setRoles] = useState<any[]>([])
   const [positions, setPositions] = useState<MasterTable[]>([])
+
+  const [selectedCompanies, setSelectedCompanies] = useState([])
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -88,6 +94,10 @@ export const UserRegisterContainer = () => {
     if (data) {
       setPositions(data)
     }
+  }
+
+  const handleCompanyChange = (event) => {
+    setSelectedCompanies(event.target.value)
   }
 
   async function getAll() {
@@ -226,15 +236,35 @@ export const UserRegisterContainer = () => {
               </div>
               <div className="col-span-6">
                 <FormControl fullWidth>
-                  <InputLabel id="CompanyLabel">Empresa</InputLabel>
+                  <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
                   <Select
-                    labelId="CompanyLabel"
+                    labelId="IdCompanyLabel"
                     id="IdCompany"
-                    name="IdCompany"
-                    value={formik.values.IdCompany}
-                    onChange={formik.handleChange}
+                    multiple
+                    value={selectedCompanies}
+                    onChange={handleCompanyChange}
+                    input={<OutlinedInput label="Compañía" />}
+                    renderValue={() => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selectedCompanies.map((idCompany: string) => {
+                          const company = companies.find(
+                            (c: GetCompaniesResponse) =>
+                              c.IdCompany === idCompany
+                          )
+                          return (
+                            <Chip
+                              key={company!.IdCompany}
+                              label={company!.Name}
+                            />
+                          )
+                        })}
+                      </Box>
+                    )}
                   >
-                    {companies?.map((company: any) => (
+                    <MenuItem disabled value="">
+                      <em>Seleccione</em>
+                    </MenuItem>
+                    {companies.map((company: GetCompaniesResponse) => (
                       <MenuItem
                         key={company.IdCompany}
                         value={company.IdCompany}

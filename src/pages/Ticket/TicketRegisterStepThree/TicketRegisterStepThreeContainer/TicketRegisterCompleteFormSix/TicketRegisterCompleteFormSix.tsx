@@ -6,11 +6,12 @@ import {
   ConstantLocalStorage,
   ConstantMessage,
   ConstantTicketMessage,
-  ConstantsMasterTable,
 } from "../../../../../common/constants"
 import { useFormik } from "formik"
-import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
+import {
+  GetTicketById,
+  TicketRegisterStepThreeRequest,
+} from "../../../../../common/interfaces/Ticket.interface"
 import { Link, useNavigate } from "react-router-dom"
 import { TicketService } from "../../../../../common/services/TicketService"
 import { TextField } from "@mui/material"
@@ -18,40 +19,44 @@ import moment from "moment"
 import CanvasDraw from "react-canvas-draw"
 import { AiOutlineClear } from "react-icons/ai"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { ModalTicket } from "./ModalTicket/ModalTicket"
+import { TicketAnswerService } from "../../../../../common/services/TicketAnswerService"
 
 const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
+  Comment: yup
+    .string()
+    .required("El Comentario es obligatorio")
+    .min(10, "El Comentario debe tener como mínimo 10 caracteres"),
+  Recommendation: yup
+    .string()
+    .required("La Recomendación es obligatoria")
+    .min(10, "La Recomendación debe tener como mínimo 10 caracteres"),
+  ResponsibleDni: yup
+    .string()
+    .required()
+    .matches(/^[0-9]+$/, "Deben ser solo números")
+    .min(8, "El DNI debe tener como mínimo 8 caracteres")
+    .max(8, "El DNI debe tener como máximo 8 caracteres"),
+  ResponsibleName: yup.string().required("El nombre es obligatorio"),
+  TechnicianDni: yup
+    .string()
+    .required()
+    .matches(/^[0-9]+$/, "Deben ser solo números")
+    .min(8, "El DNI debe tener como mínimo 8 caracteres")
+    .max(8, "El DNI debe tener como máximo 8 caracteres"),
+  TechnicianName: yup.string().required("El nombre es obligatorio"),
 })
 
 export const TicketRegisterCompleteFormSix = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
+  const [ticketFormOne, setTicketFormOne] = useState<any>()
+  const [ticketFormTwo, setTicketFormTwo] = useState<any>()
+  const [ticketFormThree, setTicketFormThree] = useState<any>()
+  const [ticketFormFour, setTicketFormFour] = useState<any>()
+  const [ticketFormFive, setTicketFormFive] = useState<any>()
   const [isModalTicketOpen, setIsModalTicketOpen] = useState(false)
   const [modalTicketType, setModalTicketType] = useState<
     "success" | "error" | "question" | "none"
@@ -75,9 +80,50 @@ export const TicketRegisterCompleteFormSix = () => {
     }
   }
 
+  function getStepOne() {
+    setTicketFormOne(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
+      )
+    )
+  }
+  function getStepTwo() {
+    setTicketFormTwo(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_TWO
+      )
+    )
+  }
+  function getStepThree() {
+    setTicketFormThree(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE
+      )
+    )
+  }
+  function getStepFour() {
+    setTicketFormFour(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_FOUR
+      )
+    )
+  }
+  function getStepFive() {
+    setTicketFormFive(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_FIVE
+      )
+    )
+  }
+
   async function getAll(idTicket: string) {
     setIsLoading(true)
     await getTicketById(idTicket)
+    getStepOne()
+    getStepTwo()
+    getStepThree()
+    getStepFour()
+    getStepFive()
     setIsLoading(false)
   }
 
@@ -100,33 +146,58 @@ export const TicketRegisterCompleteFormSix = () => {
   }
 
   async function registerTicketStepThree(isFacturable: boolean) {
+    debugger
     setIsLoadingAction(true)
 
-    const { status }: any = await TicketService.registerTicketStepThree(
-      ticket.IdTicket,
-      isFacturable
-    )
+    const request: TicketRegisterStepThreeRequest = {
+      StepOne: ticketFormOne,
+      StepTwo: ticketFormTwo,
+      StepThree: ticketFormThree,
+      StepFour: ticketFormFour,
+      StepFive: ticketFormFive,
+      StepSix: {
+        Comment: formik.values.Comment,
+        Recommendation: formik.values.Recommendation,
+        ResponsibleDni: formik.values.ResponsibleDni,
+        ResponsibleName: formik.values.ResponsibleName,
+        TechnicianDni: formik.values.TechnicianDni,
+        TechnicianName: formik.values.TechnicianName,
+      },
+    }
 
-    if (status == ConstantHttpErrors.OK) {
-      setIsModalTicketOpen(false)
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(
+    const { data, status: ticketStatus }: any =
+      await TicketService.registerTicketStepThree(
+        request,
+        ticket.IdTicket,
         isFacturable
-          ? ConstantTicketMessage.TICKET_ATTENDED_SUCCESS
-          : ConstantTicketMessage.TICKET_FINISHED_SUCCESS
       )
 
-      setIsLoadingAction(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
-    } else {
-      setIsModalTicketOpen(false)
-      setIsLoadingAction(false)
-      setIsModalOpen(true)
-      setModalType("error")
-      setModalMessage(ConstantMessage.SERVICE_ERROR)
+    if (ticketStatus == ConstantHttpErrors.OK) {
+      const { status }: any = await TicketAnswerService.registerTicketAnswer(
+        data[0].IdTicket,
+        request
+      )
+
+      if (status == ConstantHttpErrors.CREATED) {
+        setIsModalTicketOpen(false)
+        setIsModalOpen(true)
+        setModalType("success")
+        setModalMessage(
+          isFacturable
+            ? ConstantTicketMessage.TICKET_ATTENDED_SUCCESS
+            : ConstantTicketMessage.TICKET_FINISHED_SUCCESS
+        )
+        setIsLoadingAction(false)
+        setTimeout(() => {
+          navigate("/tickets")
+        }, 2000)
+      } else {
+        setIsModalTicketOpen(false)
+        setIsLoadingAction(false)
+        setIsModalOpen(true)
+        setModalType("error")
+        setModalMessage(ConstantMessage.SERVICE_ERROR)
+      }
     }
   }
 
@@ -147,15 +218,12 @@ export const TicketRegisterCompleteFormSix = () => {
 
   const formik = useFormik({
     initialValues: {
-      DeviceOne: "",
-      CounterOne: "",
-      GuideOne: "",
-      DeviceTwo: "",
-      CounterTwo: "",
-      GuideTwo: "",
-      ReportedFailure: "",
-      FoundFailure: "",
-      Extra: "",
+      Comment: "",
+      Recommendation: "",
+      ResponsibleName: "",
+      ResponsibleDni: "",
+      TechnicianName: "",
+      TechnicianDni: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {},
@@ -167,22 +235,6 @@ export const TicketRegisterCompleteFormSix = () => {
       getAll(idTicket)
     }
   }, [])
-
-  useEffect(() => {
-    if (ticket) {
-      formik.setValues({
-        DeviceOne: "",
-        CounterOne: "",
-        GuideOne: "",
-        DeviceTwo: "",
-        CounterTwo: "",
-        GuideTwo: "",
-        ReportedFailure: "",
-        FoundFailure: "",
-        Extra: "",
-      })
-    }
-  }, [ticket])
 
   return (
     <>
@@ -202,26 +254,48 @@ export const TicketRegisterCompleteFormSix = () => {
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
             required
-            name="CounterOne"
-            id="CounterOne"
-            rows={1}
-            value={formik.values.CounterOne}
+            name="Comment"
+            id="Comment"
+            rows={2}
+            value={formik.values.Comment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           ></textarea>
+          <div className="flex justify-between">
+            {formik.touched.Comment && formik.errors.Comment ? (
+              <p className="text-qRed text-sm">{formik.errors.Comment}</p>
+            ) : (
+              <div></div>
+            )}
+            <small className="text-right block">
+              {formik.values.Comment.length}/100
+            </small>
+          </div>
         </div>
         <div className="col-span-12">
           <label>Recomendaciones</label>
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
             required
-            name="GuideOne"
-            id="GuideOne"
+            name="Recommendation"
+            id="Recommendation"
             rows={2}
-            value={formik.values.GuideOne}
+            value={formik.values.Recommendation}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           ></textarea>
+          <div className="flex justify-between">
+            {formik.touched.Recommendation && formik.errors.Recommendation ? (
+              <p className="text-qRed text-sm">
+                {formik.errors.Recommendation}
+              </p>
+            ) : (
+              <div></div>
+            )}
+            <small className="text-right block">
+              {formik.values.Recommendation.length}/100
+            </small>
+          </div>
         </div>
         <div className="col-span-5 border-gray-400 border-2 rounded-md">
           <CanvasDraw
@@ -266,13 +340,18 @@ export const TicketRegisterCompleteFormSix = () => {
             required
             color="primary"
             className="w-full"
-            id="DeviceTwo"
-            name="DeviceTwo"
-            value={formik.values.DeviceTwo}
+            id="ResponsibleName"
+            name="ResponsibleName"
+            value={formik.values.ResponsibleName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.DeviceTwo && Boolean(formik.errors.DeviceTwo)}
-            helperText={formik.touched.DeviceTwo && formik.errors.DeviceTwo}
+            error={
+              formik.touched.ResponsibleName &&
+              Boolean(formik.errors.ResponsibleName)
+            }
+            helperText={
+              formik.touched.ResponsibleName && formik.errors.ResponsibleName
+            }
             label="Nombre"
           />
         </div>
@@ -282,15 +361,18 @@ export const TicketRegisterCompleteFormSix = () => {
             required
             color="primary"
             className="w-full"
-            id="CounterTwo"
-            name="CounterTwo"
-            value={formik.values.CounterTwo}
+            id="TechnicianName"
+            name="TechnicianName"
+            value={formik.values.TechnicianName}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={
-              formik.touched.CounterTwo && Boolean(formik.errors.CounterTwo)
+              formik.touched.TechnicianName &&
+              Boolean(formik.errors.TechnicianName)
             }
-            helperText={formik.touched.CounterTwo && formik.errors.CounterTwo}
+            helperText={
+              formik.touched.TechnicianName && formik.errors.TechnicianName
+            }
             label="Nombre técnico"
           />
         </div>
@@ -299,17 +381,17 @@ export const TicketRegisterCompleteFormSix = () => {
             required
             color="primary"
             className="w-full"
-            id="ReportedFailure"
-            name="ReportedFailure"
-            value={formik.values.ReportedFailure}
+            id="ResponsibleDni"
+            name="ResponsibleDni"
+            value={formik.values.ResponsibleDni}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             error={
-              formik.touched.ReportedFailure &&
-              Boolean(formik.errors.ReportedFailure)
+              formik.touched.ResponsibleDni &&
+              Boolean(formik.errors.ResponsibleDni)
             }
             helperText={
-              formik.touched.ReportedFailure && formik.errors.ReportedFailure
+              formik.touched.ResponsibleDni && formik.errors.ResponsibleDni
             }
             label="DNI"
           />
@@ -320,13 +402,18 @@ export const TicketRegisterCompleteFormSix = () => {
             required
             color="primary"
             className="w-full"
-            id="Extra"
-            name="Extra"
-            value={formik.values.Extra}
+            id="TechnicianDni"
+            name="TechnicianDni"
+            value={formik.values.TechnicianDni}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.Extra && Boolean(formik.errors.Extra)}
-            helperText={formik.touched.Extra && formik.errors.Extra}
+            error={
+              formik.touched.TechnicianDni &&
+              Boolean(formik.errors.TechnicianDni)
+            }
+            helperText={
+              formik.touched.TechnicianDni && formik.errors.TechnicianDni
+            }
             label="DNI"
           />
         </div>

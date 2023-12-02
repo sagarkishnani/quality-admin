@@ -1,77 +1,12 @@
 import { useEffect, useState } from "react"
-import * as yup from "yup"
-import secureLocalStorage from "react-secure-storage"
-import {
-  ConstantLocalStorage,
-  ConstantsMasterTable,
-} from "../../../../../common/constants"
 import { useFormik } from "formik"
-import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { Link, useNavigate } from "react-router-dom"
-import { TicketService } from "../../../../../common/services/TicketService"
-import { Checkbox, FormControl, FormControlLabel } from "@mui/material"
+import { Checkbox, FormControlLabel } from "@mui/material"
 import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
-import { Button } from "../../../../../common/components/Button/Button"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
-
-export const TicketRegisterViewFormFive = () => {
+export const TicketRegisterViewFormFive = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [devices, setDevices] = useState<MasterTable[]>([])
-  const { user } = useAuth()
   const { setTicketStep } = useTicket()
-
-  async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
-    if (data) {
-      setTicket(data)
-    }
-  }
-
-  async function getDevices() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.DEVICES
-    )
-    if (data) {
-      setDevices(data)
-    }
-  }
-
-  async function getAll(idTicket: string) {
-    setIsLoading(true)
-    await getTicketById(idTicket)
-    await getDevices()
-    setIsLoading(false)
-  }
 
   function registerTicketStep(isNext: boolean) {
     isNext ? setTicketStep(6) : setTicketStep(4)
@@ -79,39 +14,64 @@ export const TicketRegisterViewFormFive = () => {
 
   const formik = useFormik({
     initialValues: {
-      DeviceOne: "",
-      CounterOne: "",
-      GuideOne: "",
-      DeviceTwo: "",
-      CounterTwo: "",
-      GuideTwo: "",
-      ReportedFailure: "",
-      FoundFailure: "",
+      UsoPapelHumedo: false,
+      UsoPapelReciclado: false,
+      UsoPapelGrapas: false,
+      UsoEtiquetas: false,
+      ConectadoPared: false,
+      ConectadoSupresor: false,
+      ConectadoEstabilizador: false,
+      ConectadoUPS: false,
+      Operativo: false,
+      PegadoEtiquetaGarantia: false,
+      EnObservacion: false,
+      EquipoRequiereCambio: false,
+      EquipoRequiereMantenimiento: false,
+      CartuchoOtroProveedor: false,
+      CartuchoDanado: false,
+      Instalacion: false,
+      ServicioGarantia: false,
+      Negligencia: false,
+      Mantenimiento: false,
+      Retiro: false,
+      Reparacion: false,
     },
-    validationSchema: validationSchema,
     onSubmit: (values) => {},
   })
 
   useEffect(() => {
-    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
-    if (idTicket !== null) {
-      getAll(idTicket)
-    }
-  }, [])
-
-  useEffect(() => {
+    setIsLoading(true)
     if (ticket) {
       formik.setValues({
-        DeviceOne: "",
-        CounterOne: "",
-        GuideOne: "",
-        DeviceTwo: "",
-        CounterTwo: "",
-        GuideTwo: "",
-        ReportedFailure: ticket.ReportedFailure || "",
-        FoundFailure: "",
+        UsoPapelHumedo: ticket?.TicketAnswer?.UsoPapelHumedo || false,
+        UsoPapelReciclado: ticket?.TicketAnswer?.UsoPapelReciclado || false,
+        UsoPapelGrapas: ticket?.TicketAnswer?.UsoPapelGrapas || false,
+        UsoEtiquetas: ticket?.TicketAnswer?.UsoEtiquetas || false,
+        ConectadoPared: ticket?.TicketAnswer?.ConectadoPared || false,
+        ConectadoSupresor: ticket?.TicketAnswer?.ConectadoSupresor || false,
+        ConectadoEstabilizador:
+          ticket?.TicketAnswer?.ConectadoEstabilizador || false,
+        ConectadoUPS: ticket?.TicketAnswer?.ConectadoUPS || false,
+        Operativo: ticket?.TicketAnswer?.Operativo || false,
+        PegadoEtiquetaGarantia:
+          ticket?.TicketAnswer?.PegadoEtiquetaGarantia || false,
+        EnObservacion: ticket?.TicketAnswer?.EnObservacion || false,
+        EquipoRequiereCambio:
+          ticket?.TicketAnswer?.EquipoRequiereCambio || false,
+        EquipoRequiereMantenimiento:
+          ticket?.TicketAnswer?.EquipoRequiereMantenimiento || false,
+        CartuchoOtroProveedor:
+          ticket?.TicketAnswer?.CartuchoOtroProveedor || false,
+        CartuchoDanado: ticket?.TicketAnswer?.CartuchoDanado || false,
+        Instalacion: ticket?.TicketAnswer?.Instalacion || false,
+        ServicioGarantia: ticket?.TicketAnswer?.ServicioGarantia || false,
+        Negligencia: ticket?.TicketAnswer?.Negligencia || false,
+        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento || false,
+        Retiro: ticket?.TicketAnswer?.Retiro || false,
+        Reparacion: ticket?.TicketAnswer?.Reparacion || false,
       })
     }
+    setIsLoading(false)
   }, [ticket])
 
   return (
@@ -134,25 +94,36 @@ export const TicketRegisterViewFormFive = () => {
           <div className="flex flex-col">
             <div>
               <FormControlLabel
-                control={<Checkbox checked disabled />}
+                control={
+                  <Checkbox checked={formik.values.UsoPapelHumedo} disabled />
+                }
                 label="Uso de papel húmedo"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox
+                    checked={formik.values.UsoPapelReciclado}
+                    disabled
+                  />
+                }
                 label="Uso de papel reciclado"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox checked={formik.values.UsoPapelGrapas} disabled />
+                }
                 label="Uso de papel C grapas"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox checked={formik.values.UsoEtiquetas} disabled />
+                }
                 label="Uso de etiquetas"
               />
             </div>
@@ -162,25 +133,39 @@ export const TicketRegisterViewFormFive = () => {
           <div className="flex flex-col">
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox checked={formik.values.ConectadoPared} disabled />
+                }
                 label="Conectado a la pared"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox
+                    checked={formik.values.ConectadoSupresor}
+                    disabled
+                  />
+                }
                 label="Conectado a supresor"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox
+                    checked={formik.values.ConectadoEstabilizador}
+                    disabled
+                  />
+                }
                 label="Conectado a estabilizador"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox checked={formik.values.ConectadoUPS} disabled />
+                }
                 label="Conectado a UPS"
               />
             </div>
@@ -189,30 +174,47 @@ export const TicketRegisterViewFormFive = () => {
         <div className="col-span-3">
           <div className="flex flex-col">
             <FormControlLabel
-              control={<Checkbox disabled />}
+              control={<Checkbox checked={formik.values.Operativo} disabled />}
               label="Operativo"
             />
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox
+                    checked={formik.values.PegadoEtiquetaGarantia}
+                    disabled
+                  />
+                }
                 label="Pegado de etiqueta garantía"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox checked={formik.values.EnObservacion} disabled />
+                }
                 label="En observación"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox
+                    checked={formik.values.EquipoRequiereCambio}
+                    disabled
+                  />
+                }
                 label="Equipo requiere cambio"
               />
             </div>
             <div>
               <FormControlLabel
-                control={<Checkbox disabled />}
+                control={
+                  <Checkbox
+                    checked={formik.values.EquipoRequiereMantenimiento}
+                    disabled
+                  />
+                }
                 label="Equipo requiere mantenimiento"
               />
             </div>
@@ -222,41 +224,48 @@ export const TicketRegisterViewFormFive = () => {
           <div className="flex flex-col">
             <FormControlLabel
               label="Cartucho otro proveedor"
-              control={<Checkbox disabled />}
+              control={
+                <Checkbox
+                  checked={formik.values.CartuchoOtroProveedor}
+                  disabled
+                />
+              }
             />
             <FormControlLabel
               label="Cartucho dañado"
-              control={<Checkbox disabled />}
+              control={
+                <Checkbox checked={formik.values.CartuchoDanado} disabled />
+              }
             />
           </div>
         </div>
         <div className="col-span-3">
           <FormControlLabel
             label="Instalación"
-            control={<Checkbox disabled />}
+            control={<Checkbox checked={formik.values.Instalacion} disabled />}
           />
         </div>
         <div className="col-span-3">
           <FormControlLabel
             label="Servicio de garantía"
-            control={<Checkbox disabled />}
+            control={
+              <Checkbox checked={formik.values.ServicioGarantia} disabled />
+            }
           />
         </div>
         <div className="col-span-3">
           <FormControlLabel
             label="Negligencia"
-            control={<Checkbox checked disabled />}
+            control={<Checkbox checked={formik.values.Negligencia} disabled />}
           />
         </div>
         <div className="col-span-3">
           <div className="flex flex-col">
             <FormControlLabel
-              label="Visita facturable"
-              control={<Checkbox disabled />}
-            />
-            <FormControlLabel
               label="Mantenimiento"
-              control={<Checkbox disabled />}
+              control={
+                <Checkbox checked={formik.values.Mantenimiento} disabled />
+              }
             />
           </div>
         </div>

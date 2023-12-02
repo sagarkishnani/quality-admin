@@ -20,6 +20,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { HiOutlineTrash } from "react-icons/hi"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { useNavigate } from "react-router-dom"
+import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
 
 const validationSchema = yup.object({})
 
@@ -40,6 +41,7 @@ export const TicketRegisterFacturable = () => {
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [services, setServices] = useState<any[]>([])
   const [selectedServices, setSelectedServices] = useState<any[]>([])
+  const [serviceStatus, setServiceStatus] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -69,11 +71,21 @@ export const TicketRegisterFacturable = () => {
   async function registerTicketStepFour() {
     setIsLoadingAction(true)
 
-    const { status }: any = await TicketService.registerTicketStepFour(
-      ticket.IdTicket
-    )
+    const { status: ticketStatus }: any =
+      await TicketService.registerTicketStepFour(ticket.IdTicket)
 
-    if (status == ConstantHttpErrors.OK) {
+    if (ticketStatus == ConstantHttpErrors.OK) {
+      for (const service of selectedServices) {
+        const { status }: any =
+          await TicketServicesService.registerTicketService(
+            ticket.IdTicket,
+            service.IdService
+          )
+
+        console.log("servicio y status:", status)
+        // if (status === ConstantHttpErrors.CREATED)
+      }
+
       setIsModalOpen(true)
       setModalType("success")
       setModalMessage(ConstantTicketMessage.TICKET_FINISHED_SUCCESS)

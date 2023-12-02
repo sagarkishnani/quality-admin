@@ -20,12 +20,42 @@ serve(async (req) => {
   }
   try {
     if (req.method === 'POST') {
-      const { email, password, Name, PhoneNumber, IdRole, IdCompany, Dni, ImageUrl, Position } = await req.json();
+      const { User, UserCompany } = await req.json();
 
+      //Registro mi usuario en la tabla auth
       const { data: user, error } = await supabase.auth.signUp({
-        email,
-        password,
+        User.email,
+        User.password,
       });
+
+      if (error) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+            'Content-Type': 'application/json',
+          },
+          status: 500,
+        });
+      }
+
+
+      //Registro mi usuario con múltiples empresas
+      const { data: userCompany, error } = await supabase
+        .from('UserCompany')
+        .insert([
+          {
+            IdUser: user.user.id,
+            email: User.email,
+            Name: User.Name,
+            PhoneNumber: User.PhoneNumber,
+            IdRole: User.IdRole,
+            IdCompany: User.IdCompany,
+            Dni: User.Dni,
+            ImageUrl: User.ImageUrl,
+            Position: User.Position
+          }
+        ]);
 
       if (error) {
         return new Response(JSON.stringify({ error: error.message }), {
@@ -43,14 +73,14 @@ serve(async (req) => {
         .insert([
           {
             IdUser: user.user.id,
-            email: email,
-            Name: Name,
-            PhoneNumber: PhoneNumber,
-            IdRole: IdRole,
-            IdCompany: IdCompany,
-            Dni: Dni,
-            ImageUrl: ImageUrl,
-            Position: Position
+            email: User.email,
+            Name: User.Name,
+            PhoneNumber: User.PhoneNumber,
+            IdRole: User.IdRole,
+            IdCompany: User.IdCompany,
+            Dni: User.Dni,
+            ImageUrl: User.ImageUrl,
+            Position: User.Position
           }
         ]);
 
