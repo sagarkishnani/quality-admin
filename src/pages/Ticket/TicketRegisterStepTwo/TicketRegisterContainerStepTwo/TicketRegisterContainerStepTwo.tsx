@@ -22,8 +22,6 @@ import {
   ConstantMessage,
   ConstantRoles,
   ConstantTicketMessage,
-  ConstantTicketStatus,
-  ConstantTicketTypes,
   ConstantsMasterTable,
 } from "../../../../common/constants"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
@@ -38,28 +36,13 @@ import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { UserService } from "../../../../common/services/UserService"
 
 const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
+  ScheduledAppointmentDate: yup
+    .date()
+    .required("Fecha de atención programada es obligatoria"),
+  ScheduledAppointmentTime: yup
+    .date()
+    .required("Hora de atención programada es obligatoria"),
+  ReportedFailure: yup.string().required("Falla a reportar es obligatoria"),
 })
 
 export const TicketRegisterContainerStepTwo = () => {
@@ -71,34 +54,14 @@ export const TicketRegisterContainerStepTwo = () => {
   >("none")
   const [modalMessage, setModalMessage] = useState("")
   const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [positions, setPositions] = useState<MasterTable[]>([])
   const [technicians, setTechnicians] = useState<any[]>([])
   const [areas, setAreas] = useState<MasterTable[]>([])
   const [floors, setFloors] = useState<MasterTable[]>([])
-  const [pictures, setPictures] = useState<string[]>([])
-  const [imgData, setImgData] = useState("")
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
-  const { user } = useAuth()
   const navigate = useNavigate()
-
-  const onChangePicture = (e: any) => {
-    const newPictures: string[] = []
-    const files = e.target.files
-
-    for (let i = 0; i < files.length; i++) {
-      const reader = new FileReader()
-
-      reader.onload = (e) => {
-        newPictures.push(e.target?.result)
-        if (newPictures.length === files.length) {
-          setPictures([...pictures, ...newPictures])
-        }
-      }
-
-      reader.readAsDataURL(files[i])
-    }
-  }
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const bucketUrl = "/storage/v1/object/public/media/"
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
@@ -111,15 +74,6 @@ export const TicketRegisterContainerStepTwo = () => {
 
   const handleCloseImageModal = () => {
     setIsImageModal(false)
-  }
-
-  async function getPositions() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.POSITIONS
-    )
-    if (data) {
-      setPositions(data)
-    }
   }
 
   async function getAreas() {
@@ -158,7 +112,6 @@ export const TicketRegisterContainerStepTwo = () => {
     setIsLoading(true)
     await getTicketById(idTicket)
     await getTechnicians()
-    await getPositions()
     await getAreas()
     await getFloors()
     setIsLoading(false)
@@ -225,7 +178,7 @@ export const TicketRegisterContainerStepTwo = () => {
         Address: ticket.Company.Address || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
-        IdUser: "",
+        IdUser: ticket?.User?.Name || "",
         IdTechnician: "",
         ScheduledAppointmentTime: new Date(),
         ScheduledAppointmentDate: new Date(),
@@ -278,42 +231,26 @@ export const TicketRegisterContainerStepTwo = () => {
                 />
               </div>
               <div className="col-span-6">
-                <FormControl fullWidth>
-                  <InputLabel id="FloorLabel">Piso</InputLabel>
-                  <Select
-                    labelId="FloorLabel"
-                    id="CompanyFloor"
-                    name="CompanyFloor"
-                    value={formik.values.CompanyFloor}
-                    onChange={formik.handleChange}
-                    disabled
-                  >
-                    {floors?.map((floor: MasterTable) => (
-                      <MenuItem key={floor.IdMasterTable} value={floor.Name}>
-                        {floor.Name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  disabled
+                  color="primary"
+                  className="w-full"
+                  id="CompanyFloor"
+                  name="CompanyFloor"
+                  value={formik.values.CompanyFloor}
+                  label="Piso"
+                />
               </div>
               <div className="col-span-6">
-                <FormControl fullWidth>
-                  <InputLabel id="AreaLabel">Área</InputLabel>
-                  <Select
-                    labelId="AreaLabel"
-                    id="CompanyArea"
-                    name="CompanyArea"
-                    value={formik.values.CompanyArea}
-                    onChange={formik.handleChange}
-                    disabled
-                  >
-                    {areas?.map((area: MasterTable) => (
-                      <MenuItem key={area.IdMasterTable} value={area.Name}>
-                        {area.Name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  disabled
+                  color="primary"
+                  className="w-full"
+                  id="CompanyArea"
+                  name="CompanyArea"
+                  value={formik.values.CompanyArea}
+                  label="Área"
+                />
               </div>
               <div className="col-span-12">
                 <TextField
@@ -327,51 +264,40 @@ export const TicketRegisterContainerStepTwo = () => {
                 />
               </div>
               <div className="col-span-12">
-                <TextField
-                  color="primary"
-                  multiline
-                  minRows={5}
-                  className="w-full"
-                  type="text"
-                  id="ReportedFailure"
-                  name="ReportedFailure"
-                  value={formik.values.ReportedFailure}
-                  label="Falla a reportar"
+                <textarea
+                  className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2 bg-white text-gray-400"
                   disabled
-                />
+                  name="ReportedFailure"
+                  id="ReportedFailure"
+                  rows={3}
+                  value={formik.values.ReportedFailure}
+                ></textarea>
               </div>
-              <div className="col-span-12">
-                <div className="flex flex-row space-x-2">
-                  <h3>Evidencia(s)</h3>
-                  <div className="register_profile_image">
-                    <input
-                      id="profilePic"
-                      type="file"
-                      accept=".png, .jpg, .gif, .svg, .webp"
-                      onChange={onChangePicture}
-                      multiple
-                      className="border-none bg-none text-qBlue underline font-medium"
-                    />
+              {ticket?.TicketFile?.length > 0 && (
+                <div className="col-span-12 mt-2">
+                  <div className="flex flex-row space-x-2">
+                    <h3>Evidencia(s)</h3>
+                  </div>
+                  <div className="flex flex-row space-x-2 mt-4">
+                    {ticket?.TicketFile?.map((picture, index) => (
+                      <div
+                        className="w-16 h-16 relative cursor-pointer"
+                        onClick={() =>
+                          handleOpenImageModal(
+                            supabaseUrl + bucketUrl + picture.FileUrl
+                          )
+                        }
+                      >
+                        <img
+                          key={index}
+                          className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
+                          src={supabaseUrl + bucketUrl + picture.FileUrl}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="flex flex-row space-x-2 mt-4">
-                  {pictures.map((imgData, index) => (
-                    <div
-                      className="w-16 h-16 relative cursor-pointer"
-                      onClick={() => handleOpenImageModal(imgData)}
-                    >
-                      <img
-                        key={index}
-                        className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
-                        src={imgData}
-                      />
-                      <button className="w-8 h-8 absolute right-0 -top-4 bg-qBlue rounded-md hidden">
-                        X
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           )}
           {isLoading && (
@@ -405,7 +331,7 @@ export const TicketRegisterContainerStepTwo = () => {
             </div>
             <div className="col-span-2 flex flex-col text-sm text-qBlack space-y-6">
               <div>
-                <InputLabel id="ScheduledAppointmentDate">
+                <InputLabel id="ScheduledAppointmentDate" required>
                   Fecha de atención programada
                 </InputLabel>
                 <DatePicker
@@ -421,7 +347,7 @@ export const TicketRegisterContainerStepTwo = () => {
                 />
               </div>
               <div>
-                <InputLabel id="ScheduledAppointmentTime">
+                <InputLabel id="ScheduledAppointmentTime" required>
                   Hora de atención programada
                 </InputLabel>
                 <TimePicker
@@ -436,8 +362,8 @@ export const TicketRegisterContainerStepTwo = () => {
                 />
               </div>
               <div>
-                <FormControl fullWidth>
-                  <InputLabel id="IdTechnicianLabel">
+                <FormControl required fullWidth>
+                  <InputLabel id="IdTechnicianLabel" required>
                     Técnico asignado
                   </InputLabel>
                   <Select

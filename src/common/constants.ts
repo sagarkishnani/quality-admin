@@ -44,9 +44,15 @@ export const ConstantCompanyMessage = {
 export const ConstantTicketMessage = {
     TICKET_REGISTER_SUCCESS: 'El ticket se registró correctamente',
     TICKET_ASSIGNED_SUCCESS: 'Se asignó a un técnico correctamente',
+    TICKET_ATTENDED_SUCCESS: 'El ticket fue atendido correctamente',
+    TICKET_FINISHED_SUCCESS: 'El ticket se finalizó correctamente',
     TICKET_CANCEL_QUESTION: '¿Está seguro de cancelar el ticket?',
+    TICKET_FACTURABLE: 'El servicio técnico debe ser',
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
     TICKET_CANCEL_ERROR: 'Hubo un error al cancelar',
+    TICKET_IMAGE_ERROR: 'Hubo un error al subir la imagen',
+    TICKET_REGISTER_ERROR: 'Hubo un error al registrar el ticket',
+    TICKET_SERVICE_REGISTER_ERROR: 'Hubo un error al registrar el servicio'
 }
 
 export const ConstantMasterTableMessage = {
@@ -59,11 +65,13 @@ export const ConstantMasterTableMessage = {
 
 export const ConstantUserMessage = {
     USER_INCORRECT: 'El usuario o contraseña es incorrecto.',
-    USER_DELETE_QUESTION: '¿Está seguro de eliminar el usuario?'
+    USER_DELETE_QUESTION: '¿Está seguro de eliminar el usuario?',
+    USER_DELETE_ERROR: 'Hubo un error al eliminar',
+    USER_DELETE: 'El usuario se eliminó correctamente'
 }
 
 export const ConstantsMasterTable = {
-    TICKET_STATUS: '00100',
+    DEVICES: '00100',
     TICKET_TYPES: '00200',
     AREAS: '00300',
     FLOORS: '00400',
@@ -71,7 +79,16 @@ export const ConstantsMasterTable = {
     CURRENCIES: '00600',
     PAYMENT_CONDITIONS: '00700',
     CE: '00800',
-    BANKS: '00900'
+    BANKS: '00900',
+    SERVICES: '',
+    FILE_PURPOSE: '01100'
+}
+
+export const ConstantFilePurpose = {
+    IMAGEN_USUARIO: '01101',
+    IMAGEN_TECNICO: '01102',
+    FIRMA_USUARIO: '01103',
+    FIRMA_TECNICO: '01104'
 }
 
 export const ConstantLocalStorage = {
@@ -79,6 +96,11 @@ export const ConstantLocalStorage = {
     ID_MASTER_TABLE: 'localStorageIdMasterTable',
     ID_TICKET: 'localStorageIdTicket',
     ID_USER: 'localStorageIdUser',
+    TICKET_STEP_THREE_FORM_ONE: 'localStorageTicketStepThreeFormOne',
+    TICKET_STEP_THREE_FORM_TWO: 'localStorageTicketStepThreeFormTwo',
+    TICKET_STEP_THREE_FORM_THREE: 'localStorageTicketStepThreeFormThree',
+    TICKET_STEP_THREE_FORM_FOUR: 'localStorageTicketStepThreeFormFour',
+    TICKET_STEP_THREE_FORM_FIVE: 'localStorageTicketStepThreeFormFive',
     USER: 'localStorageUser'
 }
 

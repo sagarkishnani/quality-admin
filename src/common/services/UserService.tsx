@@ -13,6 +13,7 @@ async function getUsers() {
     const { data, error } = await supabase
       .from("User")
       .select("*, Company (Name), Role (Name)")
+      .eq("RecordStatus", true)
     if (error) {
       console.warn(error)
       return []
@@ -97,19 +98,43 @@ async function editUser(request: UserEditRequest) {
   }
 }
 
+// async function deleteUser(idUser: string) {
+//   try {
+//     const { data, error } = await supabase.functions.invoke("delete-user", {
+//       body: idUser,
+//     })
+//     if (error) {
+//       console.warn(error)
+//       return error
+//     } else if (data) {
+//       return data
+//     }
+//   } catch (error) {
+//     console.error("Error al eliminar usuario:", error)
+//     return error
+//   }
+// }
+
 async function deleteUser(idUser: string) {
   try {
-    const { data, error } = await supabase.functions.invoke("delete-user", {
-      body: idUser,
-    })
+    const { data, error, status } = await supabase
+      .from("User")
+      .update([
+        {
+          RecordStatus: false,
+        },
+      ])
+      .eq("IdUser", idUser)
+      .select()
+
     if (error) {
       console.warn(error)
-      return error
+      return { error, status }
     } else if (data) {
-      return data
+      return { data, status }
     }
   } catch (error) {
-    console.error("Error al eliminar usuario:", error)
+    console.error("Error al eliminar el usuario", error)
     return error
   }
 }
@@ -178,7 +203,7 @@ async function updatePicture(idUser: string, imgName: string) {
       return data
     }
   } catch (error) {
-    console.error("Error updatingPicture:", error)
+    console.error("Error al actualizar foto:", error)
     return error
   }
 }

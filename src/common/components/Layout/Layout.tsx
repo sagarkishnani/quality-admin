@@ -23,6 +23,10 @@ import { TicketList } from "../../../pages/Ticket/TicketList/TicketList"
 import { TicketRegister } from "../../../pages/Ticket/TicketRegister/TicketRegister"
 import { TicketRegisterStepTwo } from "../../../pages/Ticket/TicketRegisterStepTwo/TicketRegisterStepTwo"
 import { TicketRegisterStepThree } from "../../../pages/Ticket/TicketRegisterStepThree/TicketRegisterStepThree"
+import { TicketRegisterStepFour } from "../../../pages/Ticket/TicketRegisterStepFour/TicketRegisterStepFour"
+import { TicketRegisterView } from "../../../pages/Ticket/TicketRegisterView/TicketRegisterView"
+import { WelcomeScreen } from "../../../pages/Welcome/WelcomeScreen/WelcomeScreen"
+import { Welcome } from "../../../pages/Welcome/Welcome"
 
 export const Layout = () => {
   const { user } = useAuth()
@@ -34,9 +38,13 @@ export const Layout = () => {
         <Navbar />
         <div className="overflow-auto">
           <Routes>
+            <Route path="/" element={<Welcome />}>
+              <Route index element={<WelcomeScreen />} />
+            </Route>
             <Route path="/tickets" element={<Ticket />}>
               <Route index element={<TicketList />} />
               <Route path="nuevo" element={<TicketRegister />} />
+              <Route path="ver" element={<TicketRegisterView />} />
               <Route
                 path="asignar-tecnico"
                 element={<TicketRegisterStepTwo />}
@@ -44,6 +52,10 @@ export const Layout = () => {
               <Route
                 path="completar-formulario"
                 element={<TicketRegisterStepThree />}
+              />
+              <Route
+                path="registrar-facturable"
+                element={<TicketRegisterStepFour />}
               />
             </Route>
             <Route path="/mis-datos" element={<Profile />}>

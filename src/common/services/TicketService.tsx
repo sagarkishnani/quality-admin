@@ -3,10 +3,11 @@ import {
   FilteredTicketsRequest,
   TicketRegisterAndUploadImage,
   TicketRegisterStepOneRequest,
+  TicketRegisterStepThreeRequest,
   TicketRegisterStepTwoRequest,
 } from "../interfaces/Ticket.interface"
 import moment from "moment"
-import { ConstantTicketStatus } from "../constants"
+import { ConstantTicketStatus, ConstantTicketTypes } from "../constants"
 
 const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY
@@ -37,7 +38,7 @@ async function getTicketById(idTicket: string) {
     const { data, error } = await supabase
       .from("Ticket")
       .select(
-        "IdTicket, CodeTicket, IdTicketStatus, IdTicketCompany, IdTicketType, ReportedFailure, CompanyFloor, CompanyArea, IdTechnician, RecordCreationDate, AppointmentDate, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name)"
+        "*, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name), User (Name), TicketAnswer(*), TicketFile (*)"
       )
       .eq("IdTicket", idTicket)
 
@@ -104,6 +105,7 @@ async function getTicketById(idTicket: string) {
 
 async function getFilteredTickets(request: FilteredTicketsRequest) {
   const idcompany = request.IdCompany
+  const idtechnician = request.IdTechnician
   const pending = request.Pending
   const inprogress = request.InProgress
   const attended = request.Attended
@@ -119,6 +121,7 @@ async function getFilteredTickets(request: FilteredTicketsRequest) {
       facturable,
       finished,
       idcompany,
+      idtechnician,
       inprogress,
       notfacturable,
       pending,
@@ -216,6 +219,76 @@ async function registerTicketStepTwo(
   }
 }
 
+async function registerTicketStepThree(
+  request: TicketRegisterStepThreeRequest,
+  idTicket: string,
+  isFacturable: boolean
+) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Ticket")
+      .update({
+        IdTicketStatus: isFacturable
+          ? ConstantTicketStatus.ATENDIDO
+          : ConstantTicketStatus.FINALIZADO,
+        IdTicketType: isFacturable
+          ? ConstantTicketTypes.FACTURABLE
+          : ConstantTicketTypes.NO_FACTURABLE,
+        AppointmentDate: request.StepOne.ScheduledAppointmentInitTime,
+        FoundFailure: request.StepTwo.FoundFailure,
+        DeviceOne: request.StepTwo.DeviceOne,
+        CounterOne: request.StepTwo.CounterOne,
+        GuideOne: request.StepTwo.GuideOne,
+        DeviceTwo: request.StepTwo.DeviceTwo,
+        CounterTwo: request.StepTwo.CounterTwo,
+        GuideTwo: request.StepTwo.GuideTwo,
+        Comment: request.StepSix.Comment,
+        Recommendation: request.StepSix.Recommendation,
+        ResponsibleName: request.StepSix.ResponsibleName,
+        ResponsibleDni: request.StepSix.ResponsibleDni,
+        TechnicianName: request.StepSix.TechnicianName,
+        TechnicianDni: request.StepSix.TechnicianDni,
+      })
+      .eq("IdTicket", idTicket)
+      .select("IdTicket")
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar ticket", error)
+    return error
+  }
+}
+
+async function registerTicketStepFour(
+  // request: TicketRegisterStepTwoRequest,
+  idTicket: string
+) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Ticket")
+      .update({
+        IdTicketStatus: ConstantTicketStatus.FINALIZADO,
+      })
+      .eq("IdTicket", idTicket)
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar ticket", error)
+    return error
+  }
+}
+
 async function cancelTicket(idTicket: string) {
   try {
     const { data, error, status } = await supabase
@@ -233,7 +306,7 @@ async function cancelTicket(idTicket: string) {
       return { data, status }
     }
   } catch (error) {
-    console.error("Error al registrar ticket", error)
+    console.error("Error al cancelar ticket", error)
     return error
   }
 }
@@ -249,7 +322,8 @@ async function ticketRegisterAndUploadImage(
       .insert([
         {
           IdTicket: request.IdTicket,
-          FileUrl: request.FileUrl,
+          FileUrl: res.path,
+          FilePurpose: request.FilePurpose,
         },
       ])
       .select()
@@ -291,6 +365,8 @@ export const TicketService = {
   getTicketUserById,
   registerTicketStepOne,
   registerTicketStepTwo,
+  registerTicketStepThree,
+  registerTicketStepFour,
   cancelTicket,
   ticketRegisterAndUploadImage,
 }

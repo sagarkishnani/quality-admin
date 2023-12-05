@@ -1,27 +1,32 @@
-import * as yup from "yup";
-import { HiChevronLeft } from "react-icons/hi";
-import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import * as yup from "yup"
+import { HiChevronLeft } from "react-icons/hi"
+import { useFormik } from "formik"
+import { useEffect, useState } from "react"
 import {
   ConstantMessage,
   ConstantsMasterTable,
-} from "../../../../common/constants";
-import { Link, useNavigate } from "react-router-dom";
+} from "../../../../common/constants"
+import { Link, useNavigate } from "react-router-dom"
 import {
+  Box,
+  Chip,
   FormControl,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   Skeleton,
   TextField,
-} from "@mui/material";
-import { Button } from "../../../../common/components/Button/Button";
-import { Modal } from "../../../../common/components/Modal/Modal";
-import { CompanyService } from "../../../../common/services/CompanyService";
-import { RoleService } from "../../../../common/services/RoleService";
-import { UserRegisterRequest } from "../../../../common/interfaces/User.interface";
-import { UserService } from "../../../../common/services/UserService";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
+} from "@mui/material"
+import { Button } from "../../../../common/components/Button/Button"
+import { Modal } from "../../../../common/components/Modal/Modal"
+import { CompanyService } from "../../../../common/services/CompanyService"
+import { RoleService } from "../../../../common/services/RoleService"
+import { UserRegisterRequest } from "../../../../common/interfaces/User.interface"
+import { UserService } from "../../../../common/services/UserService"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
+import { GetCompaniesResponse } from "../../../../common/interfaces/Company.interface"
+import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 
 const validationSchema = yup.object({
   Dni: yup
@@ -46,74 +51,81 @@ const validationSchema = yup.object({
     .string()
     .min(6, "La contraseña debe tener como mínimo 6 caracteres")
     .required("Contraseña es obligatoria"),
-});
+})
 
 export const UserRegisterContainer = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
-  const [companies, setCompanies] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [positions, setPositions] = useState<any[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const [companies, setCompanies] = useState<GetCompaniesResponse[]>([])
+  const [roles, setRoles] = useState<any[]>([])
+  const [positions, setPositions] = useState<MasterTable[]>([])
+
+  const [selectedCompanies, setSelectedCompanies] = useState([])
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const navigate = useNavigate();
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const navigate = useNavigate()
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   async function getCompanies() {
-    const data = await CompanyService.getCompanies();
+    const data = await CompanyService.getCompanies()
     if (data) {
-      setCompanies(data);
+      setCompanies(data)
     }
   }
 
   async function getRoles() {
-    const data = await RoleService.getRoles();
+    const data = await RoleService.getRoles()
     if (data) {
-      setRoles(data);
+      setRoles(data)
     }
   }
 
   async function getPositions() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.POSITIONS
-    );
+    )
     if (data) {
-      setPositions(data);
+      setPositions(data)
     }
   }
 
+  const handleCompanyChange = (event) => {
+    setSelectedCompanies(event.target.value)
+  }
+
   async function getAll() {
-    setIsLoading(true);
-    await getCompanies();
-    await getRoles();
-    await getPositions();
-    setIsLoading(false);
+    setIsLoading(true)
+    await getCompanies()
+    await getRoles()
+    await getPositions()
+    setIsLoading(false)
   }
 
   async function registerUser(request: UserRegisterRequest) {
-    setIsLoadingAction(true);
+    setIsLoadingAction(true)
 
-    const { message }: any = await UserService.registerUser(request);
+    const { message }: any = await UserService.registerUser(request)
     if (message) {
-      setIsModalOpen(true);
-      setModalType("success");
-      setModalMessage(message);
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(message)
 
-      setIsLoadingAction(false);
+      setIsLoadingAction(false)
       setTimeout(() => {
-        navigate("/usuarios");
-      }, 2000);
+        navigate("/usuarios")
+      }, 2000)
     } else {
-      setIsLoadingAction(false);
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_ERROR);
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_ERROR)
     }
   }
 
@@ -130,13 +142,13 @@ export const UserRegisterContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      registerUser(values);
+      registerUser(values)
     },
-  });
+  })
 
   useEffect(() => {
-    getAll();
-  }, []);
+    getAll()
+  }, [])
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
@@ -224,15 +236,35 @@ export const UserRegisterContainer = () => {
               </div>
               <div className="col-span-6">
                 <FormControl fullWidth>
-                  <InputLabel id="CompanyLabel">Empresa</InputLabel>
+                  <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
                   <Select
-                    labelId="CompanyLabel"
+                    labelId="IdCompanyLabel"
                     id="IdCompany"
-                    name="IdCompany"
-                    value={formik.values.IdCompany}
-                    onChange={formik.handleChange}
+                    multiple
+                    value={selectedCompanies}
+                    onChange={handleCompanyChange}
+                    input={<OutlinedInput label="Compañía" />}
+                    renderValue={() => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selectedCompanies.map((idCompany: string) => {
+                          const company = companies.find(
+                            (c: GetCompaniesResponse) =>
+                              c.IdCompany === idCompany
+                          )
+                          return (
+                            <Chip
+                              key={company!.IdCompany}
+                              label={company!.Name}
+                            />
+                          )
+                        })}
+                      </Box>
+                    )}
                   >
-                    {companies?.map((company: any) => (
+                    <MenuItem disabled value="">
+                      <em>Seleccione</em>
+                    </MenuItem>
+                    {companies.map((company: GetCompaniesResponse) => (
                       <MenuItem
                         key={company.IdCompany}
                         value={company.IdCompany}
@@ -355,5 +387,5 @@ export const UserRegisterContainer = () => {
         handleClose={handleCloseModal}
       />
     </form>
-  );
-};
+  )
+}

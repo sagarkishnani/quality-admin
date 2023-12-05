@@ -42,3 +42,13 @@ export interface CompanyRegisterRequest {
     AfterSalesContactPhone?: string | null;
     AfterSalesContactCellphone?: string | null;
 }
+
+export interface GetCompaniesResponse {
+    IdCompany: string;
+    Name: string;
+    ImgUrl: string;
+    Ruc: string;
+    Address: string;
+    MainContactName: string;
+    MainContactEmail: string;
+}

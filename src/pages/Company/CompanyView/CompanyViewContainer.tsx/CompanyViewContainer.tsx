@@ -64,7 +64,6 @@ export const CompanyViewContainer = () => {
     const data = await CompanyService.getCompanyById(idCompany)
     if (data) {
       setCompany(data)
-      console.log(data)
     }
   }
 

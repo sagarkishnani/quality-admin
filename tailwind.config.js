@@ -9,6 +9,7 @@ export default {
         qGreen: "#74C947",
         qDarkGreen: "#65B13D",
         qBlue: "#00A0DF",
+        qDarkerBlue: "#0281b3",
         qLightGray: "#F6F6F6",
         qGray: "#BBBCBD",
         qRed: "#C94F47",
@@ -20,4 +21,4 @@ export default {
     },
   },
   plugins: [],
-};
+}

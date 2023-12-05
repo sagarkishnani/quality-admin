@@ -4,8 +4,8 @@
  * @format
  */
 
-import pattern from "../../../assets/patterns/pattern.svg";
-import logo from "../../../assets/logo/logo-white.svg";
+import pattern from "../../../assets/patterns/pattern.svg"
+import logo from "../../../assets/logo/logo-white.svg"
 import {
   HiOutlineTicket,
   HiChevronRight,
@@ -13,26 +13,26 @@ import {
   HiOutlineOfficeBuilding,
   HiOutlineCog,
   HiOutlineUserGroup,
-} from "react-icons/hi";
-import { BsWhatsapp } from "react-icons/bs";
-import { RouteLink } from "../../interfaces/RouteLink.interface";
-import { Link, useMatch } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { ConstantRoles } from "../../constants";
+} from "react-icons/hi"
+import { BsWhatsapp } from "react-icons/bs"
+import { RouteLink } from "../../interfaces/RouteLink.interface"
+import { Link, useMatch } from "react-router-dom"
+import { useAuth } from "../../contexts/AuthContext"
+import { ConstantRoles } from "../../constants"
 
 export const Sidebar = () => {
-  const { user } = useAuth();
+  const { user } = useAuth()
 
   const isActiveRoute = (route: string) => {
     if (useMatch(route)) {
-      return 1;
-    } else 0;
-  };
+      return 1
+    } else 0
+  }
 
   const hasRole = (roles: string[]) => {
-    if (roles.includes(user!.IdRole)) return true;
-    else false;
-  };
+    if (roles.includes(user!.IdRole)) return true
+    else false
+  }
 
   const routeLinks: RouteLink[] = [
     {
@@ -80,16 +80,18 @@ export const Sidebar = () => {
       Icon: <HiOutlineCog className="inline" size={"20"} />,
       Roles: [ConstantRoles.LIDER_FUNCIONAL],
     },
-  ];
+  ]
 
   return (
     <>
       {/* Mobile Sidebar */}
       <div className={`h-full w-10 lg:hidden bg-qBlack fixed text-white`}>
         <div className="flex flex-col text-white">
-          <div className="p-2">
-            <img src={logo} alt="logo" />
-          </div>
+          <Link to={"/"}>
+            <div className="p-2">
+              <img src={logo} alt="logo" />
+            </div>
+          </Link>
           <div>
             <div className="p-2">
               {routeLinks.map((route) => (
@@ -122,9 +124,11 @@ export const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div className="bg-qBlack text-white hidden fixed lg:block h-full w-[18rem]">
         <div className="flex flex-col text-white">
-          <div className="p-8">
-            <img src={logo} alt="logo" />
-          </div>
+          <Link to={"/"}>
+            <div className="p-8">
+              <img src={logo} alt="logo" />
+            </div>
+          </Link>
           <div>
             <div className="justify-center text-center p-8">
               <div>
@@ -180,5 +184,5 @@ export const Sidebar = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

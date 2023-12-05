@@ -3,6 +3,8 @@ import { createContext, useContext, useState } from "react"
 interface TicketContextInterface {
   filteredTickets: any[] | null
   setFilteredTickets: React.Dispatch<React.SetStateAction<any[] | null>>
+  ticketStep: number
+  setTicketStep: React.Dispatch<React.SetStateAction<number>>
 }
 
 const TicketContext = createContext<TicketContextInterface | undefined>(
@@ -19,10 +21,13 @@ export const useTicket = () => {
 
 export const TicketProvider = ({ children }) => {
   const [filteredTickets, setFilteredTickets] = useState<any[] | null>(null)
+  const [ticketStep, setTicketStep] = useState<number>(1)
 
   const ticketContextValue: TicketContextInterface = {
     filteredTickets,
     setFilteredTickets,
+    ticketStep,
+    setTicketStep,
   }
 
   return (

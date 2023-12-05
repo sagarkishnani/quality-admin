@@ -1,13 +1,13 @@
-import * as yup from "yup";
-import { HiChevronLeft } from "react-icons/hi";
-import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import * as yup from "yup"
+import { HiChevronLeft } from "react-icons/hi"
+import { useFormik } from "formik"
+import { useEffect, useState } from "react"
 import {
   ConstantLocalStorage,
   ConstantMessage,
   ConstantsMasterTable,
-} from "../../../../common/constants";
-import { Link, useNavigate } from "react-router-dom";
+} from "../../../../common/constants"
+import { Link, useNavigate } from "react-router-dom"
 import {
   FormControl,
   InputLabel,
@@ -15,15 +15,15 @@ import {
   Select,
   Skeleton,
   TextField,
-} from "@mui/material";
-import { Button } from "../../../../common/components/Button/Button";
-import { Modal } from "../../../../common/components/Modal/Modal";
-import secureLocalStorage from "react-secure-storage";
-import { CompanyService } from "../../../../common/services/CompanyService";
-import { RoleService } from "../../../../common/services/RoleService";
-import { UserEditRequest } from "../../../../common/interfaces/User.interface";
-import { UserService } from "../../../../common/services/UserService";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
+} from "@mui/material"
+import { Button } from "../../../../common/components/Button/Button"
+import { Modal } from "../../../../common/components/Modal/Modal"
+import secureLocalStorage from "react-secure-storage"
+import { CompanyService } from "../../../../common/services/CompanyService"
+import { RoleService } from "../../../../common/services/RoleService"
+import { UserEditRequest } from "../../../../common/interfaces/User.interface"
+import { UserService } from "../../../../common/services/UserService"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
 
 const validationSchema = yup.object({
   Dni: yup
@@ -44,83 +44,83 @@ const validationSchema = yup.object({
     .string()
     .required("Correo es obligatorio")
     .email("Debe ser un correo"),
-});
+})
 
 export const UserEditContainer = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
-  const [userData, setUserData] = useState<any>(null);
-  const [companies, setCompanies] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [positions, setPositions] = useState<any[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const [userData, setUserData] = useState<any>(null)
+  const [companies, setCompanies] = useState<any[]>([])
+  const [roles, setRoles] = useState<any[]>([])
+  const [positions, setPositions] = useState<any[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const navigate = useNavigate();
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const navigate = useNavigate()
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   async function getCompanies() {
-    const data = await CompanyService.getCompanies();
+    const data = await CompanyService.getCompanies()
     if (data) {
-      setCompanies(data);
+      setCompanies(data)
     }
   }
 
   async function getRoles() {
-    const data = await RoleService.getRoles();
+    const data = await RoleService.getRoles()
     if (data) {
-      setRoles(data);
+      setRoles(data)
     }
   }
 
   async function getPositions() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.POSITIONS
-    );
+    )
     if (data) {
-      setPositions(data);
+      setPositions(data)
     }
   }
 
   async function editUser(request: UserEditRequest) {
-    setIsLoadingAction(true);
-    const { data }: any = await UserService.editUser(request);
+    setIsLoadingAction(true)
+    const { data }: any = await UserService.editUser(request)
     if (data.message) {
-      setIsModalOpen(true);
-      setModalType("success");
-      setModalMessage(data.message);
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(data.message)
 
-      setIsLoadingAction(false);
+      setIsLoadingAction(false)
       setTimeout(() => {
-        navigate("/usuarios");
-      }, 2000);
+        navigate("/usuarios")
+      }, 2000)
     } else {
-      setIsLoadingAction(false);
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_ERROR);
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_ERROR)
     }
   }
 
   async function getUserById(idUser: string) {
-    const data = await UserService.getUserById(idUser);
+    const data = await UserService.getUserById(idUser)
     if (data) {
-      setUserData(data);
+      setUserData(data)
     }
   }
 
   async function getAll(idUser: string) {
-    setIsLoading(true);
-    await getCompanies();
-    await getRoles();
-    await getPositions();
-    await getUserById(idUser);
-    setIsLoading(false);
+    setIsLoading(true)
+    await getCompanies()
+    await getRoles()
+    await getPositions()
+    await getUserById(idUser)
+    setIsLoading(false)
   }
 
   const formik = useFormik({
@@ -135,17 +135,16 @@ export const UserEditContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      editUser(values);
+      editUser(values)
     },
-  });
+  })
 
   useEffect(() => {
-    const idUser = secureLocalStorage.getItem(ConstantLocalStorage.ID_USER);
+    const idUser = secureLocalStorage.getItem(ConstantLocalStorage.ID_USER)
     if (idUser !== null) {
-      getAll(idUser);
+      getAll(idUser)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (userData) {
@@ -157,9 +156,9 @@ export const UserEditContainer = () => {
         PhoneNumber: userData.PhoneNumber || 0,
         Position: userData.Position || "",
         email: userData.email || "",
-      });
+      })
     }
-  }, [userData]);
+  }, [userData])
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
@@ -354,5 +353,5 @@ export const UserEditContainer = () => {
         handleClose={handleCloseModal}
       />
     </form>
-  );
-};
+  )
+}

@@ -1,41 +1,41 @@
-import { Skeleton, TextField } from "@mui/material";
-import { useFormik } from "formik";
-import { useAuth } from "../../../common/contexts/AuthContext";
-import { v4 as uuidv4 } from "uuid";
-import { useState, useEffect } from "react";
-import { UserService } from "../../../common/services/UserService";
-import { ConstantStorageBuckets } from "../../../common/constants";
+import { Skeleton, TextField } from "@mui/material"
+import { useFormik } from "formik"
+import { useAuth } from "../../../common/contexts/AuthContext"
+import { v4 as uuidv4 } from "uuid"
+import { useState, useEffect } from "react"
+import { UserService } from "../../../common/services/UserService"
+import { ConstantStorageBuckets } from "../../../common/constants"
 
 export const ProfileForm = () => {
   const supabaseImgUrl =
     import.meta.env.VITE_REACT_APP_SUPABASE_STORAGE_URL +
-    ConstantStorageBuckets.USER;
-  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
+    ConstantStorageBuckets.USER
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user, setUser } = useAuth();
-  const [imgEvent, setImgEvent] = useState<any>();
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { user, setUser } = useAuth()
+  const [imgEvent, setImgEvent] = useState<any>()
 
   const handleImageChange = async (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImgEvent(e.target.files[0]);
+      setImgEvent(e.target.files[0])
     }
-  };
+  }
 
   async function uploadUserPicture(imageFile: any) {
-    setIsLoading(true);
+    setIsLoading(true)
     const dataImage: any = await UserService.uploadUserPicture(
       uuidv4(),
       imageFile
-    );
-    const imgId = dataImage?.path.slice(dataImage?.path.lastIndexOf("/") + 1);
+    )
+    const imgId = dataImage?.path.slice(dataImage?.path.lastIndexOf("/") + 1)
 
-    await UserService.updatePicture(user!.IdUser, imgId);
+    await UserService.updatePicture(user!.IdUser, imgId)
 
     if (user) {
-      const updatedUser = { ...user, ImageUrl: imgId };
-      setUser(updatedUser);
-      setIsLoading(false);
+      const updatedUser = { ...user, ImageUrl: imgId }
+      setUser(updatedUser)
+      setIsLoading(false)
     }
   }
 
@@ -47,16 +47,14 @@ export const ProfileForm = () => {
       Company: "",
       Role: "",
     },
-    onSubmit: (values) => {
-      console.log(values);
-    },
-  });
+    onSubmit: (values) => {},
+  })
 
   useEffect(() => {
     if (imgEvent !== undefined) {
-      uploadUserPicture(imgEvent);
+      uploadUserPicture(imgEvent)
     }
-  }, [imgEvent]);
+  }, [imgEvent])
 
   return (
     <div className="p-8">
@@ -150,5 +148,5 @@ export const ProfileForm = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

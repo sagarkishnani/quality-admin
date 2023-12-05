@@ -1,75 +1,70 @@
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
-import { ConstantLocalStorage } from "../../../../../common/constants"
-import { useFormik } from "formik"
-import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { useNavigate } from "react-router-dom"
-import { TicketService } from "../../../../../common/services/TicketService"
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material"
+  ConstantFilePurpose,
+  ConstantLocalStorage,
+} from "../../../../../common/constants"
+import { useFormik } from "formik"
+import {
+  GetTicketById,
+  TicketRegisterStepThreeRequestFormOne,
+} from "../../../../../common/interfaces/Ticket.interface"
+import { InputLabel, TextField } from "@mui/material"
 import moment from "moment"
 import { TimePicker } from "@mui/x-date-pickers"
+import { useTicket } from "../../../../../common/contexts/TicketContext"
+import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
+
+interface TicketRegisterCompleteFormOneInterface {
+  ticket: GetTicketById
+}
 
 const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
+  ScheduledAppointmentInitTime: yup
+    .date()
+    .required("Hora de inicio es obligatorio"),
+  ScheduledAppointmentEndTime: yup
+    .date()
+    .required("Hora de fin es obligatorio"),
 })
 
-export const TicketRegisterCompleteFormOne = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [ticket, setTicket] = useState<GetTicketById>(null)
-  const [technicians, setTechnicians] = useState<any[]>([])
-  const [pictures, setPictures] = useState<string[]>([])
-  const [imgData, setImgData] = useState("")
+export const TicketRegisterCompleteFormOne = ({
+  ticket,
+}: TicketRegisterCompleteFormOneInterface) => {
+  const [ticketFormOne, setTicketFormOne] = useState<any>()
+  const [pictures, setTicketPictures] = useState<[]>()
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
-  const { user } = useAuth()
-  const navigate = useNavigate()
+  const { setTicketStep } = useTicket()
 
-  async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
-    if (data) {
-      setTicket(data)
-      console.log(data)
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const bucketUrl = "/storage/v1/object/public/media/"
+
+  function registerTicketStep() {
+    if (formik.isValid) {
+      const requestFormOne: TicketRegisterStepThreeRequestFormOne = {
+        ScheduledAppointmentInitTime:
+          formik.values.ScheduledAppointmentInitTime,
+        ScheduledAppointmentEndTime: formik.values.ScheduledAppointmentEndTime,
+      }
+
+      secureLocalStorage.setItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE,
+        requestFormOne
+      )
+
+      setTicketStep(2)
     }
   }
 
-  async function getAll(idTicket: string) {
-    setIsLoading(true)
-    await getTicketById(idTicket)
-    // await getTechnicians()
-    // await getPositions()
-    // await getAreas()
-    // await getFloors()
-    setIsLoading(false)
+  const handleOpenImageModal = (imgData: string) => {
+    setIsImageModal(true)
+    setSelectedImg(imgData)
+  }
+
+  const handleCloseImageModal = () => {
+    setIsImageModal(false)
   }
 
   const formik = useFormik({
@@ -82,24 +77,23 @@ export const TicketRegisterCompleteFormOne = () => {
       CompanyArea: "",
       IdTechnician: "",
       IdUser: "",
-      ScheduledAppointmentTime: new Date(),
-      ScheduledAppointmentDate: new Date(),
+      ScheduledAppointmentInitTime: moment(new Date()),
+      ScheduledAppointmentEndTime: moment(new Date()),
       ReportedFailure: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      //   registerTicketStepTwo(values)
+    onSubmit: () => {
+      registerTicketStep()
     },
   })
 
   useEffect(() => {
-    const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
-    if (idTicket !== null) {
-      getAll(idTicket)
-    }
-  }, [])
+    setTicketFormOne(
+      secureLocalStorage.getItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
+      )
+    )
 
-  useEffect(() => {
     if (ticket) {
       formik.setValues({
         IdTicketStatus: ticket.IdTicketStatus || "",
@@ -108,12 +102,19 @@ export const TicketRegisterCompleteFormOne = () => {
         Address: ticket.Company.Address || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
-        IdUser: "",
+        IdUser: ticket?.User?.Name || "",
         IdTechnician: "",
-        ScheduledAppointmentTime: new Date(),
-        ScheduledAppointmentDate: new Date(),
+        ScheduledAppointmentInitTime:
+          ticketFormOne?.ScheduledAppointmentInitTime,
+        ScheduledAppointmentEndTime: ticketFormOne?.ScheduledAppointmentEndTime,
         ReportedFailure: ticket.ReportedFailure || "",
       })
+
+      const ticketPictures = ticket?.TicketFile.filter(
+        (picture) => picture.FilePurpose === ConstantFilePurpose.IMAGEN_USUARIO
+      )
+
+      setTicketPictures(ticketPictures)
     }
   }, [ticket])
 
@@ -131,22 +132,22 @@ export const TicketRegisterCompleteFormOne = () => {
           </h2>
         </div>
         <div className="col-span-6">
-          <InputLabel id="ScheduledAppointmentTime">Hora inicio</InputLabel>
+          <InputLabel id="ScheduledAppointmentInitTime">Hora inicio</InputLabel>
           <TimePicker
             className="w-full"
-            value={moment(formik.values.ScheduledAppointmentTime)}
+            value={moment(formik.values.ScheduledAppointmentInitTime)}
             onChange={(value) =>
-              formik.setFieldValue("ScheduledAppointmentTime", value, true)
+              formik.setFieldValue("ScheduledAppointmentInitTime", value, true)
             }
           />
         </div>
         <div className="col-span-6">
-          <InputLabel id="ScheduledAppointmentTime">Hora fin</InputLabel>
+          <InputLabel id="ScheduledAppointmentEndTime">Hora fin</InputLabel>
           <TimePicker
             className="w-full"
-            value={moment(formik.values.ScheduledAppointmentTime)}
+            value={moment(formik.values.ScheduledAppointmentEndTime)}
             onChange={(value) =>
-              formik.setFieldValue("ScheduledAppointmentTime", value, true)
+              formik.setFieldValue("ScheduledAppointmentEndTime", value, true)
             }
           />
         </div>
@@ -205,7 +206,50 @@ export const TicketRegisterCompleteFormOne = () => {
             label="Usuario"
           />
         </div>
+        {pictures?.length > 0 && (
+          <div className="col-span-12 mt-4">
+            <div className="flex flex-row space-x-2">
+              <h3>Evidencia(s)</h3>
+            </div>
+            <div className="flex flex-row space-x-2 mt-4">
+              {pictures?.map((picture, index) => (
+                <div
+                  className="w-16 h-16 relative cursor-pointer"
+                  onClick={() =>
+                    handleOpenImageModal(
+                      supabaseUrl + bucketUrl + picture.FileUrl
+                    )
+                  }
+                >
+                  <img
+                    key={index}
+                    className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
+                    src={supabaseUrl + bucketUrl + picture.FileUrl}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+      <div className="w-full mt-4 flex justify-end">
+        <button
+          className={`px-10 py-2 font-medium rounded-full text-white ${
+            formik.isValid
+              ? "bg-qGreen hover:bg-qDarkGreen"
+              : "bg-qGray cursor-default"
+          }`}
+          onClick={registerTicketStep}
+          type="button"
+        >
+          Siguiente
+        </button>
+      </div>
+      <ImageModal
+        img={selectedImg}
+        open={isImageModal}
+        handleClose={handleCloseImageModal}
+      />
     </>
   )
 }

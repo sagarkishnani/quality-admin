@@ -58,6 +58,30 @@ body {
   border-radius: 8px !important;
 }
 
+.btn-dialog-facturable {
+  background-color: #74c947 !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  padding: 8px 18px !important;
+  border-radius: 20px !important;
+}
+
+.btn-dialog-non-facturable {
+  background-color: #00a0df !important;
+  color: white !important;
+  text-transform: uppercase !important;
+  padding: 8px 18px !important;
+  border-radius: 20px !important;
+}
+
+.date-filter {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+textarea {
+  resize: none;
+}
+
 @layer base {
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {

@@ -1,3 +1,5 @@
+import { Moment } from "moment";
+
 export interface GetTicketsResponse {
     IdTicket: string;
     IdTicketStatus: string;
@@ -32,7 +34,7 @@ export interface TicketRegisterAndUploadImage {
     imgName: string;
     file: File;
     IdTicket: string;
-    FileUrl: string;
+    FilePurpose: string;
 }
 
 // export interface TicketFile {
@@ -70,6 +72,7 @@ export interface UserRole {
 }
 
 export interface FilteredTicketsRequest {
+    IdTechnician: string | null;
     IdCompany: string | null;
     Pending: string | null;
     InProgress: string | null;
@@ -96,6 +99,11 @@ export interface GetTicketById {
     ReportedFailure: string;
     TicketStatus: GetTicketByIdAdditional;
     TicketType: GetTicketByIdAdditional;
+    TicketFile: TicketFile[];
+}
+
+export interface TicketFile {
+    FileUrl: string;
 }
 
 export interface GetTicketByIdCompany {
@@ -112,4 +120,115 @@ export interface TicketRegisterStepTwoRequest {
     IdTechnician: string;
     ScheduledAppointmentTime: Date;
     ScheduledAppointmentDate: Date;
+}
+
+export interface TicketRegisterStepThreeRequestFormOne {
+    ScheduledAppointmentInitTime: Moment;
+    ScheduledAppointmentEndTime: Moment;
+}
+
+export interface TicketRegisterStepThreeRequestFormTwo {
+    DeviceOne: string;
+    CounterOne: string;
+    GuideOne: string;
+    DeviceTwo: string;
+    CounterTwo: string;
+    GuideTwo: string;
+    FoundFailure: string;
+    Pictures: TicketRegisterStepThreePicture[];
+}
+
+export interface TicketRegisterStepThreePicture {
+    Content: string;
+    FilePurpose: string;
+}
+
+export interface TicketRegisterStepThreeRequestFormThree {
+    BandejaUno: string | null;
+    BisagraEscaner: string | null;
+    BandejaDos: string | null;
+    BandejaADF: string | null;
+    BandejaSalida: string | null;
+    CristalCamaPlana: string | null;
+    ConectorUSB: string | null;
+    Engranaje: string | null;
+    ConectorRJ: string | null;
+    LaminaTeplon: string | null;
+    PanelControl: string | null;
+    RodilloPresion: string | null;
+}
+
+export interface TicketRegisterStepThreeRequestFormFour {
+    Instalacion: boolean | null;
+    Retiro: boolean | null;
+    Reparacion: boolean | null;
+    ActualFirmware: boolean | null;
+    EtiquetaFusor: boolean | null;
+    EtiquetaFusorTeflon: boolean | null;
+    CambioCartucho: boolean | null;
+    CambioFusor: boolean | null;
+    CambioImagen: boolean | null;
+    CambioRodillo: boolean | null;
+    CambioTeflon: boolean | null;
+    CambioRodilloBUno: boolean | null;
+    CambioRodilloBDos: boolean | null;
+    CambioSeparador: boolean | null;
+    CambioDrive: boolean | null;
+    CambioSwing: boolean | null;
+    CambioAOF: boolean | null;
+    CambioDC: boolean | null;
+    MantImpresora: boolean | null;
+    MantOptico: boolean | null;
+    MantOpticoEscaner: boolean | null;
+    MantSistema: boolean | null;
+    RevCartucho: boolean | null;
+    RevFusor: boolean | null;
+    RevImagen: boolean | null;
+    RevADF: boolean | null;
+    RevRodilloBUno: boolean | null;
+    RevRodilloBDos: boolean | null;
+    RevSeparador: boolean | null;
+    RevDuplex: boolean | null;
+}
+
+export interface TicketRegisterStepThreeRequestFormFive {
+    UsoPapelHumedo: boolean | null;
+    UsoPapelReciclado: boolean | null;
+    UsoPapelGrapas: boolean | null;
+    UsoEtiquetas: boolean | null;
+    ConectadoPared: boolean | null;
+    ConectadoSupresor: boolean | null;
+    ConectadoEstabilizador: boolean | null;
+    ConectadoUPS: boolean | null;
+    Operativo: boolean | null;
+    PegadoEtiquetaGarantia: boolean | null;
+    EnObservacion: boolean | null;
+    EquipoRequiereCambio: boolean | null;
+    EquipoRequiereMantenimiento: boolean | null;
+    CartuchoOtroProveedor: boolean | null;
+    CartuchoDanado: boolean | null;
+    Instalacion: boolean | null;
+    ServicioGarantia: boolean | null;
+    Negligencia: boolean | null;
+    Mantenimiento: boolean | null;
+    Retiro: boolean | null;
+    Reparacion: boolean | null;
+}
+
+export interface TicketRegisterStepThreeRequestFormSix {
+    Comment: string;
+    Recommendation: string;
+    ResponsibleName: string;
+    ResponsibleDni: string;
+    TechnicianName: string;
+    TechnicianDni: string;
+}
+
+export interface TicketRegisterStepThreeRequest {
+    StepOne: TicketRegisterStepThreeRequestFormOne;
+    StepTwo: TicketRegisterStepThreeRequestFormTwo;
+    StepThree: TicketRegisterStepThreeRequestFormThree;
+    StepFour: TicketRegisterStepThreeRequestFormFour;
+    StepFive: TicketRegisterStepThreeRequestFormFive;
+    StepSix: TicketRegisterStepThreeRequestFormSix;
 }
