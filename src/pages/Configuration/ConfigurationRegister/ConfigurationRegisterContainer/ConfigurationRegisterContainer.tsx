@@ -1,18 +1,18 @@
-import * as yup from "yup";
-import { HiChevronLeft } from "react-icons/hi";
-import { useFormik } from "formik";
-import { useEffect, useState } from "react";
-import { MasterTableRegisterRequest } from "../../../../common/interfaces/MasterTable.interface";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
+import * as yup from "yup"
+import { HiChevronLeft } from "react-icons/hi"
+import { useFormik } from "formik"
+import { useEffect, useState } from "react"
+import { MasterTableRegisterRequest } from "../../../../common/interfaces/MasterTable.interface"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
 import {
   ConstantHttpErrors,
   ConstantMasterTableMessage,
   ConstantMessage,
-} from "../../../../common/constants";
-import { Link, useNavigate } from "react-router-dom";
-import { Skeleton, TextField } from "@mui/material";
-import { Button } from "../../../../common/components/Button/Button";
-import { Modal } from "../../../../common/components/Modal/Modal";
+} from "../../../../common/constants"
+import { Link, useNavigate } from "react-router-dom"
+import { Skeleton, TextField } from "@mui/material"
+import { Button } from "../../../../common/components/Button/Button"
+import { Modal } from "../../../../common/components/Modal/Modal"
 
 const validationSchema = yup.object({
   IdMasterTable: yup
@@ -27,57 +27,57 @@ const validationSchema = yup.object({
   Name: yup.string().required("Nombre es obligatorio"),
   Value: yup.string(),
   Order: yup.number().required("Orden es obligatorio"),
-});
+})
 
 export const ConfigurationRegisterContainer = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
-  const [mtParents, setMtParents] = useState<any>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const [mtParents, setMtParents] = useState<any>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const navigate = useNavigate();
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const navigate = useNavigate()
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   async function getMtParents() {
-    setIsLoading(true);
-    const data = await MasterTableService.getMasterTableParents();
+    setIsLoading(true)
+    const data = await MasterTableService.getMasterTableParents()
     if (data) {
-      setMtParents(data);
-      setIsLoading(false);
+      setMtParents(data)
+      setIsLoading(false)
     }
   }
 
   async function registerMt(request: MasterTableRegisterRequest) {
-    setIsLoadingAction(true);
+    setIsLoadingAction(true)
 
     const { data, status }: any = await MasterTableService.registerMasterTable(
       request
-    );
+    )
     if (status == ConstantHttpErrors.CREATED) {
-      setIsModalOpen(true);
-      setModalType("success");
-      setModalMessage(ConstantMasterTableMessage.MT_REGISTER_SUCCESS);
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantMasterTableMessage.MT_REGISTER_SUCCESS)
 
-      setIsLoadingAction(false);
+      setIsLoadingAction(false)
       setTimeout(() => {
-        navigate("/configuracion");
-      }, 2000);
+        navigate("/configuracion")
+      }, 2000)
     } else if (status == ConstantHttpErrors.DUPLICATED) {
-      setIsLoadingAction(false);
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_DUPLICATED);
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_DUPLICATED)
     } else {
-      setIsLoadingAction(false);
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_ERROR);
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_ERROR)
     }
   }
 
@@ -91,14 +91,13 @@ export const ConfigurationRegisterContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      registerMt(values);
-      console.log(values);
+      registerMt(values)
     },
-  });
+  })
 
   useEffect(() => {
-    getMtParents();
-  }, []);
+    getMtParents()
+  }, [])
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
@@ -243,5 +242,5 @@ export const ConfigurationRegisterContainer = () => {
         handleClose={handleCloseModal}
       />
     </form>
-  );
-};
+  )
+}

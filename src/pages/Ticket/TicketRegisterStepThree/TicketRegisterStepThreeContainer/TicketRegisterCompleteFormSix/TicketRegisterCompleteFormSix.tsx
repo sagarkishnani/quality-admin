@@ -14,7 +14,13 @@ import {
 } from "../../../../../common/interfaces/Ticket.interface"
 import { Link, useNavigate } from "react-router-dom"
 import { TicketService } from "../../../../../common/services/TicketService"
-import { TextField } from "@mui/material"
+import {
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material"
 import moment from "moment"
 import CanvasDraw from "react-canvas-draw"
 import { AiOutlineClear } from "react-icons/ai"
@@ -146,7 +152,6 @@ export const TicketRegisterCompleteFormSix = () => {
   }
 
   async function registerTicketStepThree(isFacturable: boolean) {
-    debugger
     setIsLoadingAction(true)
 
     const request: TicketRegisterStepThreeRequest = {
@@ -220,6 +225,7 @@ export const TicketRegisterCompleteFormSix = () => {
     initialValues: {
       Comment: "",
       Recommendation: "",
+      Firma: "",
       ResponsibleName: "",
       ResponsibleDni: "",
       TechnicianName: "",
@@ -297,44 +303,70 @@ export const TicketRegisterCompleteFormSix = () => {
             </small>
           </div>
         </div>
-        <div className="col-span-5 border-gray-400 border-2 rounded-md">
-          <CanvasDraw
-            ref={firstSignature}
-            canvasHeight={120}
-            canvasWidth={320}
-            hideInterface={true}
-            brushRadius={2}
-            brushColor="black"
-          />
+        <div className="col-span-12">
+          <FormControl>
+            <RadioGroup
+              row
+              id="Firma"
+              name="Firma"
+              value={formik.values.Firma}
+              onChange={formik.handleChange}
+            >
+              <FormControlLabel
+                value="U"
+                control={<Radio />}
+                label="Subir imágenes"
+              />
+              <FormControlLabel
+                value="W"
+                control={<Radio />}
+                label="Escribir firmas"
+              />
+            </RadioGroup>
+          </FormControl>
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5 border-gray-400 border-2 rounded-md">
-          <CanvasDraw
-            ref={secondSignature}
-            canvasHeight={120}
-            canvasWidth={320}
-            hideInterface={true}
-            brushRadius={2}
-            brushColor="black"
-          />
-        </div>
-        <div className="col-span-5 -mt-3">
-          <div className="flex justify-end pr-1">
-            <button onClick={() => clearSignature(1)} type="button">
-              <AiOutlineClear size={20} color={"#00A0DF"} />
-            </button>
-          </div>
-          <p>Firma del responsable (*)</p>
-        </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5 -mt-3">
-          <div className="flex justify-end pr-1">
-            <button onClick={() => clearSignature(2)} type="button">
-              <AiOutlineClear size={20} color={"#00A0DF"} />
-            </button>
-          </div>
-          <p>Firma del técnico responsable</p>
-        </div>
+        {formik.values.Firma === "W" && (
+          <>
+            <div className="col-span-5 border-gray-400 border-2 rounded-md">
+              <CanvasDraw
+                ref={firstSignature}
+                canvasHeight={120}
+                canvasWidth={320}
+                hideInterface={true}
+                brushRadius={2}
+                brushColor="black"
+              />
+            </div>
+            <div className="col-span-2"></div>
+            <div className="col-span-5 border-gray-400 border-2 rounded-md">
+              <CanvasDraw
+                ref={secondSignature}
+                canvasHeight={120}
+                canvasWidth={320}
+                hideInterface={true}
+                brushRadius={2}
+                brushColor="black"
+              />
+            </div>
+            <div className="col-span-5 -mt-3">
+              <div className="flex justify-end pr-1">
+                <button onClick={() => clearSignature(1)} type="button">
+                  <AiOutlineClear size={20} color={"#00A0DF"} />
+                </button>
+              </div>
+              <p>Firma del responsable (*)</p>
+            </div>
+            <div className="col-span-2"></div>
+            <div className="col-span-5 -mt-3">
+              <div className="flex justify-end pr-1">
+                <button onClick={() => clearSignature(2)} type="button">
+                  <AiOutlineClear size={20} color={"#00A0DF"} />
+                </button>
+              </div>
+              <p>Firma del técnico responsable</p>
+            </div>
+          </>
+        )}
         <div className="col-span-5">
           <TextField
             required

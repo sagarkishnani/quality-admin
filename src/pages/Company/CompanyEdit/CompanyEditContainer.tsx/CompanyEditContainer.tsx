@@ -1,20 +1,20 @@
-import { useFormik } from "formik";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
-import { Skeleton, TextField } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import { HiChevronLeft } from "react-icons/hi";
-import { useEffect, useState } from "react";
-import secureLocalStorage from "react-secure-storage";
-import * as yup from "yup";
+import { useFormik } from "formik"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
+import { Skeleton, TextField } from "@mui/material"
+import { Link, useNavigate } from "react-router-dom"
+import { HiChevronLeft } from "react-icons/hi"
+import { useEffect, useState } from "react"
+import secureLocalStorage from "react-secure-storage"
+import * as yup from "yup"
 import {
   ConstantHttpErrors,
   ConstantLocalStorage,
   ConstantMasterTableMessage,
   ConstantMessage,
-} from "../../../../common/constants";
-import { Button } from "../../../../common/components/Button/Button";
-import { MasterTableEditRequest } from "../../../../common/interfaces/MasterTable.interface";
-import { Modal } from "../../../../common/components/Modal/Modal";
+} from "../../../../common/constants"
+import { Button } from "../../../../common/components/Button/Button"
+import { MasterTableEditRequest } from "../../../../common/interfaces/MasterTable.interface"
+import { Modal } from "../../../../common/components/Modal/Modal"
 
 const validationSchema = yup.object({
   IdMasterTable: yup
@@ -29,66 +29,66 @@ const validationSchema = yup.object({
   Name: yup.string().required("Nombre es obligatorio"),
   Value: yup.string(),
   Order: yup.number().required("Orden es obligatorio"),
-});
+})
 
 export const ConfigurationEditContainer = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [mtParents, setMtParents] = useState<any>([]);
-  const [mt, setMt] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [mtParents, setMtParents] = useState<any>([])
+  const [mt, setMt] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const navigate = useNavigate();
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const navigate = useNavigate()
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   async function editMt(request: MasterTableEditRequest) {
     const { data, status }: any = await MasterTableService.editMasterTable(
       request,
       mt.IdMasterTable
-    );
+    )
     if (status == ConstantHttpErrors.OK) {
-      setIsModalOpen(true);
-      setModalType("success");
-      setModalMessage(ConstantMasterTableMessage.MT_EDIT_SUCCESS);
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantMasterTableMessage.MT_EDIT_SUCCESS)
 
       setTimeout(() => {
-        navigate("/configuracion");
-      }, 2000);
+        navigate("/configuracion")
+      }, 2000)
     } else if (status == ConstantHttpErrors.DUPLICATED) {
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_DUPLICATED);
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_DUPLICATED)
     } else {
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantMessage.SERVICE_ERROR);
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_ERROR)
     }
   }
 
   async function getMtParents() {
-    const data = await MasterTableService.getMasterTableParents();
+    const data = await MasterTableService.getMasterTableParents()
     if (data) {
-      setMtParents(data);
+      setMtParents(data)
     }
   }
 
   async function getMtById(idMasterTable: string) {
-    const data = await MasterTableService.getMasterTableById(idMasterTable);
+    const data = await MasterTableService.getMasterTableById(idMasterTable)
     if (data) {
-      setMt(data);
+      setMt(data)
     }
   }
 
   async function getAll(idMasterTable: string) {
-    setIsLoading(true);
-    await getMtById(idMasterTable);
-    await getMtParents();
-    setIsLoading(false);
+    setIsLoading(true)
+    await getMtById(idMasterTable)
+    await getMtParents()
+    setIsLoading(false)
   }
 
   const formik = useFormik({
@@ -101,19 +101,18 @@ export const ConfigurationEditContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      editMt(values);
-      console.log(values);
+      editMt(values)
     },
-  });
+  })
 
   useEffect(() => {
     const idMasterTable = secureLocalStorage.getItem(
       ConstantLocalStorage.ID_MASTER_TABLE
-    );
+    )
     if (idMasterTable !== null) {
-      getAll(idMasterTable);
+      getAll(idMasterTable)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (mt) {
@@ -123,9 +122,9 @@ export const ConfigurationEditContainer = () => {
         Name: mt.Name || "",
         Value: mt.Value || "",
         Order: mt.Order || 0,
-      });
+      })
     }
-  }, [mt]);
+  }, [mt])
 
   return (
     <>
@@ -308,5 +307,5 @@ export const ConfigurationEditContainer = () => {
         />
       </form>
     </>
-  );
-};
+  )
+}

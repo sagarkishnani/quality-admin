@@ -1,15 +1,15 @@
-import { TextField } from "@mui/material";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../../../assets/logo/logo.jpg";
-import { Button } from "../../../common/components/Button/Button";
-import { UserService } from "../../../common/services/UserService";
-import { Modal } from "../../../common/components/Modal/Modal";
-import { ConstantUserMessage } from "../../../common/constants";
-import { useAuth } from "../../../common/contexts/AuthContext";
-import bgLogin from "../../../assets/images/login/bg_login.png";
+import { TextField } from "@mui/material"
+import { useFormik } from "formik"
+import * as yup from "yup"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import logo from "../../../assets/logo/logo.jpg"
+import { Button } from "../../../common/components/Button/Button"
+import { UserService } from "../../../common/services/UserService"
+import { Modal } from "../../../common/components/Modal/Modal"
+import { ConstantUserMessage } from "../../../common/constants"
+import { useAuth } from "../../../common/contexts/AuthContext"
+import bgLogin from "../../../assets/images/login/bg_login.png"
 
 const validationSchema = yup.object({
   email: yup
@@ -20,35 +20,35 @@ const validationSchema = yup.object({
     .string()
     .min(6, "La contraseña debe tener como mínimo 6 caracteres")
     .required("Contraseña es obligatoria"),
-});
+})
 
 export const LoginContainer = () => {
-  const { setUser } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { setUser } = useAuth()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
-  >("none");
-  const [modalMessage, setModalMessage] = useState("");
-  const navigate = useNavigate();
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const navigate = useNavigate()
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
   async function login(email: string, password: string) {
-    setIsLoading(true);
-    const userAuth = await UserService.loginUser(email, password);
+    setIsLoading(true)
+    const userAuth = await UserService.loginUser(email, password)
 
     if (userAuth?.email) {
-      setUser(userAuth);
-      setIsLoading(false);
-      navigate("/");
+      setUser(userAuth)
+      setIsLoading(false)
+      navigate("/")
     } else {
-      setIsLoading(false);
-      setIsModalOpen(true);
-      setModalType("error");
-      setModalMessage(ConstantUserMessage.USER_INCORRECT);
+      setIsLoading(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantUserMessage.USER_INCORRECT)
     }
   }
 
@@ -59,10 +59,9 @@ export const LoginContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      login(values.email, values.password);
+      login(values.email, values.password)
     },
-  });
+  })
 
   return (
     <>
@@ -148,5 +147,5 @@ export const LoginContainer = () => {
         handleClose={handleCloseModal}
       ></Modal>
     </>
-  );
-};
+  )
+}

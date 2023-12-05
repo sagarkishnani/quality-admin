@@ -4,13 +4,30 @@ import { InputLabel, TextField } from "@mui/material"
 import moment from "moment"
 import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
+import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
+import { ConstantFilePurpose } from "../../../../../common/constants"
 
 export const TicketRegisterViewFormOne = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [pictures, setTicketPictures] = useState<[]>(ticket.TicketFile)
+  const [selectedImg, setSelectedImg] = useState("")
+  const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const { setTicketStep } = useTicket()
+
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const bucketUrl = "/storage/v1/object/public/media/"
 
   function registerTicketStep() {
     setTicketStep(2)
+  }
+
+  const handleOpenImageModal = (imgData: string) => {
+    setIsImageModal(true)
+    setSelectedImg(imgData)
+  }
+
+  const handleCloseImageModal = () => {
+    setIsImageModal(false)
   }
 
   const formik = useFormik({
@@ -36,7 +53,6 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
 
   useEffect(() => {
     setIsLoading(true)
-    console.log(ticket)
     if (ticket) {
       formik.setValues({
         IdTicketStatus: ticket.IdTicketStatus || "",
@@ -53,6 +69,12 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
         ScheduledAppointmentTime: ticket?.ScheduledAppointmentTime,
         ReportedFailure: ticket.ReportedFailure || "",
       })
+
+      const ticketPictures = ticket?.TicketFile.filter(
+        (picture) => picture.FilePurpose === ConstantFilePurpose.IMAGEN_USUARIO
+      )
+
+      setTicketPictures(ticketPictures)
     }
     setIsLoading(false)
   }, [ticket])
@@ -175,6 +197,19 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             label="Usuario"
           />
         </div>
+        {ticket?.TicketStatus?.Name == "Pendiente" ||
+          (ticket?.TicketStatus?.Name == "En progreso" && (
+            <div className="col-span-12">
+              <textarea
+                className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2 bg-white text-gray-400"
+                disabled
+                name="ReportedFailure"
+                id="ReportedFailure"
+                rows={3}
+                value={formik.values.ReportedFailure}
+              ></textarea>
+            </div>
+          ))}
         {ticket?.TicketStatus?.Name == "En progreso" && (
           <div className="col-span-12">
             <TextField
@@ -189,6 +224,31 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
           </div>
         )}
       </div>
+      {pictures.length > 0 && (
+        <div className="col-span-12 mt-4">
+          <div className="flex flex-row space-x-2">
+            <h3>Evidencia(s)</h3>
+          </div>
+          <div className="flex flex-row space-x-2 mt-4">
+            {pictures.map((picture, index) => (
+              <div
+                className="w-16 h-16 relative cursor-pointer"
+                onClick={() =>
+                  handleOpenImageModal(
+                    supabaseUrl + bucketUrl + picture.FileUrl
+                  )
+                }
+              >
+                <img
+                  key={index}
+                  className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
+                  src={supabaseUrl + bucketUrl + picture.FileUrl}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {ticket?.TicketStatus?.Name !== "Pendiente" &&
         ticket?.TicketStatus?.Name !== "En progreso" && (
           <div className="w-full mt-4 flex justify-end">
@@ -203,6 +263,11 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             </button>
           </div>
         )}
+      <ImageModal
+        img={selectedImg}
+        open={isImageModal}
+        handleClose={handleCloseImageModal}
+      />
     </>
   )
 }

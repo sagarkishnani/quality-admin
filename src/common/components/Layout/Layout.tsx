@@ -25,6 +25,8 @@ import { TicketRegisterStepTwo } from "../../../pages/Ticket/TicketRegisterStepT
 import { TicketRegisterStepThree } from "../../../pages/Ticket/TicketRegisterStepThree/TicketRegisterStepThree"
 import { TicketRegisterStepFour } from "../../../pages/Ticket/TicketRegisterStepFour/TicketRegisterStepFour"
 import { TicketRegisterView } from "../../../pages/Ticket/TicketRegisterView/TicketRegisterView"
+import { WelcomeScreen } from "../../../pages/Welcome/WelcomeScreen/WelcomeScreen"
+import { Welcome } from "../../../pages/Welcome/Welcome"
 
 export const Layout = () => {
   const { user } = useAuth()
@@ -36,6 +38,9 @@ export const Layout = () => {
         <Navbar />
         <div className="overflow-auto">
           <Routes>
+            <Route path="/" element={<Welcome />}>
+              <Route index element={<WelcomeScreen />} />
+            </Route>
             <Route path="/tickets" element={<Ticket />}>
               <Route index element={<TicketList />} />
               <Route path="nuevo" element={<TicketRegister />} />

@@ -3,6 +3,7 @@ import { HiChevronLeft } from "react-icons/hi"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { v4 as uuidv4 } from "uuid"
 import {
   FormControl,
   InputLabel,
@@ -16,13 +17,14 @@ import { Modal } from "../../../../common/components/Modal/Modal"
 import { useAuth } from "../../../../common/contexts/AuthContext"
 import { TicketService } from "../../../../common/services/TicketService"
 import {
+  ConstantFilePurpose,
   ConstantHttpErrors,
-  ConstantMessage,
   ConstantTicketMessage,
   ConstantTicketStatus,
   ConstantsMasterTable,
 } from "../../../../common/constants"
 import {
+  TicketRegisterAndUploadImage,
   TicketRegisterStepOneRequest,
   UserTicketResponse,
 } from "../../../../common/interfaces/Ticket.interface"
@@ -30,6 +32,7 @@ import { MasterTableService } from "../../../../common/services/MasterTableServi
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 import { ImageModal } from "../../../../common/components/ImageModal/ImageModal"
 import moment from "moment"
+import { dataURLtoFile } from "../../../../common/utils"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -127,22 +130,46 @@ export const TicketRegisterContainer = () => {
     request.IdTicketCompany = userData.Company.IdCompany
     request.IdUser = userData.IdUser
 
-    const { status }: any = await TicketService.registerTicketStepOne(request)
+    const { data, status }: any = await TicketService.registerTicketStepOne(
+      request
+    )
 
-    if (status == ConstantHttpErrors.CREATED) {
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
+    if (status == ConstantHttpErrors.CREATED && data) {
+      for (const picture of pictures) {
+        const request: TicketRegisterAndUploadImage = {
+          IdTicket: data[0].IdTicket,
+          file: dataURLtoFile(picture),
+          FilePurpose: ConstantFilePurpose.IMAGEN_USUARIO,
+          imgName: uuidv4(),
+        }
 
-      setIsLoadingAction(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
+        const { status }: any =
+          await TicketService.ticketRegisterAndUploadImage(request)
+
+        if (
+          status !== ConstantHttpErrors.CREATED &&
+          status !== ConstantHttpErrors.OK
+        ) {
+          setIsLoadingAction(false)
+          setIsModalOpen(true)
+          setModalType("error")
+          setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
+          return
+        } else {
+          setIsModalOpen(true)
+          setModalType("success")
+          setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
+          setIsLoadingAction(false)
+          setTimeout(() => {
+            navigate("/tickets")
+          }, 2000)
+        }
+      }
     } else {
       setIsLoadingAction(false)
       setIsModalOpen(true)
       setModalType("error")
-      setModalMessage(ConstantMessage.SERVICE_ERROR)
+      setModalMessage(ConstantTicketMessage.TICKET_REGISTER_ERROR)
     }
   }
 

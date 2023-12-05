@@ -22,8 +22,6 @@ serve(async (req) => {
         email
       });
 
-      console.log(user)
-
       if (error) {
         return new Response(JSON.stringify({ error: error.message }), {
           headers: {

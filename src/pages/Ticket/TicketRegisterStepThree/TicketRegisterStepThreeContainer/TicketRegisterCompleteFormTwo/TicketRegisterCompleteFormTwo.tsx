@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
 import {
+  ConstantFilePurpose,
   ConstantLocalStorage,
   ConstantsMasterTable,
 } from "../../../../../common/constants"
@@ -22,6 +23,7 @@ import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
 import { MasterTableService } from "../../../../../common/services/MasterTableService"
 import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
+import { loopPictures } from "../../../../../common/utils"
 
 interface TicketRegisterCompleteFormTwoInterface {
   ticket: GetTicketById
@@ -103,6 +105,7 @@ export const TicketRegisterCompleteFormTwo = ({
         CounterTwo: formik.values.CounterTwo,
         GuideTwo: formik.values.GuideTwo,
         FoundFailure: formik.values.FoundFailure,
+        Pictures: loopPictures(pictures, ConstantFilePurpose.IMAGEN_TECNICO),
       }
 
       secureLocalStorage.setItem(

@@ -50,6 +50,9 @@ export const ConstantTicketMessage = {
     TICKET_FACTURABLE: 'El servicio técnico debe ser',
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
     TICKET_CANCEL_ERROR: 'Hubo un error al cancelar',
+    TICKET_IMAGE_ERROR: 'Hubo un error al subir la imagen',
+    TICKET_REGISTER_ERROR: 'Hubo un error al registrar el ticket',
+    TICKET_SERVICE_REGISTER_ERROR: 'Hubo un error al registrar el servicio'
 }
 
 export const ConstantMasterTableMessage = {
@@ -77,7 +80,15 @@ export const ConstantsMasterTable = {
     PAYMENT_CONDITIONS: '00700',
     CE: '00800',
     BANKS: '00900',
-    SERVICES: ''
+    SERVICES: '',
+    FILE_PURPOSE: '01100'
+}
+
+export const ConstantFilePurpose = {
+    IMAGEN_USUARIO: '01101',
+    IMAGEN_TECNICO: '01102',
+    FIRMA_USUARIO: '01103',
+    FIRMA_TECNICO: '01104'
 }
 
 export const ConstantLocalStorage = {

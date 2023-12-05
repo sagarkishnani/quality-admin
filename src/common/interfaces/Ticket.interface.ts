@@ -34,7 +34,7 @@ export interface TicketRegisterAndUploadImage {
     imgName: string;
     file: File;
     IdTicket: string;
-    FileUrl: string;
+    FilePurpose: string;
 }
 
 // export interface TicketFile {
@@ -99,6 +99,11 @@ export interface GetTicketById {
     ReportedFailure: string;
     TicketStatus: GetTicketByIdAdditional;
     TicketType: GetTicketByIdAdditional;
+    TicketFile: TicketFile[];
+}
+
+export interface TicketFile {
+    FileUrl: string;
 }
 
 export interface GetTicketByIdCompany {
@@ -130,6 +135,12 @@ export interface TicketRegisterStepThreeRequestFormTwo {
     CounterTwo: string;
     GuideTwo: string;
     FoundFailure: string;
+    Pictures: TicketRegisterStepThreePicture[];
+}
+
+export interface TicketRegisterStepThreePicture {
+    Content: string;
+    FilePurpose: string;
 }
 
 export interface TicketRegisterStepThreeRequestFormThree {

@@ -1,4 +1,11 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
+import {
+  Alert,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+} from "@mui/material"
 import moment from "moment"
 import * as yup from "yup"
 import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
@@ -38,9 +45,11 @@ interface Row {
 export const TicketRegisterFacturable = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const [open, setOpen] = useState(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [services, setServices] = useState<any[]>([])
   const [selectedServices, setSelectedServices] = useState<any[]>([])
+  const [total, setTotal] = useState<number>()
   const [serviceStatus, setServiceStatus] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
@@ -60,6 +69,21 @@ export const TicketRegisterFacturable = () => {
     setSelectedServices(newServices)
   }
 
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return
+    }
+
+    setOpen(false)
+  }
+
   const handleCloseModal = () => {
     setIsModalOpen(false)
   }
@@ -69,6 +93,7 @@ export const TicketRegisterFacturable = () => {
   }
 
   async function registerTicketStepFour() {
+    debugger
     setIsLoadingAction(true)
 
     const { status: ticketStatus }: any =
@@ -82,14 +107,21 @@ export const TicketRegisterFacturable = () => {
             service.IdService
           )
 
-        console.log("servicio y status:", status)
-        // if (status === ConstantHttpErrors.CREATED)
+        if (
+          status !== ConstantHttpErrors.CREATED &&
+          status !== ConstantHttpErrors.OK
+        ) {
+          setIsLoadingAction(false)
+          setIsModalOpen(true)
+          setModalType("error")
+          setModalMessage(ConstantTicketMessage.TICKET_SERVICE_REGISTER_ERROR)
+          return
+        }
       }
 
       setIsModalOpen(true)
       setModalType("success")
       setModalMessage(ConstantTicketMessage.TICKET_FINISHED_SUCCESS)
-
       setIsLoadingAction(false)
       setTimeout(() => {
         navigate("/tickets")
@@ -122,6 +154,14 @@ export const TicketRegisterFacturable = () => {
     )
 
     if (selectedService) {
+      const isSelected = selectedServices.find(
+        ({ IdService }) => selectedService.IdService === IdService
+      )
+      if (isSelected) {
+        handleOpen()
+        return
+      }
+
       if (selectedServices.length == 0) {
         setSelectedServices([selectedService])
       } else {
@@ -148,23 +188,9 @@ export const TicketRegisterFacturable = () => {
     onSubmit: (values) => {},
   })
 
-  //   useEffect(() => {
-  //     const totalCost = selectedServices.reduce(
-  //       (acc, service) => acc + service.cost,
-  //       0
-  //     )
-
-  //     const totalRow = {
-  //       IdService: "1",
-  //       Name: "Total",
-  //       Cost: totalCost,
-  //     }
-
-  //     setSelectedServices((prevSelectedServices) => [
-  //       ...prevSelectedServices,
-  //       totalRow,
-  //     ])
-  //   }, [selectedServices])
+  useEffect(() => {
+    setTotal(selectedServices.reduce((acc, service) => acc + service.Cost, 0))
+  }, [selectedServices])
 
   useEffect(() => {
     const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
@@ -280,7 +306,7 @@ export const TicketRegisterFacturable = () => {
                         },
                         columns: {
                           columnVisibilityModel: {
-                            id: false,
+                            IdService: false,
                           },
                         },
                       }}
@@ -304,10 +330,21 @@ export const TicketRegisterFacturable = () => {
           </>
         </div>
       </div>
+      {total! > 0 && (
+        <div className="mt-6">
+          {" "}
+          <h2>
+            El costo total del servicio facturable es de{" "}
+            <strong>${(Math.round(total! * 100) / 100).toFixed(2)}</strong>
+          </h2>
+        </div>
+      )}
       <div className="w-full mt-12 flex justify-end">
         <button
           className={`px-10 py-2 font-medium rounded-full text-white ${
-            formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
+            formik.isValid && selectedServices.length > 0
+              ? "bg-qGreen hover:bg-qDarkGreen"
+              : "bg-qGray"
           }`}
           onClick={handleRegister}
         >
@@ -320,6 +357,16 @@ export const TicketRegisterFacturable = () => {
         open={isModalOpen}
         handleClose={handleCloseModal}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="warning" sx={{ width: "100%" }}>
+          No puede agregar servicios repetidos
+        </Alert>
+      </Snackbar>
     </>
   )
 }

@@ -87,9 +87,11 @@ export const Sidebar = () => {
       {/* Mobile Sidebar */}
       <div className={`h-full w-10 lg:hidden bg-qBlack fixed text-white`}>
         <div className="flex flex-col text-white">
-          <div className="p-2">
-            <img src={logo} alt="logo" />
-          </div>
+          <Link to={"/"}>
+            <div className="p-2">
+              <img src={logo} alt="logo" />
+            </div>
+          </Link>
           <div>
             <div className="p-2">
               {routeLinks.map((route) => (
@@ -122,9 +124,11 @@ export const Sidebar = () => {
       {/* Desktop Sidebar */}
       <div className="bg-qBlack text-white hidden fixed lg:block h-full w-[18rem]">
         <div className="flex flex-col text-white">
-          <div className="p-8">
-            <img src={logo} alt="logo" />
-          </div>
+          <Link to={"/"}>
+            <div className="p-8">
+              <img src={logo} alt="logo" />
+            </div>
+          </Link>
           <div>
             <div className="justify-center text-center p-8">
               <div>

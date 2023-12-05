@@ -38,7 +38,7 @@ async function getTicketById(idTicket: string) {
     const { data, error } = await supabase
       .from("Ticket")
       .select(
-        "*, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name), User (Name), TicketAnswer(*)"
+        "*, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name), User (Name), TicketAnswer(*), TicketFile (*)"
       )
       .eq("IdTicket", idTicket)
 
@@ -306,7 +306,7 @@ async function cancelTicket(idTicket: string) {
       return { data, status }
     }
   } catch (error) {
-    console.error("Error al registrar ticket", error)
+    console.error("Error al cancelar ticket", error)
     return error
   }
 }
@@ -322,7 +322,8 @@ async function ticketRegisterAndUploadImage(
       .insert([
         {
           IdTicket: request.IdTicket,
-          FileUrl: request.FileUrl,
+          FileUrl: res.path,
+          FilePurpose: request.FilePurpose,
         },
       ])
       .select()

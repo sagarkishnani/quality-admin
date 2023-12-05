@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
-import { ConstantLocalStorage } from "../../../../../common/constants"
+import {
+  ConstantFilePurpose,
+  ConstantLocalStorage,
+} from "../../../../../common/constants"
 import { useFormik } from "formik"
 import {
   GetTicketById,
@@ -11,6 +14,7 @@ import { InputLabel, TextField } from "@mui/material"
 import moment from "moment"
 import { TimePicker } from "@mui/x-date-pickers"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
+import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
 
 interface TicketRegisterCompleteFormOneInterface {
   ticket: GetTicketById
@@ -29,7 +33,13 @@ export const TicketRegisterCompleteFormOne = ({
   ticket,
 }: TicketRegisterCompleteFormOneInterface) => {
   const [ticketFormOne, setTicketFormOne] = useState<any>()
+  const [pictures, setTicketPictures] = useState<[]>()
+  const [selectedImg, setSelectedImg] = useState("")
+  const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const { setTicketStep } = useTicket()
+
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const bucketUrl = "/storage/v1/object/public/media/"
 
   function registerTicketStep() {
     if (formik.isValid) {
@@ -46,6 +56,15 @@ export const TicketRegisterCompleteFormOne = ({
 
       setTicketStep(2)
     }
+  }
+
+  const handleOpenImageModal = (imgData: string) => {
+    setIsImageModal(true)
+    setSelectedImg(imgData)
+  }
+
+  const handleCloseImageModal = () => {
+    setIsImageModal(false)
   }
 
   const formik = useFormik({
@@ -90,6 +109,12 @@ export const TicketRegisterCompleteFormOne = ({
         ScheduledAppointmentEndTime: ticketFormOne?.ScheduledAppointmentEndTime,
         ReportedFailure: ticket.ReportedFailure || "",
       })
+
+      const ticketPictures = ticket?.TicketFile.filter(
+        (picture) => picture.FilePurpose === ConstantFilePurpose.IMAGEN_USUARIO
+      )
+
+      setTicketPictures(ticketPictures)
     }
   }, [ticket])
 
@@ -181,6 +206,31 @@ export const TicketRegisterCompleteFormOne = ({
             label="Usuario"
           />
         </div>
+        {pictures?.length > 0 && (
+          <div className="col-span-12 mt-4">
+            <div className="flex flex-row space-x-2">
+              <h3>Evidencia(s)</h3>
+            </div>
+            <div className="flex flex-row space-x-2 mt-4">
+              {pictures?.map((picture, index) => (
+                <div
+                  className="w-16 h-16 relative cursor-pointer"
+                  onClick={() =>
+                    handleOpenImageModal(
+                      supabaseUrl + bucketUrl + picture.FileUrl
+                    )
+                  }
+                >
+                  <img
+                    key={index}
+                    className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
+                    src={supabaseUrl + bucketUrl + picture.FileUrl}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <div className="w-full mt-4 flex justify-end">
         <button
@@ -195,6 +245,11 @@ export const TicketRegisterCompleteFormOne = ({
           Siguiente
         </button>
       </div>
+      <ImageModal
+        img={selectedImg}
+        open={isImageModal}
+        handleClose={handleCloseImageModal}
+      />
     </>
   )
 }

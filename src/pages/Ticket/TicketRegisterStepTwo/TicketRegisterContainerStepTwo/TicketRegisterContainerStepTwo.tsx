@@ -57,29 +57,11 @@ export const TicketRegisterContainerStepTwo = () => {
   const [technicians, setTechnicians] = useState<any[]>([])
   const [areas, setAreas] = useState<MasterTable[]>([])
   const [floors, setFloors] = useState<MasterTable[]>([])
-  const [pictures, setPictures] = useState<string[]>([])
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
-  const { user } = useAuth()
   const navigate = useNavigate()
-
-  const onChangePicture = (e: any) => {
-    const newPictures: string[] = []
-    const files = e.target.files
-
-    for (let i = 0; i < files.length; i++) {
-      const reader = new FileReader()
-
-      reader.onload = (e) => {
-        newPictures.push(e.target?.result)
-        if (newPictures.length === files.length) {
-          setPictures([...pictures, ...newPictures])
-        }
-      }
-
-      reader.readAsDataURL(files[i])
-    }
-  }
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const bucketUrl = "/storage/v1/object/public/media/"
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
@@ -249,42 +231,26 @@ export const TicketRegisterContainerStepTwo = () => {
                 />
               </div>
               <div className="col-span-6">
-                <FormControl fullWidth>
-                  <InputLabel id="FloorLabel">Piso</InputLabel>
-                  <Select
-                    labelId="FloorLabel"
-                    id="CompanyFloor"
-                    name="CompanyFloor"
-                    value={formik.values.CompanyFloor}
-                    onChange={formik.handleChange}
-                    disabled
-                  >
-                    {floors?.map((floor: MasterTable) => (
-                      <MenuItem key={floor.IdMasterTable} value={floor.Name}>
-                        {floor.Name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  disabled
+                  color="primary"
+                  className="w-full"
+                  id="CompanyFloor"
+                  name="CompanyFloor"
+                  value={formik.values.CompanyFloor}
+                  label="Piso"
+                />
               </div>
               <div className="col-span-6">
-                <FormControl fullWidth>
-                  <InputLabel id="AreaLabel">Área</InputLabel>
-                  <Select
-                    labelId="AreaLabel"
-                    id="CompanyArea"
-                    name="CompanyArea"
-                    value={formik.values.CompanyArea}
-                    onChange={formik.handleChange}
-                    disabled
-                  >
-                    {areas?.map((area: MasterTable) => (
-                      <MenuItem key={area.IdMasterTable} value={area.Name}>
-                        {area.Name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  disabled
+                  color="primary"
+                  className="w-full"
+                  id="CompanyArea"
+                  name="CompanyArea"
+                  value={formik.values.CompanyArea}
+                  label="Área"
+                />
               </div>
               <div className="col-span-12">
                 <TextField
@@ -307,38 +273,31 @@ export const TicketRegisterContainerStepTwo = () => {
                   value={formik.values.ReportedFailure}
                 ></textarea>
               </div>
-              <div className="col-span-12">
-                <div className="flex flex-row space-x-2">
-                  <h3>Evidencia(s)</h3>
-                  <div className="register_profile_image">
-                    <input
-                      id="profilePic"
-                      type="file"
-                      accept=".png, .jpg, .gif, .svg, .webp"
-                      onChange={onChangePicture}
-                      multiple
-                      className="border-none bg-none text-qBlue underline font-medium"
-                    />
+              {ticket?.TicketFile?.length > 0 && (
+                <div className="col-span-12 mt-2">
+                  <div className="flex flex-row space-x-2">
+                    <h3>Evidencia(s)</h3>
+                  </div>
+                  <div className="flex flex-row space-x-2 mt-4">
+                    {ticket?.TicketFile?.map((picture, index) => (
+                      <div
+                        className="w-16 h-16 relative cursor-pointer"
+                        onClick={() =>
+                          handleOpenImageModal(
+                            supabaseUrl + bucketUrl + picture.FileUrl
+                          )
+                        }
+                      >
+                        <img
+                          key={index}
+                          className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
+                          src={supabaseUrl + bucketUrl + picture.FileUrl}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="flex flex-row space-x-2 mt-4">
-                  {pictures.map((imgData, index) => (
-                    <div
-                      className="w-16 h-16 relative cursor-pointer"
-                      onClick={() => handleOpenImageModal(imgData)}
-                    >
-                      <img
-                        key={index}
-                        className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
-                        src={imgData}
-                      />
-                      <button className="w-8 h-8 absolute right-0 -top-4 bg-qBlue rounded-md hidden">
-                        X
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           )}
           {isLoading && (

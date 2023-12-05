@@ -60,7 +60,6 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
   })
 
   useEffect(() => {
-    console.log(ticket)
     setIsLoading(true)
     if (ticket) {
       formik.setValues({

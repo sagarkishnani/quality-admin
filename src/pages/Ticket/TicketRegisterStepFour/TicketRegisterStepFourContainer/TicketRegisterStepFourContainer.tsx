@@ -62,7 +62,6 @@ export const TicketRegisterStepFourContainer = () => {
     const data = await TicketService.getTicketById(idTicket)
     if (data) {
       setTicket(data)
-      console.log(data)
     }
   }
 
