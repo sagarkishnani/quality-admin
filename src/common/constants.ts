@@ -51,6 +51,7 @@ export const ConstantTicketMessage = {
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
     TICKET_CANCEL_ERROR: 'Hubo un error al cancelar',
     TICKET_IMAGE_ERROR: 'Hubo un error al subir la imagen',
+    TICKET_SIGNATURE_ERROR: 'Hubo un error al subir la firma',
     TICKET_REGISTER_ERROR: 'Hubo un error al registrar el ticket',
     TICKET_SERVICE_REGISTER_ERROR: 'Hubo un error al registrar el servicio'
 }
@@ -101,6 +102,7 @@ export const ConstantLocalStorage = {
     TICKET_STEP_THREE_FORM_THREE: 'localStorageTicketStepThreeFormThree',
     TICKET_STEP_THREE_FORM_FOUR: 'localStorageTicketStepThreeFormFour',
     TICKET_STEP_THREE_FORM_FIVE: 'localStorageTicketStepThreeFormFive',
+    TICKET_FACTURABLE: 'localStorageFacturable',
     USER: 'localStorageUser'
 }
 

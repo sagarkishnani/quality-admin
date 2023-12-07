@@ -28,7 +28,6 @@ export function dataURLtoFile(dataurl) {
 }
 
 export function loopPictures(pictures: string[], filePurpose: string) {
-    debugger
     const pictureList: TicketRegisterStepThreePicture[] = [];
 
     for (const picture of pictures) {

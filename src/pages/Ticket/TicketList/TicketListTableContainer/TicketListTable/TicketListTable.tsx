@@ -16,10 +16,8 @@ import { useAuth } from "../../../../../common/contexts/AuthContext"
 import {
   ConstantHttpErrors,
   ConstantLocalStorage,
-  ConstantMasterTableMessage,
   ConstantRoles,
   ConstantTicketMessage,
-  ConstantTicketStatus,
 } from "../../../../../common/constants"
 import secureLocalStorage from "react-secure-storage"
 import { Modal } from "../../../../../common/components/Modal/Modal"
@@ -87,6 +85,7 @@ export const TicketListTable = ({
   }
 
   const handleFacturableForm = () => {
+    secureLocalStorage.setItem(ConstantLocalStorage.TICKET_FACTURABLE, true)
     navigate("registrar-facturable")
   }
 

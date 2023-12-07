@@ -23,11 +23,11 @@ import { MasterTableService } from "../../../../../common/services/MasterTableSe
 import { ServicesService } from "../../../../../common/services/ServicesService"
 import { TicketService } from "../../../../../common/services/TicketService"
 import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
+import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { HiOutlineTrash } from "react-icons/hi"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { useNavigate } from "react-router-dom"
-import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
 
 const validationSchema = yup.object({})
 
@@ -50,6 +50,7 @@ export const TicketRegisterFacturable = () => {
   const [services, setServices] = useState<any[]>([])
   const [selectedServices, setSelectedServices] = useState<any[]>([])
   const [total, setTotal] = useState<number>()
+  const [ticketServices, setTicketServices] = useState([])
   const [serviceStatus, setServiceStatus] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
@@ -93,7 +94,6 @@ export const TicketRegisterFacturable = () => {
   }
 
   async function registerTicketStepFour() {
-    debugger
     setIsLoadingAction(true)
 
     const { status: ticketStatus }: any =
@@ -138,6 +138,7 @@ export const TicketRegisterFacturable = () => {
     setIsLoading(true)
     await getTicketById(idTicket)
     await getServices()
+    await getTicketServices(idTicket)
     setIsLoading(false)
   }
 
@@ -180,6 +181,14 @@ export const TicketRegisterFacturable = () => {
     }
   }
 
+  async function getTicketServices(idTicket: string) {
+    const { data } = await TicketServicesService.getTicketServices(idTicket)
+    if (data) {
+      const onlyServices = data.map((item) => item.Services)
+      setTicketServices(onlyServices)
+    }
+  }
+
   const formik = useFormik({
     initialValues: {
       Service: "",
@@ -196,6 +205,12 @@ export const TicketRegisterFacturable = () => {
     const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
     if (idTicket !== null) {
       getAll(idTicket)
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      secureLocalStorage.removeItem(ConstantLocalStorage.TICKET_FACTURABLE)
     }
   }, [])
 
@@ -244,6 +259,30 @@ export const TicketRegisterFacturable = () => {
     },
   ]
 
+  const columnsView: GridColDef[] = [
+    {
+      field: "IdService",
+      headerName: "Service ID",
+      width: 10,
+      disableColumnMenu: true,
+    },
+    {
+      field: "Name",
+      headerName: "Descripción del servicio",
+      width: 550,
+      disableColumnMenu: true,
+    },
+    {
+      field: "Cost",
+      headerName: "Precio + IGV",
+      width: 100,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        return <div>${params.value}</div>
+      },
+    },
+  ]
+
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
@@ -257,78 +296,128 @@ export const TicketRegisterFacturable = () => {
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
         </div>
-        <div className="col-span-8">
-          <FormControl fullWidth>
-            <InputLabel id="ServiceLabel">Servicios</InputLabel>
-            <Select
-              labelId="ServiceLabel"
-              id="Service"
-              name="Service"
-              value={formik.values.Service}
-              onChange={formik.handleChange}
-            >
-              {services?.map((service: any) => (
-                <MenuItem key={service.IdService} value={service.IdService}>
-                  {service.Name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
-        <div className="col-span-4 flex items-center">
-          <button
-            className={`px-8 py-2 font-medium rounded-md text-white ${
-              formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
-            }`}
-            onClick={handleAddService}
-          >
-            Añadir
-          </button>
-        </div>
-        <div className="col-span-12">
+        {ticketServices?.length == 0 && (
           <>
-            {selectedServices?.length == 0 && (
-              <div className="flex-1 p-4">
-                No se ha agregado ningún servicio
-              </div>
-            )}
-            {selectedServices?.length !== 0 && (
+            <div className="col-span-8">
+              <FormControl fullWidth>
+                <InputLabel id="ServiceLabel">Servicios</InputLabel>
+                <Select
+                  labelId="ServiceLabel"
+                  id="Service"
+                  name="Service"
+                  value={formik.values.Service}
+                  onChange={formik.handleChange}
+                >
+                  {services?.map((service: any) => (
+                    <MenuItem key={service.IdService} value={service.IdService}>
+                      {service.Name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <div className="col-span-4 flex items-center">
+              <button
+                className={`px-8 py-2 font-medium rounded-md text-white ${
+                  formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
+                }`}
+                onClick={handleAddService}
+              >
+                Añadir
+              </button>
+            </div>
+            <div className="col-span-12">
               <>
-                <div className="flex-1 w-[80vw] lg:w-auto">
-                  <div style={{ height: "100%", width: "100%" }}>
-                    <DataGrid
-                      rows={selectedServices}
-                      getRowId={(row) => row.IdService}
-                      columns={columns}
-                      initialState={{
-                        pagination: {
-                          paginationModel: { page: 0, pageSize: 8 },
-                        },
-                        columns: {
-                          columnVisibilityModel: {
-                            IdService: false,
-                          },
-                        },
-                      }}
-                      pageSizeOptions={[8, 12, 20]}
-                      localeText={{
-                        noRowsLabel: "No se ha encontrado datos.",
-                        noResultsOverlayLabel:
-                          "No se ha encontrado ningún resultado",
-                        toolbarColumns: "Columnas",
-                        toolbarColumnsLabel: "Seleccionar columnas",
-                        toolbarFilters: "Filtros",
-                        toolbarFiltersLabel: "Ver filtros",
-                        toolbarFiltersTooltipHide: "Quitar filtros",
-                        toolbarFiltersTooltipShow: "Ver filtros",
-                      }}
-                    />
+                {selectedServices?.length == 0 && (
+                  <div className="flex-1 p-4">
+                    No se ha agregado ningún servicio
                   </div>
-                </div>
+                )}
+                {selectedServices?.length !== 0 && (
+                  <>
+                    <div className="flex-1 w-[80vw] lg:w-auto">
+                      <div style={{ height: "100%", width: "100%" }}>
+                        <DataGrid
+                          rows={selectedServices}
+                          getRowId={(row) => row.IdService}
+                          columns={columns}
+                          initialState={{
+                            pagination: {
+                              paginationModel: { page: 0, pageSize: 8 },
+                            },
+                            columns: {
+                              columnVisibilityModel: {
+                                IdService: false,
+                              },
+                            },
+                          }}
+                          pageSizeOptions={[8, 12, 20]}
+                          localeText={{
+                            noRowsLabel: "No se ha encontrado datos.",
+                            noResultsOverlayLabel:
+                              "No se ha encontrado ningún resultado",
+                            toolbarColumns: "Columnas",
+                            toolbarColumnsLabel: "Seleccionar columnas",
+                            toolbarFilters: "Filtros",
+                            toolbarFiltersLabel: "Ver filtros",
+                            toolbarFiltersTooltipHide: "Quitar filtros",
+                            toolbarFiltersTooltipShow: "Ver filtros",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
-            )}
+            </div>
           </>
-        </div>
+        )}
+        {ticketServices.length > 0 && (
+          <div className="col-span-12">
+            <>
+              {ticketServices?.length == 0 && (
+                <div className="flex-1 p-4">
+                  No se ha agregado ningún servicio
+                </div>
+              )}
+              {ticketServices?.length !== 0 && (
+                <>
+                  <div className="flex-1 w-[80vw] lg:w-auto">
+                    <div style={{ height: "100%", width: "100%" }}>
+                      <DataGrid
+                        rows={ticketServices}
+                        getRowId={(row) => row.IdService}
+                        columns={columnsView}
+                        initialState={{
+                          pagination: {
+                            paginationModel: { page: 0, pageSize: 8 },
+                          },
+                          columns: {
+                            columnVisibilityModel: {
+                              IdService: false,
+                            },
+                          },
+                        }}
+                        pageSizeOptions={[8, 12, 20]}
+                        localeText={{
+                          noRowsLabel: "No se ha encontrado datos.",
+                          noResultsOverlayLabel:
+                            "No se ha encontrado ningún resultado",
+                          toolbarColumns: "Columnas",
+                          toolbarColumnsLabel: "Seleccionar columnas",
+                          toolbarFilters: "Filtros",
+                          toolbarFiltersLabel: "Ver filtros",
+                          toolbarFiltersTooltipHide: "Quitar filtros",
+                          toolbarFiltersTooltipShow: "Ver filtros",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          </div>
+        )}
       </div>
       {total! > 0 && (
         <div className="mt-6">
@@ -339,18 +428,21 @@ export const TicketRegisterFacturable = () => {
           </h2>
         </div>
       )}
-      <div className="w-full mt-12 flex justify-end">
-        <button
-          className={`px-10 py-2 font-medium rounded-full text-white ${
-            formik.isValid && selectedServices.length > 0
-              ? "bg-qGreen hover:bg-qDarkGreen"
-              : "bg-qGray"
-          }`}
-          onClick={handleRegister}
-        >
-          Finalizar
-        </button>
-      </div>
+      {ticketServices.length === 0 && (
+        <div className="w-full mt-12 flex justify-end">
+          <button
+            className={`px-10 py-2 font-medium rounded-full text-white ${
+              formik.isValid && selectedServices.length > 0
+                ? "bg-qGreen hover:bg-qDarkGreen"
+                : "bg-qGray"
+            }`}
+            onClick={handleRegister}
+          >
+            Finalizar
+          </button>
+        </div>
+      )}
+
       <Modal
         modalType={modalType}
         title={modalMessage}

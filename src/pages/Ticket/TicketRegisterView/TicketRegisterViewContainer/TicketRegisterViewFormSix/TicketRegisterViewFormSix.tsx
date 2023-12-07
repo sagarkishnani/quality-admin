@@ -1,26 +1,25 @@
 import { useEffect, useState, useRef } from "react"
 import { useFormik } from "formik"
-import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
 import { TextField } from "@mui/material"
 import moment from "moment"
-import CanvasDraw from "react-canvas-draw"
-import { AiOutlineClear } from "react-icons/ai"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { useAuth } from "../../../../../common/contexts/AuthContext"
-import { ConstantRoles } from "../../../../../common/constants"
+import {
+  ConstantFilePurpose,
+  ConstantLocalStorage,
+  ConstantRoles,
+} from "../../../../../common/constants"
+import secureLocalStorage from "react-secure-storage"
 
 export const TicketRegisterViewFormSix = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [firstSignature, setFirstSignature] = useState<string>("")
+  const [secondSignature, setSecondSignature] = useState<string>("")
   const { user } = useAuth()
-  const firstSignature = useRef(null)
-  const secondSignature = useRef(null)
   const { setTicketStep } = useTicket()
 
-  function clearSignature(signature: number) {
-    signature == 1
-      ? firstSignature?.current.clear()
-      : secondSignature?.current.clear()
-  }
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const bucketUrl = "/storage/v1/object/public/media/"
 
   function registerTicketStep(isNext: boolean) {
     isNext ? setTicketStep(7) : setTicketStep(5)
@@ -38,6 +37,10 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
     onSubmit: (values) => {},
   })
 
+  function isFacturableView() {
+    return secureLocalStorage.getItem(ConstantLocalStorage.TICKET_FACTURABLE)
+  }
+
   useEffect(() => {
     setIsLoading(true)
     if (ticket) {
@@ -50,6 +53,17 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
         TechnicianDni: ticket?.TechnicianDni || "",
       })
     }
+
+    const firstSign = ticket?.TicketFile.filter(
+      (picture) => picture.FilePurpose === ConstantFilePurpose.FIRMA_USUARIO
+    )
+    setFirstSignature(firstSign[0].FileUrl)
+
+    const secondSign = ticket?.TicketFile.filter(
+      (picture) => picture.FilePurpose === ConstantFilePurpose.FIRMA_TECNICO
+    )
+    setSecondSignature(secondSign[0].FileUrl)
+
     setIsLoading(false)
   }, [ticket])
 
@@ -88,42 +102,26 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
             value={formik.values.Recommendation}
           ></textarea>
         </div>
-        <div className="col-span-5 border-gray-400 border-2 rounded-md">
-          <CanvasDraw
-            ref={firstSignature}
-            canvasHeight={120}
-            canvasWidth={320}
-            hideInterface={true}
-            brushRadius={2}
-            brushColor="black"
+        <div className="col-span-5 border-gray-400 border-2 rounded-md w-80 h-32">
+          <img
+            className="w-full h-full bg-cover"
+            src={supabaseUrl + bucketUrl + firstSignature}
+            alt=""
           />
         </div>
         <div className="col-span-2"></div>
-        <div className="col-span-5 border-gray-400 border-2 rounded-md">
-          <CanvasDraw
-            ref={secondSignature}
-            canvasHeight={120}
-            canvasWidth={320}
-            hideInterface={true}
-            brushRadius={2}
-            brushColor="black"
+        <div className="col-span-5 border-gray-400 border-2 rounded-md w-80 h-32">
+          <img
+            className="w-full h-full bg-cover"
+            src={supabaseUrl + bucketUrl + secondSignature}
+            alt=""
           />
         </div>
         <div className="col-span-5 -mt-3">
-          <div className="flex justify-end pr-1">
-            <button onClick={() => clearSignature(1)} type="button">
-              <AiOutlineClear size={20} color={"#00A0DF"} />
-            </button>
-          </div>
           <p>Firma del responsable (*)</p>
         </div>
         <div className="col-span-2"></div>
         <div className="col-span-5 -mt-3">
-          <div className="flex justify-end pr-1">
-            <button onClick={() => clearSignature(2)} type="button">
-              <AiOutlineClear size={20} color={"#00A0DF"} />
-            </button>
-          </div>
           <p>Firma del técnico responsable</p>
         </div>
         <div className="col-span-5">
@@ -182,19 +180,21 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
         >
           Anterior
         </button>
-        {
-          /* {ticket?.TicketStatus?.Name == "Finalizado" && */ user?.IdRole ==
-            ConstantRoles.LIDER_FUNCIONAL &&
-            ticket?.TicketType?.Name == "Facturable" && (
-              <button
-                className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
-                type="button"
-                onClick={() => registerTicketStep(true)}
-              >
-                Siguiente
-              </button>
-            )
-        }
+        {((ticket?.TicketStatus?.Name == "Atendido" &&
+          user?.IdRole == ConstantRoles.LIDER_FUNCIONAL &&
+          ticket?.TicketType?.Name == "Facturable" &&
+          isFacturableView()) ||
+          (ticket?.TicketStatus?.Name == "Finalizado" &&
+            user?.IdRole == ConstantRoles.LIDER_FUNCIONAL &&
+            ticket?.TicketType?.Name == "Facturable")) && (
+          <button
+            className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
+            type="button"
+            onClick={() => registerTicketStep(true)}
+          >
+            Siguiente
+          </button>
+        )}
       </div>
     </>
   )

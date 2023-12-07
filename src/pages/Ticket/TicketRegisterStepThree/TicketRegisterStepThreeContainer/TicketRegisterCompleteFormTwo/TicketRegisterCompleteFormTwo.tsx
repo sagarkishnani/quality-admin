@@ -323,11 +323,11 @@ export const TicketRegisterCompleteFormTwo = ({
           <div className="flex flex-row space-x-2 mt-4">
             {pictures.map((imgData, index) => (
               <div
+                key={index}
                 className="w-16 h-16 relative cursor-pointer"
                 onClick={() => handleOpenImageModal(imgData)}
               >
                 <img
-                  key={index}
                   className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
                   src={imgData}
                 />

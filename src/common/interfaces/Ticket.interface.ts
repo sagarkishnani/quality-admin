@@ -218,8 +218,10 @@ export interface TicketRegisterStepThreeRequestFormFive {
 export interface TicketRegisterStepThreeRequestFormSix {
     Comment: string;
     Recommendation: string;
+    ResponsibleSignature: TicketRegisterStepThreePicture;
     ResponsibleName: string;
     ResponsibleDni: string;
+    TechnicianSignature: TicketRegisterStepThreePicture;
     TechnicianName: string;
     TechnicianDni: string;
 }
