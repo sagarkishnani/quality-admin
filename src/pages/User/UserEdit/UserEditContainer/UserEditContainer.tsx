@@ -3,15 +3,19 @@ import { HiChevronLeft } from "react-icons/hi"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import {
+  ConstantHttpErrors,
   ConstantLocalStorage,
   ConstantMessage,
   ConstantsMasterTable,
 } from "../../../../common/constants"
 import { Link, useNavigate } from "react-router-dom"
 import {
+  Box,
+  Chip,
   FormControl,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   Skeleton,
   TextField,
@@ -21,9 +25,14 @@ import { Modal } from "../../../../common/components/Modal/Modal"
 import secureLocalStorage from "react-secure-storage"
 import { CompanyService } from "../../../../common/services/CompanyService"
 import { RoleService } from "../../../../common/services/RoleService"
-import { UserEditRequest } from "../../../../common/interfaces/User.interface"
+import {
+  UserCompanyRegister,
+  UserEditRequest,
+} from "../../../../common/interfaces/User.interface"
 import { UserService } from "../../../../common/services/UserService"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
+import { GetCompaniesResponse } from "../../../../common/interfaces/Company.interface"
+import { UserCompanyService } from "../../../../common/services/UserCompanyService"
 
 const validationSchema = yup.object({
   Dni: yup
@@ -38,12 +47,8 @@ const validationSchema = yup.object({
     .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
   PhoneNumber: yup.number().required("Celular es obligatorio"),
   IdRole: yup.string().required("Rol es obligatorio"),
-  IdCompany: yup.string().required("Empresa es obligatorio"),
+  // IdCompany: yup.string().required("Empresa es obligatorio"),
   Position: yup.string().required("Cargo es obligatorio"),
-  email: yup
-    .string()
-    .required("Correo es obligatorio")
-    .email("Debe ser un correo"),
 })
 
 export const UserEditContainer = () => {
@@ -53,6 +58,7 @@ export const UserEditContainer = () => {
   const [companies, setCompanies] = useState<any[]>([])
   const [roles, setRoles] = useState<any[]>([])
   const [positions, setPositions] = useState<any[]>([])
+  const [selectedCompanies, setSelectedCompanies] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -87,13 +93,37 @@ export const UserEditContainer = () => {
     }
   }
 
+  const handleCompanyChange = (event) => {
+    setSelectedCompanies(event.target.value)
+  }
+
   async function editUser(request: UserEditRequest) {
     setIsLoadingAction(true)
-    const { data }: any = await UserService.editUser(request)
-    if (data.message) {
+
+    const idUser: any = await UserService.editUser(request)
+    if (idUser) {
+      const { status } = await UserService.deleteUserCompany(idUser)
+      if (status === ConstantHttpErrors.NO_CONTENT) {
+        for (const company of selectedCompanies) {
+          const request: UserCompanyRegister = {
+            IdUser: idUser,
+            IdCompany: company,
+          }
+          const { status: userCompanyStatus }: any =
+            await UserService.registerUserCompany(request)
+
+          if (userCompanyStatus !== ConstantHttpErrors.CREATED) {
+            setIsLoadingAction(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantMessage.SERVICE_ERROR)
+          }
+        }
+      }
+
       setIsModalOpen(true)
       setModalType("success")
-      setModalMessage(data.message)
+      setModalMessage("El usuario se actualizó satisfactoriamente")
 
       setIsLoadingAction(false)
       setTimeout(() => {
@@ -104,6 +134,14 @@ export const UserEditContainer = () => {
       setIsModalOpen(true)
       setModalType("error")
       setModalMessage(ConstantMessage.SERVICE_ERROR)
+    }
+  }
+
+  async function getUserCompanies(idUser: string) {
+    const data = await UserCompanyService.getUserCompanies(idUser)
+    if (data) {
+      const onlyCompanies = data.map((item) => item.Company.IdCompany)
+      setSelectedCompanies(onlyCompanies)
     }
   }
 
@@ -120,11 +158,13 @@ export const UserEditContainer = () => {
     await getRoles()
     await getPositions()
     await getUserById(idUser)
+    await getUserCompanies(idUser)
     setIsLoading(false)
   }
 
   const formik = useFormik({
     initialValues: {
+      IdUser: "",
       Dni: "",
       Name: "",
       PhoneNumber: "",
@@ -135,6 +175,8 @@ export const UserEditContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      values.IdCompany = selectedCompanies[0]
+      values.IdUser = userData.IdUser
       editUser(values)
     },
   })
@@ -149,6 +191,7 @@ export const UserEditContainer = () => {
   useEffect(() => {
     if (userData) {
       formik.setValues({
+        IdUser: userData.IdUser,
         Dni: userData.Dni,
         Name: userData.Name || "",
         IdCompany: userData.IdCompany || "",
@@ -244,27 +287,6 @@ export const UserEditContainer = () => {
               </div>
               <div className="col-span-6">
                 <FormControl fullWidth>
-                  <InputLabel id="CompanyLabel">Empresa</InputLabel>
-                  <Select
-                    labelId="CompanyLabel"
-                    id="IdCompany"
-                    name="IdCompany"
-                    value={formik.values.IdCompany}
-                    onChange={formik.handleChange}
-                  >
-                    {companies?.map((company: any) => (
-                      <MenuItem
-                        key={company.IdCompany}
-                        value={company.IdCompany}
-                      >
-                        {company.Name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              <div className="col-span-6">
-                <FormControl fullWidth>
                   <InputLabel id="PositionLabel">Cargo</InputLabel>
                   <Select
                     labelId="PositionLabel"
@@ -288,16 +310,53 @@ export const UserEditContainer = () => {
                 <TextField
                   color="primary"
                   className="w-full"
-                  required
+                  disabled
                   id="email"
                   name="email"
                   value={formik.values.email}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
                   label="Correo"
                 />
+              </div>
+              <div className="col-span-12">
+                <FormControl fullWidth>
+                  <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
+                  <Select
+                    labelId="IdCompanyLabel"
+                    id="IdCompany"
+                    multiple
+                    value={selectedCompanies}
+                    onChange={handleCompanyChange}
+                    input={<OutlinedInput label="Compañías" />}
+                    renderValue={() => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selectedCompanies.map((idCompany: string) => {
+                          const company = companies.find(
+                            (c: GetCompaniesResponse) =>
+                              c.IdCompany === idCompany
+                          )
+                          return (
+                            <Chip
+                              key={company?.IdCompany}
+                              label={company?.Name}
+                            />
+                          )
+                        })}
+                      </Box>
+                    )}
+                  >
+                    <MenuItem disabled value="">
+                      <em>Seleccione</em>
+                    </MenuItem>
+                    {companies.map((company: GetCompaniesResponse) => (
+                      <MenuItem
+                        key={company.IdCompany}
+                        value={company.IdCompany}
+                      >
+                        {company.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
             </div>
           )}
@@ -326,12 +385,9 @@ export const UserEditContainer = () => {
               </h4>
             </div>
             <div className="col-span-2 text-sm text-qBlack">
-              1. El usuario podrá cambiar su contraseña en el login en "Olvidé
-              contraseña"
+              1. El usuario solo podrá cambiar su foto de perfil en "Mis Datos".{" "}
               <br /> <br />
-              2. El usuario solo podrá cambiar su foto de perfil en "Mis Datos".{" "}
-              <br /> <br />
-              3. Siempre mantener datos del usuario actualizados para envío de
+              2. Siempre mantener datos del usuario actualizados para envío de
               correos. <br />
             </div>
           </div>

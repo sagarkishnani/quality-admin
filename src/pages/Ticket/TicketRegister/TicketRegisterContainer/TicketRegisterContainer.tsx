@@ -51,7 +51,6 @@ export const TicketRegisterContainer = () => {
     "success" | "error" | "question" | "none"
   >("none")
   const [modalMessage, setModalMessage] = useState("")
-  const [userData, setUserData] = useState<UserTicketResponse>(null)
   const [areas, setAreas] = useState<MasterTable[]>([])
   const [floors, setFloors] = useState<MasterTable[]>([])
   const [pictures, setPictures] = useState<string[]>([])
@@ -109,26 +108,19 @@ export const TicketRegisterContainer = () => {
     }
   }
 
-  async function getTicketUserById(idUser: string) {
-    const data = await TicketService.getTicketUserById(idUser)
-    if (data) {
-      setUserData(data)
-    }
-  }
-
   async function getAll(idUser: string) {
     setIsLoading(true)
-    await getTicketUserById(idUser)
     await getAreas()
     await getFloors()
     setIsLoading(false)
   }
 
   async function registerTicket(request: TicketRegisterStepOneRequest) {
+    debugger
     setIsLoadingAction(true)
 
-    request.IdTicketCompany = userData.Company.IdCompany
-    request.IdUser = userData.IdUser
+    request.IdTicketCompany = user!.Company.IdCompany
+    request.IdUser = user!.IdUser
 
     const { data, status }: any = await TicketService.registerTicketStepOne(
       request
@@ -200,19 +192,19 @@ export const TicketRegisterContainer = () => {
   }, [])
 
   useEffect(() => {
-    if (userData) {
+    if (user) {
       formik.setValues({
         IdTicketStatus: "",
-        IdTicketCompany: userData.Company.Name || "",
+        IdTicketCompany: user.Company.Name || "",
         IdTicketType: "",
-        Address: userData.Company.Address || "",
+        Address: user.Company.Address || "",
         CompanyFloor: "",
         CompanyArea: "",
-        IdUser: userData.Name || "",
+        IdUser: user.Name || "",
         ReportedFailure: "",
       })
     }
-  }, [userData])
+  }, [user])
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">

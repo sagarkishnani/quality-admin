@@ -96,6 +96,23 @@ export const TicketListTable = ({
     setModalAction("cancelar")
   }
 
+  const getCompletarFormulario = (selectedTicket: any) => {
+    if (
+      user?.IdRole === ConstantRoles.TECNICO &&
+      selectedTicket?.Status === "En progreso"
+    ) {
+      return true
+    } else if (
+      (user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
+        user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+      selectedTicket?.IsGuaranteeTechnician &&
+      selectedTicket?.Status === "En progreso" &&
+      selectedTicket?.Technician === "Técnico de garantía"
+    ) {
+      return true
+    } else false
+  }
+
   const handleCancelBtn = async () => {
     const { status }: any = await TicketService.cancelTicket(selectedTicket.id)
 
@@ -293,13 +310,12 @@ export const TicketListTable = ({
                   Asignar técnico
                 </MenuItem>
               )}
-            {user?.IdRole === ConstantRoles.TECNICO &&
-              selectedTicket?.Status === "En progreso" && (
-                <MenuItem onClick={handleCompleteForm}>
-                  <HiOutlineDocumentText size={"20"} className="mr-2" />
-                  Completar formulario
-                </MenuItem>
-              )}
+            {getCompletarFormulario(selectedTicket) && (
+              <MenuItem onClick={handleCompleteForm}>
+                <HiOutlineDocumentText size={"20"} className="mr-2" />
+                Completar formulario
+              </MenuItem>
+            )}
             {user?.IdRole === ConstantRoles.LIDER_FUNCIONAL &&
               selectedTicket?.Status === "Atendido" && (
                 <MenuItem onClick={handleFacturableForm}>

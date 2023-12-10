@@ -135,7 +135,14 @@ export const TicketRegisterContainerStepTwo = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      registerTicketStepTwo(values)
+      const request: TicketRegisterStepTwoRequest = {
+        IdTechnician: values.IdTechnician == "-1" ? null : values.IdTechnician,
+        IsGuaranteeTechnician: values.IdTechnician == "-1" ? true : false,
+        ScheduledAppointmentDate: values.ScheduledAppointmentDate,
+        ScheduledAppointmentTime: values.ScheduledAppointmentTime,
+      }
+
+      registerTicketStepTwo(request)
     },
   })
 
@@ -350,6 +357,7 @@ export const TicketRegisterContainerStepTwo = () => {
                     value={formik.values.IdTechnician}
                     onChange={formik.handleChange}
                   >
+                    <MenuItem value={"-1"}>Técnico de garantía</MenuItem>
                     {technicians?.map((technician: any) => (
                       <MenuItem
                         key={technician.IdUser}

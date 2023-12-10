@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
-import {
-  ConstantLocalStorage,
-  ConstantsMasterTable,
-} from "../../../../../common/constants"
+import { ConstantLocalStorage } from "../../../../../common/constants"
 import { useFormik } from "formik"
 import {
   GetTicketById,
   TicketRegisterStepThreeRequestFormFour,
 } from "../../../../../common/interfaces/Ticket.interface"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
 import { TicketService } from "../../../../../common/services/TicketService"
 import {
   Alert,
@@ -34,6 +30,18 @@ export const TicketRegisterCompleteFormFour = () => {
   const [isCollapsedCambio, setIsCollapsedCambio] = useState(true)
   const [isCollapsedMantenimiento, setIsCollapsedMantenimiento] = useState(true)
   const [isCollapsedRevision, setIsCollapsedRevision] = useState(true)
+  const [checkboxCambioState, setCheckboxCambioState] = useState({
+    checked: false,
+    indeterminate: false,
+  })
+  const [checkboxMantState, setCheckboxMantState] = useState({
+    checked: false,
+    indeterminate: false,
+  })
+  const [checkboxRevState, setCheckboxRevState] = useState({
+    checked: false,
+    indeterminate: false,
+  })
 
   async function getTicketById(idTicket: string) {
     const data = await TicketService.getTicketById(idTicket)
@@ -156,19 +164,232 @@ export const TicketRegisterCompleteFormFour = () => {
     }
   }, [])
 
-  const handleCambioChange = (isChecked) => {
-    formik.setFieldValue("CambioCartucho", isChecked)
-    formik.setFieldValue("CambioFusor", isChecked)
+  //Handle cambio
+  const updateCambioCheckboxState = () => {
+    const checkboxCambioValues = [
+      formik.values.CambioCartucho,
+      formik.values.CambioFusor,
+      formik.values.CambioImagen,
+      formik.values.CambioRodillo,
+      formik.values.CambioTeflon,
+      formik.values.CambioRodilloBUno,
+      formik.values.CambioRodilloBDos,
+      formik.values.CambioSeparador,
+      formik.values.CambioDrive,
+      formik.values.CambioSwing,
+      formik.values.CambioAOF,
+      formik.values.CambioDC,
+    ]
+
+    const isChecked = checkboxCambioValues.every((value) => value === true)
+    const isIndeterminate =
+      checkboxCambioValues.some((value) => value !== true) &&
+      !checkboxCambioValues.every((value) => value === false)
+
+    setCheckboxCambioState({
+      checked: isChecked,
+      indeterminate: isIndeterminate,
+    })
   }
 
-  const handleMantenimientoChange = (isChecked) => {
-    // formik.setFieldValue("CambioCartucho", isChecked)
-    // formik.setFieldValue("CambioFusor", isChecked)
+  const handleCambioChange = (isChecked: boolean) => {
+    ;(formik.values.CambioCartucho = isChecked),
+      (formik.values.CambioFusor = isChecked),
+      (formik.values.CambioImagen = isChecked),
+      (formik.values.CambioRodillo = isChecked),
+      (formik.values.CambioTeflon = isChecked),
+      (formik.values.CambioRodilloBUno = isChecked),
+      (formik.values.CambioRodilloBDos = isChecked),
+      (formik.values.CambioSeparador = isChecked),
+      (formik.values.CambioDrive = isChecked),
+      (formik.values.CambioSwing = isChecked),
+      (formik.values.CambioAOF = isChecked),
+      (formik.values.CambioDC = isChecked),
+      updateCambioCheckboxState()
   }
 
-  const handleRevisionChange = (isChecked) => {
-    // formik.setFieldValue("CambioCartucho", isChecked)
-    // formik.setFieldValue("CambioFusor", isChecked)
+  const handleCambioCartuchoChange = (isChecked: boolean) => {
+    formik.values.CambioCartucho = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioFusorChange = (isChecked: boolean) => {
+    formik.values.CambioFusor = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioImagen = (isChecked: boolean) => {
+    formik.values.CambioImagen = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioRodillo = (isChecked: boolean) => {
+    formik.values.CambioRodillo = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioTeflon = (isChecked: boolean) => {
+    formik.values.CambioTeflon = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioRodilloBUno = (isChecked: boolean) => {
+    formik.values.CambioRodilloBUno = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioRodilloBDos = (isChecked: boolean) => {
+    formik.values.CambioRodilloBDos = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioSeparador = (isChecked: boolean) => {
+    formik.values.CambioSeparador = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioCambioDrive = (isChecked: boolean) => {
+    formik.values.CambioDrive = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioSwing = (isChecked: boolean) => {
+    formik.values.CambioSwing = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioAOF = (isChecked: boolean) => {
+    formik.values.CambioAOF = isChecked
+    updateCambioCheckboxState()
+  }
+
+  const handleCambioDC = (isChecked: boolean) => {
+    formik.values.CambioDC = isChecked
+    updateCambioCheckboxState()
+  }
+
+  //Handle Mantenimiento
+  const updateMantCheckboxState = () => {
+    const checkboxMantValues = [
+      formik.values.MantImpresora,
+      formik.values.MantOptico,
+      formik.values.MantOpticoEscaner,
+      formik.values.MantSistema,
+    ]
+
+    const isChecked = checkboxMantValues.every((value) => value === true)
+    const isIndeterminate =
+      checkboxMantValues.some((value) => value !== true) &&
+      !checkboxMantValues.every((value) => value === false)
+
+    setCheckboxMantState({
+      checked: isChecked,
+      indeterminate: isIndeterminate,
+    })
+  }
+
+  const handleMantChange = (isChecked: boolean) => {
+    formik.values.MantImpresora = isChecked
+    formik.values.MantOptico = isChecked
+    formik.values.MantOpticoEscaner = isChecked
+    formik.values.MantSistema = isChecked
+    updateMantCheckboxState()
+  }
+
+  const handleMantImpresoraChange = (isChecked: boolean) => {
+    formik.values.MantImpresora = isChecked
+    updateMantCheckboxState()
+  }
+
+  const handleMantOpticoChange = (isChecked: boolean) => {
+    formik.values.MantOptico = isChecked
+    updateMantCheckboxState()
+  }
+
+  const handleMantOpticoEscanerChange = (isChecked: boolean) => {
+    formik.values.MantOpticoEscaner = isChecked
+    updateMantCheckboxState()
+  }
+
+  const handleMantSistemaChange = (isChecked: boolean) => {
+    formik.values.MantSistema = isChecked
+    updateMantCheckboxState()
+  }
+
+  //Handle Revisión
+  const updateRevCheckboxState = () => {
+    const checkboxRevValues = [
+      formik.values.RevCartucho,
+      formik.values.RevFusor,
+      formik.values.RevImagen,
+      formik.values.RevADF,
+      formik.values.RevRodilloBUno,
+      formik.values.RevRodilloBDos,
+      formik.values.RevSeparador,
+      formik.values.RevDuplex,
+    ]
+
+    const isChecked = checkboxRevValues.every((value) => value === true)
+    const isIndeterminate =
+      checkboxRevValues.some((value) => value !== true) &&
+      !checkboxRevValues.every((value) => value === false)
+
+    setCheckboxRevState({
+      checked: isChecked,
+      indeterminate: isIndeterminate,
+    })
+  }
+
+  const handleRevChange = (isChecked: boolean) => {
+    formik.values.RevCartucho = isChecked
+    formik.values.RevFusor = isChecked
+    formik.values.RevImagen = isChecked
+    formik.values.RevADF = isChecked
+    formik.values.RevRodilloBUno = isChecked
+    formik.values.RevRodilloBDos = isChecked
+    formik.values.RevSeparador = isChecked
+    formik.values.RevDuplex = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevCartuchoChange = (isChecked: boolean) => {
+    formik.values.RevCartucho = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevFusorChange = (isChecked: boolean) => {
+    formik.values.RevFusor = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevImagenChange = (isChecked: boolean) => {
+    formik.values.RevImagen = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevADFChange = (isChecked: boolean) => {
+    formik.values.RevADF = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevRodilloBUnoChange = (isChecked: boolean) => {
+    formik.values.RevRodilloBUno = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevRodilloBDosChange = (isChecked: boolean) => {
+    formik.values.RevRodilloBDos = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevSeparadorChange = (isChecked: boolean) => {
+    formik.values.RevSeparador = isChecked
+    updateRevCheckboxState()
+  }
+
+  const handleRevDuplexChange = (isChecked: boolean) => {
+    formik.values.RevDuplex = isChecked
+    updateRevCheckboxState()
   }
 
   useEffect(() => {
@@ -324,15 +545,8 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="Cambio"
                     name="Cambio"
-                    checked={
-                      formik.values.CambioCartucho && formik.values.CambioFusor
-                    }
-                    indeterminate={
-                      formik.values.CambioCartucho !==
-                        formik.values.CambioFusor &&
-                      (formik.values.CambioCartucho ||
-                        formik.values.CambioFusor)
-                    }
+                    checked={checkboxCambioState.checked}
+                    indeterminate={checkboxCambioState.indeterminate}
                     onChange={(e) => handleCambioChange(e.target.checked)}
                   />
                 }
@@ -348,11 +562,8 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioCartucho"
                     name="CambioCartucho"
                     checked={formik.values.CambioCartucho}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioCartucho",
-                        !formik.values.CambioCartucho
-                      )
+                    onChange={(e) =>
+                      handleCambioCartuchoChange(e.target.checked)
                     }
                   />
                 }
@@ -364,12 +575,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioFusor"
                     name="CambioFusor"
                     checked={formik.values.CambioFusor}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioFusor",
-                        !formik.values.CambioFusor
-                      )
-                    }
+                    onChange={(e) => handleCambioFusorChange(e.target.checked)}
                   />
                 }
               />
@@ -380,12 +586,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioImagen"
                     name="CambioImagen"
                     checked={formik.values.CambioImagen}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioImagen",
-                        !formik.values.CambioImagen
-                      )
-                    }
+                    onChange={(e) => handleCambioImagen(e.target.checked)}
                   />
                 }
               />
@@ -396,12 +597,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioRodillo"
                     name="CambioRodillo"
                     checked={formik.values.CambioRodillo}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioRodillo",
-                        !formik.values.CambioRodillo
-                      )
-                    }
+                    onChange={(e) => handleCambioRodillo(e.target.checked)}
                   />
                 }
               />
@@ -412,12 +608,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioTeflon"
                     name="CambioTeflon"
                     checked={formik.values.CambioTeflon}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioTeflon",
-                        !formik.values.CambioTeflon
-                      )
-                    }
+                    onChange={(e) => handleCambioTeflon(e.target.checked)}
                   />
                 }
               />
@@ -428,12 +619,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioRodilloBUno"
                     name="CambioRodilloBUno"
                     checked={formik.values.CambioRodilloBUno}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioRodilloBUno",
-                        !formik.values.CambioRodilloBUno
-                      )
-                    }
+                    onChange={(e) => handleCambioRodilloBUno(e.target.checked)}
                   />
                 }
               />
@@ -444,12 +630,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioRodilloBDos"
                     name="CambioRodilloBDos"
                     checked={formik.values.CambioRodilloBDos}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioRodilloBDos",
-                        !formik.values.CambioRodilloBDos
-                      )
-                    }
+                    onChange={(e) => handleCambioRodilloBDos(e.target.checked)}
                   />
                 }
               />
@@ -460,12 +641,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioSeparador"
                     name="CambioSeparador"
                     checked={formik.values.CambioSeparador}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioSeparador",
-                        !formik.values.CambioSeparador
-                      )
-                    }
+                    onChange={(e) => handleCambioSeparador(e.target.checked)}
                   />
                 }
               />
@@ -476,12 +652,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioDrive"
                     name="CambioDrive"
                     checked={formik.values.CambioDrive}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioDrive",
-                        !formik.values.CambioDrive
-                      )
-                    }
+                    onChange={(e) => handleCambioCambioDrive(e.target.checked)}
                   />
                 }
               />
@@ -492,12 +663,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioSwing"
                     name="CambioSwing"
                     checked={formik.values.CambioSwing}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioSwing",
-                        !formik.values.CambioSwing
-                      )
-                    }
+                    onChange={(e) => handleCambioSwing(e.target.checked)}
                   />
                 }
               />
@@ -508,12 +674,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioAOF"
                     name="CambioAOF"
                     checked={formik.values.CambioAOF}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "CambioAOF",
-                        !formik.values.CambioAOF
-                      )
-                    }
+                    onChange={(e) => handleCambioAOF(e.target.checked)}
                   />
                 }
               />
@@ -524,9 +685,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="CambioDC"
                     name="CambioDC"
                     checked={formik.values.CambioDC}
-                    onChange={() =>
-                      formik.setFieldValue("CambioDC", !formik.values.CambioDC)
-                    }
+                    onChange={(e) => handleCambioDC(e.target.checked)}
                   />
                 }
               />
@@ -551,23 +710,9 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="Mantenimiento"
                     name="Mantenimiento"
-                    checked={
-                      formik.values.MantImpresora &&
-                      formik.values.MantOptico &&
-                      formik.values.MantOpticoEscaner &&
-                      formik.values.MantSistema
-                    }
-                    indeterminate={
-                      formik.values.MantImpresora !==
-                        formik.values.MantOptico &&
-                      (formik.values.MantImpresora ||
-                        formik.values.MantOptico ||
-                        formik.values.MantOpticoEscaner ||
-                        formik.values.MantSistema)
-                    }
-                    onChange={(e) =>
-                      handleMantenimientoChange(e.target.checked)
-                    }
+                    checked={checkboxMantState.checked}
+                    indeterminate={checkboxMantState.indeterminate}
+                    onChange={(e) => handleMantChange(e.target.checked)}
                   />
                 }
               />
@@ -582,11 +727,8 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="MantImpresora"
                     name="MantImpresora"
                     checked={formik.values.MantImpresora}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "MantImpresora",
-                        !formik.values.MantImpresora
-                      )
+                    onChange={(e) =>
+                      handleMantImpresoraChange(e.target.checked)
                     }
                   />
                 }
@@ -598,12 +740,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="MantOptico"
                     name="MantOptico"
                     checked={formik.values.MantOptico}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "MantOptico",
-                        !formik.values.MantOptico
-                      )
-                    }
+                    onChange={(e) => handleMantOpticoChange(e.target.checked)}
                   />
                 }
               />
@@ -614,11 +751,8 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="MantOpticoEscaner"
                     name="MantOpticoEscaner"
                     checked={formik.values.MantOpticoEscaner}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "MantOpticoEscaner",
-                        !formik.values.MantOpticoEscaner
-                      )
+                    onChange={(e) =>
+                      handleMantOpticoEscanerChange(e.target.checked)
                     }
                   />
                 }
@@ -630,12 +764,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="MantSistema"
                     name="MantSistema"
                     checked={formik.values.MantSistema}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "MantSistema",
-                        !formik.values.MantSistema
-                      )
-                    }
+                    onChange={(e) => handleMantSistemaChange(e.target.checked)}
                   />
                 }
               />
@@ -658,28 +787,9 @@ export const TicketRegisterCompleteFormFour = () => {
                   <Checkbox
                     id="Revision"
                     name="Revision"
-                    checked={
-                      formik.values.RevCartucho &&
-                      formik.values.RevADF &&
-                      formik.values.RevDuplex &&
-                      formik.values.RevFusor &&
-                      formik.values.RevImagen &&
-                      formik.values.RevRodilloBDos &&
-                      formik.values.RevRodilloBUno &&
-                      formik.values.RevSeparador
-                    }
-                    indeterminate={
-                      formik.values.RevCartucho !== formik.values.RevADF &&
-                      (formik.values.RevCartucho ||
-                        formik.values.RevADF ||
-                        formik.values.RevDuplex ||
-                        formik.values.RevFusor ||
-                        formik.values.RevImagen ||
-                        formik.values.RevRodilloBDos ||
-                        formik.values.RevRodilloBUno ||
-                        formik.values.RevSeparador)
-                    }
-                    onChange={(e) => handleRevisionChange(e.target.checked)}
+                    checked={checkboxRevState.checked}
+                    indeterminate={checkboxRevState.indeterminate}
+                    onChange={(e) => handleRevChange(e.target.checked)}
                   />
                 }
               />
@@ -694,12 +804,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevCartucho"
                     name="RevCartucho"
                     checked={formik.values.RevCartucho}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "RevCartucho",
-                        !formik.values.RevCartucho
-                      )
-                    }
+                    onChange={(e) => handleRevCartuchoChange(e.target.checked)}
                   />
                 }
               />
@@ -710,9 +815,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevFusor"
                     name="RevFusor"
                     checked={formik.values.RevFusor}
-                    onChange={() =>
-                      formik.setFieldValue("RevFusor", !formik.values.RevFusor)
-                    }
+                    onChange={(e) => handleRevFusorChange(e.target.checked)}
                   />
                 }
               />
@@ -723,12 +826,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevImagen"
                     name="RevImagen"
                     checked={formik.values.RevImagen}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "RevImagen",
-                        !formik.values.RevImagen
-                      )
-                    }
+                    onChange={(e) => handleRevImagenChange(e.target.checked)}
                   />
                 }
               />
@@ -739,9 +837,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevADF"
                     name="RevADF"
                     checked={formik.values.RevADF}
-                    onChange={() =>
-                      formik.setFieldValue("RevADF", !formik.values.RevADF)
-                    }
+                    onChange={(e) => handleRevADFChange(e.target.checked)}
                   />
                 }
               />
@@ -752,11 +848,8 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevRodilloBUno"
                     name="RevRodilloBUno"
                     checked={formik.values.RevRodilloBUno}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "RevRodilloBUno",
-                        !formik.values.RevRodilloBUno
-                      )
+                    onChange={(e) =>
+                      handleRevRodilloBUnoChange(e.target.checked)
                     }
                   />
                 }
@@ -768,11 +861,8 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevRodilloBDos"
                     name="RevRodilloBDos"
                     checked={formik.values.RevRodilloBDos}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "RevRodilloBDos",
-                        !formik.values.RevRodilloBDos
-                      )
+                    onChange={(e) =>
+                      handleRevRodilloBDosChange(e.target.checked)
                     }
                   />
                 }
@@ -784,12 +874,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevSeparador"
                     name="RevSeparador"
                     checked={formik.values.RevSeparador}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "RevSeparador",
-                        !formik.values.RevSeparador
-                      )
-                    }
+                    onChange={(e) => handleRevSeparadorChange(e.target.checked)}
                   />
                 }
               />
@@ -800,12 +885,7 @@ export const TicketRegisterCompleteFormFour = () => {
                     id="RevDuplex"
                     name="RevDuplex"
                     checked={formik.values.RevDuplex}
-                    onChange={() =>
-                      formik.setFieldValue(
-                        "RevDuplex",
-                        !formik.values.RevDuplex
-                      )
-                    }
+                    onChange={(e) => handleRevDuplexChange(e.target.checked)}
                   />
                 }
               />

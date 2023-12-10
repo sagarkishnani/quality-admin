@@ -29,8 +29,6 @@ import { WelcomeScreen } from "../../../pages/Welcome/WelcomeScreen/WelcomeScree
 import { Welcome } from "../../../pages/Welcome/Welcome"
 
 export const Layout = () => {
-  const { user } = useAuth()
-
   return (
     <>
       <Sidebar />

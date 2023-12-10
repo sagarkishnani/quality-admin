@@ -117,7 +117,8 @@ export interface GetTicketByIdAdditional {
 }
 
 export interface TicketRegisterStepTwoRequest {
-    IdTechnician: string;
+    IdTechnician: string | null;
+    IsGuaranteeTechnician: boolean;
     ScheduledAppointmentTime: Date;
     ScheduledAppointmentDate: Date;
 }

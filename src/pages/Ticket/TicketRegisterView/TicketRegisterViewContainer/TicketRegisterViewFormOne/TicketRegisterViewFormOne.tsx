@@ -218,7 +218,12 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
               className="w-full"
               id="IdTechnician"
               name="IdTechnician"
-              value={formik.values.IdTechnician}
+              value={
+                formik.values.IdTechnician === "" ||
+                formik.values.IdTechnician === null
+                  ? "Técnico de garantía"
+                  : formik.values.IdTechnician
+              }
               label="Técnico"
             />
           </div>

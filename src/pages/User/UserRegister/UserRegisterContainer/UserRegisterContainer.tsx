@@ -3,6 +3,7 @@ import { HiChevronLeft } from "react-icons/hi"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import {
+  ConstantHttpErrors,
   ConstantMessage,
   ConstantsMasterTable,
 } from "../../../../common/constants"
@@ -22,7 +23,10 @@ import { Button } from "../../../../common/components/Button/Button"
 import { Modal } from "../../../../common/components/Modal/Modal"
 import { CompanyService } from "../../../../common/services/CompanyService"
 import { RoleService } from "../../../../common/services/RoleService"
-import { UserRegisterRequest } from "../../../../common/interfaces/User.interface"
+import {
+  UserCompanyRegister,
+  UserRegisterRequest,
+} from "../../../../common/interfaces/User.interface"
 import { UserService } from "../../../../common/services/UserService"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import { GetCompaniesResponse } from "../../../../common/interfaces/Company.interface"
@@ -41,7 +45,7 @@ const validationSchema = yup.object({
     .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
   PhoneNumber: yup.number().required("Celular es obligatorio"),
   IdRole: yup.string().required("Rol es obligatorio"),
-  IdCompany: yup.string().required("Empresa es obligatorio"),
+  // IdCompany: yup.string().required("Empresa es obligatorio"),
   Position: yup.string().required("Cargo es obligatorio"),
   email: yup
     .string()
@@ -111,11 +115,26 @@ export const UserRegisterContainer = () => {
   async function registerUser(request: UserRegisterRequest) {
     setIsLoadingAction(true)
 
-    const { message }: any = await UserService.registerUser(request)
-    if (message) {
+    const idUser: any = await UserService.registerUser(request)
+    if (idUser) {
+      for (const company of selectedCompanies) {
+        const request: UserCompanyRegister = {
+          IdUser: idUser,
+          IdCompany: company,
+        }
+        const { status }: any = await UserService.registerUserCompany(request)
+
+        if (status !== ConstantHttpErrors.CREATED) {
+          setIsLoadingAction(false)
+          setIsModalOpen(true)
+          setModalType("error")
+          setModalMessage(ConstantMessage.SERVICE_ERROR)
+        }
+      }
+
       setIsModalOpen(true)
       setModalType("success")
-      setModalMessage(message)
+      setModalMessage("El usuario se registró satisfactoriamente")
 
       setIsLoadingAction(false)
       setTimeout(() => {
@@ -142,6 +161,7 @@ export const UserRegisterContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
+      values.IdCompany = selectedCompanies[0]
       registerUser(values)
     },
   })
@@ -234,7 +254,7 @@ export const UserRegisterContainer = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
                   <Select
@@ -243,7 +263,7 @@ export const UserRegisterContainer = () => {
                     multiple
                     value={selectedCompanies}
                     onChange={handleCompanyChange}
-                    input={<OutlinedInput label="Compañía" />}
+                    input={<OutlinedInput label="Compañías" />}
                     renderValue={() => (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selectedCompanies.map((idCompany: string) => {
@@ -275,7 +295,7 @@ export const UserRegisterContainer = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="PositionLabel">Cargo</InputLabel>
                   <Select
@@ -373,7 +393,7 @@ export const UserRegisterContainer = () => {
             <Button
               color="#74C947"
               label="Guardar registro"
-              disabled={!formik.isValid || isLoadingAction}
+              disabled={isLoadingAction}
               isLoading={isLoadingAction}
               type="submit"
             />

@@ -40,7 +40,7 @@ export const LoginContainer = () => {
     setIsLoading(true)
     const userAuth = await UserService.loginUser(email, password)
 
-    if (userAuth?.email) {
+    if (userAuth?.email && userAuth?.RecordStatus === true) {
       setUser(userAuth)
       setIsLoading(false)
       navigate("/")
@@ -125,7 +125,7 @@ export const LoginContainer = () => {
             </form>
           </div>
         </div>
-        <div className="hidden md:col-span-1 bg-loginBg bg-cover bg-no-repeat bg-left-bottom md:flex flex-col justify-center md:p-20 lg:p-40">
+        <div className="hidden md:col-span-1 bg-login bg-cover bg-no-repeat bg-left-bottom md:flex flex-col justify-center md:p-20 lg:p-40">
           <div>
             <h2 className="text-white text-3xl font-semibold mb-5">
               ¡Te damos la bienvenida!

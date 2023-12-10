@@ -103,7 +103,8 @@ export const ConstantLocalStorage = {
     TICKET_STEP_THREE_FORM_FOUR: 'localStorageTicketStepThreeFormFour',
     TICKET_STEP_THREE_FORM_FIVE: 'localStorageTicketStepThreeFormFive',
     TICKET_FACTURABLE: 'localStorageFacturable',
-    USER: 'localStorageUser'
+    USER: 'localStorageUser',
+    LOCATION: 'localStorageLocation'
 }
 
 export const ConstantStorageBuckets = {

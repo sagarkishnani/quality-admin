@@ -1,13 +1,13 @@
-import { createClient } from "@supabase/supabase-js";
-import { CompanyRegisterRequest } from "../interfaces/Company.interface";
-import { ConstantStorageBuckets } from "../constants";
+import { createClient } from "@supabase/supabase-js"
+import { CompanyRegisterRequest } from "../interfaces/Company.interface"
+import { ConstantStorageBuckets } from "../constants"
 
-const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY;
+const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY
 const supabaseImgUrl =
   import.meta.env.VITE_REACT_APP_SUPABASE_STORAGE_URL +
-  ConstantStorageBuckets.COMPANY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+  ConstantStorageBuckets.COMPANY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function getCompanies() {
   try {
@@ -15,17 +15,17 @@ async function getCompanies() {
       .from("Company")
       .select(
         "IdCompany, Name, ImgUrl, Ruc, Address, MainContactName, MainContactEmail"
-      );
+      )
 
     if (error) {
-      console.warn(error);
-      return error;
+      console.warn(error)
+      return error
     } else if (data) {
-      return data;
+      return data
     }
   } catch (error) {
-    console.error("Error fetching companies:", error);
-    return error;
+    console.error("Error fetching companies:", error)
+    return error
   }
 }
 
@@ -34,17 +34,17 @@ async function getCompanyById(idCompany: string) {
     const { data, error } = await supabase
       .from("Company")
       .select("*")
-      .eq("IdCompany", idCompany);
+      .eq("IdCompany", idCompany)
 
     if (error) {
-      console.warn(error);
-      return error;
+      console.warn(error)
+      return error
     } else if (data) {
-      return data;
+      return data[0]
     }
   } catch (error) {
-    console.error("Error al traer la empresa:", error);
-    return error;
+    console.error("Error al traer la empresa:", error)
+    return error
   }
 }
 
@@ -98,17 +98,17 @@ async function registerCompany(request: CompanyRegisterRequest) {
           AfterSalesContactCellphone: request.AfterSalesContactCellphone,
         },
       ])
-      .select();
+      .select()
 
     if (error) {
-      console.warn(error);
-      return { error, status };
+      console.warn(error)
+      return { error, status }
     } else if (data) {
-      return { data, status };
+      return { data, status }
     }
   } catch (error) {
-    console.error("Error registering companies:", error);
-    return error;
+    console.error("Error registering companies:", error)
+    return error
   }
 }
 
@@ -116,17 +116,17 @@ async function uploadCompanyLogo(imgName: string, file: File) {
   try {
     const { data, error } = await supabase.storage
       .from("media")
-      .upload("companies" + "/" + imgName, file);
+      .upload("companies" + "/" + imgName, file)
 
     if (error) {
-      console.warn(error);
-      return error;
+      console.warn(error)
+      return error
     } else if (data) {
-      return data;
+      return data
     }
   } catch (error) {
-    console.error("Error registering companies:", error);
-    return error;
+    console.error("Error registering companies:", error)
+    return error
   }
 }
 
@@ -135,4 +135,4 @@ export const CompanyService = {
   registerCompany,
   uploadCompanyLogo,
   getCompanyById,
-};
+}
