@@ -24,6 +24,7 @@ import { UserService } from "../../../../common/services/UserService"
 import { RoleService } from "../../../../common/services/RoleService"
 import unknownUser from "../../../../assets/images/user/unknown.png"
 import { UserCompanyService } from "../../../../common/services/UserCompanyService"
+import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 
 export const UserViewContainer = () => {
   const supabaseImgUrl =
@@ -35,7 +36,7 @@ export const UserViewContainer = () => {
   const [userData, setUserData] = useState<any>(null)
   const [userCompanies, setUserCompanies] = useState<any[]>([])
   const [roles, setRoles] = useState<any[]>([])
-  const [positions, setPositions] = useState<any[]>([])
+  const [positions, setPositions] = useState<MasterTable[]>([])
 
   async function getRoles() {
     const data = await RoleService.getRoles()
@@ -226,7 +227,7 @@ export const UserViewContainer = () => {
                     name="Position"
                     value={formik.values.Position}
                   >
-                    {positions?.map((position: any) => (
+                    {positions?.map((position: MasterTable) => (
                       <MenuItem
                         key={position.IdMasterTable}
                         value={position.IdMasterTable}

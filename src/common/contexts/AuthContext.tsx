@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     secureLocalStorage.setItem(ConstantLocalStorage.USER, user)
-    console.log(user)
   }, [user])
 
   return (

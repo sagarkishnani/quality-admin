@@ -29,6 +29,7 @@ import {
   ConstantsMasterTable,
 } from "../../../../common/constants"
 import { Link, useNavigate } from "react-router-dom"
+import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 
 const validationSchema = yup.object({
   Name: yup.string().required("Nombre de empresa es obligatorio"),
@@ -76,11 +77,11 @@ export const CompanyRegisterContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [ubigeos, setUbigeos] = useState<any>([])
-  const [positions, setPositions] = useState<any>([])
-  const [currencies, setCurrencies] = useState<any>([])
-  const [paymentConditions, setPaymentConditions] = useState<any>([])
-  const [ce, setCe] = useState<any>([])
-  const [banks, setBanks] = useState<any>([])
+  const [positions, setPositions] = useState<MasterTable[]>([])
+  const [currencies, setCurrencies] = useState<MasterTable[]>([])
+  const [paymentConditions, setPaymentConditions] = useState<MasterTable[]>([])
+  const [ce, setCe] = useState<MasterTable[]>([])
+  const [banks, setBanks] = useState<MasterTable[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -446,7 +447,7 @@ export const CompanyRegisterContainer = () => {
                   value={formik.values.MainContactPosition}
                   onChange={formik.handleChange}
                 >
-                  {positions?.map((position: any) => (
+                  {positions?.map((position: MasterTable) => (
                     <MenuItem
                       key={position.IdMasterTable}
                       value={position.IdMasterTable}
@@ -508,7 +509,7 @@ export const CompanyRegisterContainer = () => {
                   value={formik.values.MainContactPayment}
                   onChange={formik.handleChange}
                 >
-                  {paymentConditions?.map((paymentCondition: any) => (
+                  {paymentConditions?.map((paymentCondition: MasterTable) => (
                     <MenuItem
                       key={paymentCondition.IdMasterTable}
                       value={paymentCondition.IdMasterTable}
@@ -529,7 +530,7 @@ export const CompanyRegisterContainer = () => {
                   value={formik.values.MainContactCE}
                   onChange={formik.handleChange}
                 >
-                  {ce?.map((ce: any) => (
+                  {ce?.map((ce: MasterTable) => (
                     <MenuItem key={ce.IdMasterTable} value={ce.IdMasterTable}>
                       {ce.Name}
                     </MenuItem>
@@ -553,12 +554,12 @@ export const CompanyRegisterContainer = () => {
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                       {selectedCurrencies.map((currencyId: string) => {
                         const currency = currencies.find(
-                          (c: any) => c.IdMasterTable === currencyId
+                          (c: MasterTable) => c.IdMasterTable === currencyId
                         )
                         return (
                           <Chip
-                            key={currency.IdMasterTable}
-                            label={currency.Name}
+                            key={currency?.IdMasterTable}
+                            label={currency?.Name}
                           />
                         )
                       })}
@@ -568,7 +569,7 @@ export const CompanyRegisterContainer = () => {
                   <MenuItem disabled value="">
                     <em>Seleccione</em>
                   </MenuItem>
-                  {currencies.map((currency: any) => (
+                  {currencies.map((currency: MasterTable) => (
                     <MenuItem
                       key={currency.IdMasterTable}
                       value={currency.IdMasterTable}
@@ -615,10 +616,10 @@ export const CompanyRegisterContainer = () => {
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                       {selectedBanks.map((bankId: string) => {
                         const bank = banks.find(
-                          (c: any) => c.IdMasterTable === bankId
+                          (c: MasterTable) => c.IdMasterTable === bankId
                         )
                         return (
-                          <Chip key={bank.IdMasterTable} label={bank.Name} />
+                          <Chip key={bank?.IdMasterTable} label={bank?.Name} />
                         )
                       })}
                     </Box>
@@ -627,7 +628,7 @@ export const CompanyRegisterContainer = () => {
                   <MenuItem disabled value="">
                     <em>Seleccione</em>
                   </MenuItem>
-                  {banks.map((bank: any) => (
+                  {banks.map((bank: MasterTable) => (
                     <MenuItem
                       key={bank.IdMasterTable}
                       value={bank.IdMasterTable}
@@ -716,7 +717,7 @@ export const CompanyRegisterContainer = () => {
                       value={formik.values.BillingContactPosition}
                       onChange={formik.handleChange}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -829,7 +830,7 @@ export const CompanyRegisterContainer = () => {
                       value={formik.values.ReportContactPosition}
                       onChange={formik.handleChange}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -942,7 +943,7 @@ export const CompanyRegisterContainer = () => {
                       value={formik.values.PurchaseContactPosition}
                       onChange={formik.handleChange}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -1055,7 +1056,7 @@ export const CompanyRegisterContainer = () => {
                       value={formik.values.WarehouseContactPosition}
                       onChange={formik.handleChange}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -1168,7 +1169,7 @@ export const CompanyRegisterContainer = () => {
                       value={formik.values.AfterSalesContactPosition}
                       onChange={formik.handleChange}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}

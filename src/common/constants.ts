@@ -38,7 +38,10 @@ export const ConstantMessage = {
 export const ConstantCompanyMessage = {
     COMPANY_REGISTER_SUCCESS: 'La empresa se registró correctamente',
     COMPANY_LOGO_NOT_UPLOADED: 'Logo de empresa es obligatorio',
-    COMPANY_LOGO_ERROR: 'Error al subir imagen'
+    COMPANY_LOGO_ERROR: 'Error al subir imagen',
+    COMPANY_DELETE_QUESTION: '¿Está seguro de eliminar la empresa?',
+    COMPANY_DELETE_ERROR: 'Hubo un error al eliminar',
+    COMPANY_DELETE: 'La empresa se eliminó correctamente'
 }
 
 export const ConstantTicketMessage = {

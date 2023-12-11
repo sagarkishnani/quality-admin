@@ -1,52 +1,106 @@
-import { Avatar, Menu, MenuItem } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Avatar, Menu, MenuItem } from "@mui/material"
+import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import {
   HiOutlineDotsHorizontal,
   HiPencil,
   HiOutlineEye,
   HiOutlineTrash,
-} from "react-icons/hi";
-import secureLocalStorage from "react-secure-storage";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ConstantLocalStorage } from "../../../../../common/constants";
+} from "react-icons/hi"
+import secureLocalStorage from "react-secure-storage"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import {
+  ConstantCompanyMessage,
+  ConstantHttpErrors,
+  ConstantLocalStorage,
+} from "../../../../../common/constants"
+import { Modal } from "../../../../../common/components/Modal/Modal"
+import { CompanyService } from "../../../../../common/services/CompanyService"
 
 interface TicketListTableInterface {
-  rows: Row[];
+  rows: Row[]
+  handleReload: () => void
 }
 
 interface Row {
-  IdCompany: string;
-  Name: string;
-  ImgUrl: string;
-  Ruc: number;
-  Address: string;
-  MainContactName: string;
-  MainContactEmail: string;
+  IdCompany: string
+  Name: string
+  ImgUrl: string
+  Ruc: number
+  Address: string
+  MainContactName: string
+  MainContactEmail: string
 }
 
-export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const navigate = useNavigate();
+export const CompanyListTable = ({
+  rows,
+  handleReload,
+}: TicketListTableInterface) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalType, setModalType] = useState<
+    "success" | "error" | "question" | "none"
+  >("none")
+  const [modalMessage, setModalMessage] = useState("")
+  const [modalAction, setModalAction] = useState<string | null>("eliminar")
+  const navigate = useNavigate()
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     id: string
   ) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedId(id);
-    secureLocalStorage.setItem(ConstantLocalStorage.ID_COMPANY, id);
-  };
+    setAnchorEl(event.currentTarget)
+    setSelectedId(id)
+    secureLocalStorage.setItem(ConstantLocalStorage.ID_COMPANY, id)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
 
   const handleView = () => {
-    navigate("ver");
-  };
+    navigate("ver")
+  }
+
+  const handleEdit = () => {
+    navigate("editar")
+  }
+
+  const handleDelete = () => {
+    setIsModalOpen(true)
+    setModalType("question")
+    setModalMessage(ConstantCompanyMessage.COMPANY_DELETE_QUESTION)
+    setModalAction("eliminar")
+  }
+
+  const handleDeleteBtn = async () => {
+    const { status } = await CompanyService.deleteCompany(selectedId!)
+    if (status == ConstantHttpErrors.OK) {
+      setIsModalOpen(false)
+      setTimeout(() => {
+        setModalAction(null)
+        setIsModalOpen(true)
+        setModalType("success")
+        setModalMessage(ConstantCompanyMessage.COMPANY_DELETE)
+      }, 1000)
+      setTimeout(() => {
+        handleReload()
+      }, 2500)
+    } else {
+      setIsModalOpen(false)
+      setTimeout(() => {
+        setIsModalOpen(true)
+        setModalType("error")
+        setModalMessage(ConstantCompanyMessage.COMPANY_DELETE_ERROR)
+      }, 1000)
+    }
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-    setSelectedId(null);
-  };
+    setAnchorEl(null)
+    setSelectedId(null)
+  }
 
   const columns: GridColDef[] = [
     {
@@ -64,7 +118,7 @@ export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
             />
             <div>{params.value}</div>
           </div>
-        );
+        )
       },
     },
     {
@@ -98,8 +152,8 @@ export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
       disableColumnMenu: true,
       renderCell: (params) => {
         const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-          handleClick(event, params.row.IdCompany);
-        };
+          handleClick(event, params.row.IdCompany)
+        }
 
         return (
           <>
@@ -110,10 +164,10 @@ export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
               <HiOutlineDotsHorizontal color="black" size={"30"} />
             </div>
           </>
-        );
+        )
       },
     },
-  ];
+  ]
 
   return (
     <>
@@ -165,17 +219,25 @@ export const CompanyListTable = ({ rows }: TicketListTableInterface) => {
               <HiOutlineEye size={"20"} className="mr-2" />
               Ver empresa
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleEdit}>
               <HiPencil size={"20"} className="mr-2" />
               Editar empresa
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleDelete}>
               <HiOutlineTrash size={"20"} className="mr-2" />
               Eliminar empresa
             </MenuItem>
           </Menu>
+          <Modal
+            handleClose={handleCloseModal}
+            modalType={modalType}
+            title={modalMessage}
+            open={isModalOpen}
+            handleAction={handleDeleteBtn}
+            action={modalAction}
+          />
         </>
       )}
     </>
-  );
-};
+  )
+}
