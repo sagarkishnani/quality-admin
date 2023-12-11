@@ -103,7 +103,6 @@ import logo from "../../assets/mailBackgrounds/technicalServiceReportBG.svg";
 //     recomendation: "recomendation"
 // }
 
-
 export default function TechnicalServiceReport({ data }) {
     return (
         <div style={{ position: "relative", fontSize: "12px", width: "780px" }}>
@@ -1470,6 +1469,35 @@ export default function TechnicalServiceReport({ data }) {
                 >
                     {data.recomendation}
                 </div>
+            </div>
+
+            <div>
+                <div
+                    style={{
+                        position: "absolute",
+                        height: "55px",
+                        width: "150px",
+                        top: "870px",
+                        left: "127px",
+                        zIndex: "99",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                ><img style={{height: '100%', objectFit: 'contain'}} src={data.responsibleSign}></img></div>
+                <div
+                    style={{
+                        position: "absolute",
+                        height: "55px",
+                        width: "150px",
+                        top: "870px",
+                        left: "460px",
+                        zIndex: "99",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                ><img style={{height: '100%', objectFit: 'contain'}} src={data.responsibleTechSign}></img></div>
             </div>
         </div>
     );

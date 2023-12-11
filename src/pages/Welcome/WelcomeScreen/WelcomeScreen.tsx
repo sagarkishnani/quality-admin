@@ -126,6 +126,8 @@ const data = {
     maintenance: "x",
     comment: "comment",
     recomendation: "recomendation",
+    responsibleSign: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/XXXTentacion_signature.svg/565px-XXXTentacion_signature.svg.png",
+    responsibleTechSign: "https://signaturely.com/wp-content/uploads/2020/04/unreadable-letters-signaturely.svg"
 };
 
 export const WelcomeScreen = () => {
@@ -187,6 +189,12 @@ export const WelcomeScreen = () => {
     //         devicePixelRatio: 1.5,
     //     };
 
+    //     // DESCOMENTAR PARA DESCARGA DE ARCHIVO PDF
+    //     // html2pdf()
+    //     //     .from(printElement)
+    //     //     .set(opt)
+    //     //     .save();
+
     //     html2pdf()
     //         .from(printElement)
     //         .set(opt)
@@ -208,7 +216,7 @@ export const WelcomeScreen = () => {
     //             };
     //             const resp = await MailService.sendEmail(request);
     //             console.log("resp", resp);
-    //         });
+    //     });
     // };
 
     // return (
