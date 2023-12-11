@@ -4,23 +4,23 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-} from "@mui/material";
+} from "@mui/material"
 
 import {
   HiCheckCircle,
   HiExclamationCircle,
   HiQuestionMarkCircle,
   HiXCircle,
-} from "react-icons/hi";
+} from "react-icons/hi"
 
 interface ModalInterface {
-  title: string;
-  description?: string | null;
-  open: boolean;
-  action?: string | null;
-  modalType: "success" | "error" | "question" | "warning" | "none";
-  handleClose: () => void;
-  handleAction?: () => void;
+  title: string
+  description?: string | null
+  open: boolean
+  action?: string | null
+  modalType: "success" | "error" | "question" | "warning" | "none"
+  handleClose: () => void
+  handleAction?: () => void
 }
 export const Modal = ({
   title,
@@ -32,7 +32,7 @@ export const Modal = ({
   handleAction,
 }: ModalInterface) => {
   return (
-    <Dialog className="" open={open} onClose={handleClose}>
+    <Dialog open={open} onClose={handleClose}>
       <div className="w-[32rem]">
         <div className="flex justify-center pt-12 pb-4">
           {modalType === "none" ? null : modalType === "success" ? (
@@ -72,5 +72,5 @@ export const Modal = ({
         )}
       </div>
     </Dialog>
-  );
-};
+  )
+}

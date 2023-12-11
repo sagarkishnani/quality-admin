@@ -94,8 +94,8 @@ export const Sidebar = () => {
           </Link>
           <div>
             <div className="p-2">
-              {routeLinks.map((route) => (
-                <Link to={route.Link}>
+              {routeLinks.map((route, index) => (
+                <Link key={index} to={route.Link}>
                   {hasRole(route.Roles) && (
                     <div
                       key={route.Id}
@@ -139,8 +139,8 @@ export const Sidebar = () => {
               </div>
             </div>
             <div className="p-6">
-              {routeLinks.map((route) => (
-                <Link to={route.Link}>
+              {routeLinks.map((route, index) => (
+                <Link key={index} to={route.Link}>
                   {hasRole(route.Roles) && (
                     <div
                       key={route.Id}

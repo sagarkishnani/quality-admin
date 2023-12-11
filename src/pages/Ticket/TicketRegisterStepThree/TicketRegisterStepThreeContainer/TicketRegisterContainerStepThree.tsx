@@ -25,23 +25,28 @@ export const TicketRegisterContainerStepThree = () => {
   const navigate = useNavigate()
 
   const handleRedirect = () => {
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_TWO
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_FOUR
-    )
-    secureLocalStorage.removeItem(
-      ConstantLocalStorage.TICKET_STEP_THREE_FORM_FIVE
-    )
     navigate("/tickets")
   }
+
+  useEffect(() => {
+    return () => {
+      secureLocalStorage.removeItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_ONE
+      )
+      secureLocalStorage.removeItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_TWO
+      )
+      secureLocalStorage.removeItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_THREE
+      )
+      secureLocalStorage.removeItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_FOUR
+      )
+      secureLocalStorage.removeItem(
+        ConstantLocalStorage.TICKET_STEP_THREE_FORM_FIVE
+      )
+    }
+  }, [])
 
   async function getTicketById(idTicket: string) {
     const data = await TicketService.getTicketById(idTicket)

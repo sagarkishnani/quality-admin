@@ -28,6 +28,25 @@ async function registerTicketService(idTicket: string, idService: string) {
   }
 }
 
+async function getTicketServices(idTicket: string) {
+  try {
+    const { data, error, status } = await supabase
+      .from("TicketService")
+      .select("*, Services (*)")
+      .eq("IdTicket", idTicket)
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al obtener servicios", error)
+    return error
+  }
+}
+
 export const TicketServicesService = {
   registerTicketService,
+  getTicketServices,
 }

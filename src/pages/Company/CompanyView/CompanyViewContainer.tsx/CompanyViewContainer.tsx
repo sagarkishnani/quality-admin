@@ -11,7 +11,6 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
-  Skeleton,
   TextField,
 } from "@mui/material"
 import { Link } from "react-router-dom"
@@ -24,23 +23,20 @@ import {
 import secureLocalStorage from "react-secure-storage"
 import { UbigeoService } from "../../../../common/services/UbigeoService"
 import { CompanyService } from "../../../../common/services/CompanyService"
+import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
+import unknownUser from "../../../../assets/images/user/unknown.png"
 
 export const CompanyViewContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [company, setCompany] = useState<any>()
-  const [ubigeos, setUbigeos] = useState<any>([])
-  const [positions, setPositions] = useState<any>([])
-  const [currencies, setCurrencies] = useState<any>([])
-  const [paymentConditions, setPaymentConditions] = useState<any>([])
-  const [ce, setCe] = useState<any>([])
-  const [banks, setBanks] = useState<any>([])
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalType, setModalType] = useState<
-    "success" | "error" | "question" | "none"
-  >("none")
-  const [modalMessage, setModalMessage] = useState("")
-  const [selectedCurrencies, setSelectedCurrencies] = useState([])
-  const [selectedBanks, setSelectedBanks] = useState([])
+  const [ubigeo, setUbigeo] = useState<any>()
+  const [positions, setPositions] = useState<MasterTable[]>([])
+  const [filteredCurrencies, setFilteredCurrencies] = useState<MasterTable[]>(
+    []
+  )
+  const [paymentConditions, setPaymentConditions] = useState<MasterTable[]>([])
+  const [ce, setCe] = useState<MasterTable[]>([])
+  const [filteredBanks, setFilteredBanks] = useState<MasterTable[]>([])
 
   const [showBillingFields, setShowBillingFields] = useState(false)
   const [showReportFields, setShowReportFields] = useState(false)
@@ -51,12 +47,9 @@ export const CompanyViewContainer = () => {
   async function getAll(idCompany: string) {
     setIsLoading(true)
     await getCompanyById(idCompany)
-    await getUbigeos()
     await getPositions()
-    await getCurrencies()
     await getPaymentConditions()
     await getCE()
-    await getBanks()
     setIsLoading(false)
   }
 
@@ -64,13 +57,20 @@ export const CompanyViewContainer = () => {
     const data = await CompanyService.getCompanyById(idCompany)
     if (data) {
       setCompany(data)
+
+      if (data) {
+        await getCurrencies(data?.MainContactCurrency.split(", "))
+        await getBanks(data?.MainContactBanks.split(", "))
+      }
+
+      getUbigeo(data.Ubigeo)
     }
   }
 
-  async function getUbigeos() {
-    const data = await UbigeoService.getUbigeo()
+  async function getUbigeo(idUbigeo: number) {
+    const data = await UbigeoService.getUbigeoById(idUbigeo)
     if (data) {
-      setUbigeos(data)
+      setUbigeo(data)
     }
   }
 
@@ -83,12 +83,16 @@ export const CompanyViewContainer = () => {
     }
   }
 
-  async function getCurrencies() {
+  async function getCurrencies(currenciesStr: string[]) {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.CURRENCIES
     )
     if (data) {
-      setCurrencies(data)
+      setFilteredCurrencies(
+        data.filter((currency) =>
+          currenciesStr.includes(currency?.IdMasterTable)
+        )
+      )
     }
   }
 
@@ -110,12 +114,14 @@ export const CompanyViewContainer = () => {
     }
   }
 
-  async function getBanks() {
+  async function getBanks(banksStr: string[]) {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.BANKS
     )
     if (data) {
-      setBanks(data)
+      setFilteredBanks(
+        data.filter((bank) => banksStr?.includes(bank?.IdMasterTable))
+      )
     }
   }
 
@@ -123,7 +129,7 @@ export const CompanyViewContainer = () => {
     initialValues: {
       Name: "",
       Ruc: "",
-      Ubigeo: ubigeos[0],
+      Ubigeo: "",
       Address: "",
       ImgUrl: "",
       Local: "",
@@ -177,14 +183,19 @@ export const CompanyViewContainer = () => {
   }, [])
 
   useEffect(() => {
-    if (company) {
+    if (company && ubigeo) {
       formik.setValues({
         Name: company?.Name || "",
         Ruc: company?.Ruc || "",
-        Ubigeo: company?.Ubigeo || "",
+        Ubigeo:
+          ubigeo?.distrito +
+            ", " +
+            ubigeo?.provincia +
+            ", " +
+            ubigeo?.departamento || "",
         Address: company?.Address || "",
         ImgUrl: company?.ImgUrl || "",
-        Local: company?.Local || 0,
+        Local: company?.Local || "",
         MainContactName: company?.MainContactName || "",
         MainContactPosition: company?.MainContactPosition || "",
         MainContactEmail: company?.MainContactEmail || "",
@@ -222,8 +233,14 @@ export const CompanyViewContainer = () => {
         AfterSalesContactPhone: company?.AfterSalesContactPhone || "",
         AfterSalesContactCellphone: company?.AfterSalesContactCellphone || "",
       })
+
+      if (company?.BillingContactName !== "") setShowBillingFields(true)
+      if (company?.ReportContactName !== "") setShowReportFields(true)
+      if (company?.PurchaseContactName !== "") setShowPurchaseFields(true)
+      if (company?.WarehouseContactName !== "") setShowWarehouseFields(true)
+      if (company?.AfterSalesContactName !== "") setShowAfterSalesFields(true)
     }
-  }, [company])
+  }, [company, ubigeo])
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
@@ -238,16 +255,25 @@ export const CompanyViewContainer = () => {
             <div className="col-span-12">
               <h2 className="font-semibold text-xl pb-2">Ver empresa</h2>
             </div>
-            <div className="col-span-12">
+            <div className="col-span-6 flex items-center">
               <h4 className="text-sm text-qGray font-semibold pb-2">
                 DATOS DE LA EMPRESA
               </h4>
+            </div>
+            <div className="col-span-6 flex items-center justify-end">
+              <div className="w-20 h-20 rounded-full bg-qBlue">
+                <img
+                  className=" rounded-full w-full h-full object-cover"
+                  src={company?.ImgUrl == null ? unknownUser : company?.ImgUrl}
+                  alt="perfil"
+                />
+              </div>
             </div>
             <div className="col-span-8">
               <TextField
                 color="primary"
                 className="w-full"
-                required
+                disabled
                 id="Name"
                 name="Name"
                 value={formik.values.Name}
@@ -257,7 +283,7 @@ export const CompanyViewContainer = () => {
             <div className="col-span-4">
               <TextField
                 className="w-full"
-                required
+                disabled
                 id="Ruc"
                 name="Ruc"
                 value={formik.values.Ruc}
@@ -265,30 +291,19 @@ export const CompanyViewContainer = () => {
               />
             </div>
             <div className="col-span-12">
-              <Autocomplete
-                className="w-full"
-                disablePortal
-                options={ubigeos}
-                value={formik.values.Ubigeo}
-                getOptionLabel={(option: any) =>
-                  `${option.departamento} - ${option.provincia} - ${option.distrito}`
-                }
-                renderInput={(params) => (
-                  <TextField
-                    name="Ubigeo"
-                    required
-                    {...params}
-                    label="Departamento - Provincia - Distrito"
-                  />
-                )}
-                openText="Mostrar opciones"
-                noOptionsText="No hay opciones"
-              />
-            </div>
-            <div className="col-span-9">
               <TextField
                 className="w-full"
-                required
+                disabled
+                id="Ubigeo"
+                name="Ubigeo"
+                value={formik.values.Ubigeo}
+                label="Ubigeo"
+              />
+            </div>
+            <div className="col-span-12">
+              <TextField
+                className="w-full"
+                disabled
                 id="Address"
                 name="Address"
                 label="Dirección fiscal"
@@ -298,7 +313,7 @@ export const CompanyViewContainer = () => {
             <div className="col-span-12">
               <TextField
                 className="w-full"
-                required
+                disabled
                 id="Local"
                 name="Local"
                 label="Nombre de local"
@@ -313,7 +328,7 @@ export const CompanyViewContainer = () => {
             <div className="col-span-6">
               <TextField
                 className="w-full"
-                required
+                disabled
                 id="MainContactName"
                 name="MainContactName"
                 label="Contacto principal"
@@ -329,10 +344,11 @@ export const CompanyViewContainer = () => {
                   labelId="MainContactPositionLabel"
                   id="MainContactPosition"
                   name="MainContactPosition"
+                  disabled
                   value={formik.values.MainContactPosition}
                   onChange={formik.handleChange}
                 >
-                  {positions?.map((position: any) => (
+                  {positions?.map((position: MasterTable) => (
                     <MenuItem
                       key={position.IdMasterTable}
                       value={position.IdMasterTable}
@@ -346,7 +362,7 @@ export const CompanyViewContainer = () => {
             <div className="col-span-6">
               <TextField
                 className="w-full"
-                required
+                disabled
                 id="MainContactEmail"
                 name="MainContactEmail"
                 label="Email Contacto principal"
@@ -356,7 +372,7 @@ export const CompanyViewContainer = () => {
             <div className="col-span-6">
               <TextField
                 className="w-full"
-                required
+                disabled
                 id="MainContactPhone"
                 name="MainContactPhone"
                 label="Celular contacto principal"
@@ -371,9 +387,10 @@ export const CompanyViewContainer = () => {
                   labelId="MainContactPaymentLabel"
                   id="MainContactPayment"
                   name="MainContactPayment"
+                  disabled
                   value={formik.values.MainContactPayment}
                 >
-                  {paymentConditions?.map((paymentCondition: any) => (
+                  {paymentConditions?.map((paymentCondition: MasterTable) => (
                     <MenuItem
                       key={paymentCondition.IdMasterTable}
                       value={paymentCondition.IdMasterTable}
@@ -389,11 +406,12 @@ export const CompanyViewContainer = () => {
                 <InputLabel id="MainContactCELabel">CE</InputLabel>
                 <Select
                   labelId="MainContactCELabel"
+                  disabled
                   id="MainContactCE"
                   name="MainContactCE"
                   value={formik.values.MainContactCE}
                 >
-                  {ce?.map((ce: any) => (
+                  {ce?.map((ce: MasterTable) => (
                     <MenuItem key={ce.IdMasterTable} value={ce.IdMasterTable}>
                       {ce.Name}
                     </MenuItem>
@@ -407,45 +425,30 @@ export const CompanyViewContainer = () => {
                 <Select
                   labelId="MainContactCurrencyLabel"
                   id="MainContactCurrency"
-                  multiple
-                  value={selectedCurrencies}
+                  disabled
+                  value={filteredCurrencies}
                   input={
                     <OutlinedInput id="MainContactCurrency" label="Moneda" />
                   }
                   renderValue={() => (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                      {selectedCurrencies.map((currencyId: string) => {
-                        const currency = currencies.find(
-                          (c: any) => c.IdMasterTable === currencyId
-                        )
+                      {filteredCurrencies.map((currency) => {
                         return (
                           <Chip
-                            key={currency.IdMasterTable}
-                            label={currency.Name}
+                            key={currency?.IdMasterTable}
+                            label={currency?.Name}
                           />
                         )
                       })}
                     </Box>
                   )}
-                >
-                  <MenuItem disabled value="">
-                    <em>Seleccione</em>
-                  </MenuItem>
-                  {currencies.map((currency: any) => (
-                    <MenuItem
-                      key={currency.IdMasterTable}
-                      value={currency.IdMasterTable}
-                    >
-                      {currency.Name}
-                    </MenuItem>
-                  ))}
-                </Select>
+                ></Select>
               </FormControl>
             </div>
             <div className="col-span-3">
               <TextField
                 className="w-full"
-                required
+                disabled
                 id="MainContactAlias"
                 name="MainContactAlias"
                 label="Empresa (Alias)"
@@ -456,44 +459,30 @@ export const CompanyViewContainer = () => {
               <FormControl fullWidth>
                 <InputLabel id="MainContactBanksLabel">Banco</InputLabel>
                 <Select
+                  disabled
                   labelId="MainContactBanksLabel"
                   id="MainContactBanks"
-                  multiple
-                  value={selectedBanks}
+                  value={filteredBanks}
                   input={
                     <OutlinedInput id="MainContactCurrency" label="Moneda" />
                   }
                   renderValue={() => (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                      {selectedBanks.map((bankId: string) => {
-                        const bank = banks.find(
-                          (c: any) => c.IdMasterTable === bankId
-                        )
+                      {filteredBanks.map((bank) => {
                         return (
-                          <Chip key={bank.IdMasterTable} label={bank.Name} />
+                          <Chip key={bank?.IdMasterTable} label={bank?.Name} />
                         )
                       })}
                     </Box>
                   )}
-                >
-                  <MenuItem disabled value="">
-                    <em>Seleccione</em>
-                  </MenuItem>
-                  {banks.map((bank: any) => (
-                    <MenuItem
-                      key={bank.IdMasterTable}
-                      value={bank.IdMasterTable}
-                    >
-                      {bank.Name}
-                    </MenuItem>
-                  ))}
-                </Select>
+                ></Select>
               </FormControl>
             </div>
             <div className="col-span-12">
               <TextField
                 className="w-full"
                 id="MainContactEmailInvoice"
+                disabled
                 name="MainContactEmailInvoice"
                 label="Email Factura electrónica 1 (Opcional)"
                 value={formik.values.MainContactEmailInvoice}
@@ -504,6 +493,7 @@ export const CompanyViewContainer = () => {
                 className="w-full"
                 id="MainContactEmailInvoice2"
                 name="MainContactEmailInvoice2"
+                disabled
                 label="C.E. Factura electrónica 2 (Opcional)"
                 value={formik.values.MainContactEmailInvoice2}
               />
@@ -519,7 +509,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="BillingContactName"
                     name="BillingContactName"
                     label="Contacto cobranza"
@@ -535,9 +525,10 @@ export const CompanyViewContainer = () => {
                       labelId="BillingContactPositionLabel"
                       id="BillingContactPosition"
                       name="BillingContactPosition"
+                      disabled
                       value={formik.values.BillingContactPosition}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -551,7 +542,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="BillingContactEmail"
                     name="BillingContactEmail"
                     label="Email Contacto cobranza"
@@ -561,6 +552,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
+                    disabled
                     id="BillingContactPhone"
                     name="BillingContactPhone"
                     label="Teléfono contacto cobranza"
@@ -573,6 +565,7 @@ export const CompanyViewContainer = () => {
                     className="w-full"
                     id="BillingContactCellphone"
                     name="BillingContactCellphone"
+                    disabled
                     label="Celular contacto cobranza"
                     type="number"
                     value={formik.values.BillingContactCellphone}
@@ -591,7 +584,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="ReportContactName"
                     name="ReportContactName"
                     label="Contacto informe"
@@ -607,9 +600,10 @@ export const CompanyViewContainer = () => {
                       labelId="ReportContactPositionLabel"
                       id="ReportContactPosition"
                       name="ReportContactPosition"
+                      disabled
                       value={formik.values.ReportContactPosition}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -623,7 +617,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="ReportContactEmail"
                     name="ReportContactEmail"
                     label="Email Contacto informe"
@@ -634,6 +628,7 @@ export const CompanyViewContainer = () => {
                   <TextField
                     className="w-full"
                     id="ReportContactPhone"
+                    disabled
                     name="ReportContactPhone"
                     label="Teléfono contacto informe"
                     type="number"
@@ -643,6 +638,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
+                    disabled
                     id="ReportContactCellphone"
                     name="ReportContactCellphone"
                     label="Celular contacto informe"
@@ -663,7 +659,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="PurchaseContactName"
                     name="PurchaseContactName"
                     label="Contacto compras"
@@ -679,9 +675,10 @@ export const CompanyViewContainer = () => {
                       labelId="PurchaseContactPositionLabel"
                       id="PurchaseContactPosition"
                       name="PurchaseContactPosition"
+                      disabled
                       value={formik.values.PurchaseContactPosition}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -695,7 +692,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="PurchaseContactEmail"
                     name="PurchaseContactEmail"
                     label="Email Contacto compras"
@@ -707,6 +704,7 @@ export const CompanyViewContainer = () => {
                     className="w-full"
                     id="PurchaseContactPhone"
                     name="PurchaseContactPhone"
+                    disabled
                     label="Teléfono contacto compras"
                     type="number"
                     value={formik.values.PurchaseContactPhone}
@@ -717,6 +715,7 @@ export const CompanyViewContainer = () => {
                     className="w-full"
                     id="PurchaseContactCellphone"
                     name="PurchaseContactCellphone"
+                    disabled
                     label="Celular contacto compras"
                     type="number"
                     value={formik.values.PurchaseContactCellphone}
@@ -735,7 +734,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="WarehouseContactName"
                     name="WarehouseContactName"
                     label="Contacto almacén"
@@ -751,9 +750,10 @@ export const CompanyViewContainer = () => {
                       labelId="WarehouseContactPositionLabel"
                       id="WarehouseContactPosition"
                       name="WarehouseContactPosition"
+                      disabled
                       value={formik.values.WarehouseContactPosition}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -767,7 +767,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="WarehouseContactEmail"
                     name="WarehouseContactEmail"
                     label="Email Contacto almacén"
@@ -779,6 +779,7 @@ export const CompanyViewContainer = () => {
                     className="w-full"
                     id="WarehouseContactPhone"
                     name="WarehouseContactPhone"
+                    disabled
                     label="Teléfono contacto almacén"
                     type="number"
                     value={formik.values.WarehouseContactPhone}
@@ -789,6 +790,7 @@ export const CompanyViewContainer = () => {
                     className="w-full"
                     id="WarehouseContactCellphone"
                     name="WarehouseContactCellphone"
+                    disabled
                     label="Celular contacto almacén"
                     type="number"
                     value={formik.values.WarehouseContactCellphone}
@@ -810,6 +812,7 @@ export const CompanyViewContainer = () => {
                     required
                     id="AfterSalesContactName"
                     name="AfterSalesContactName"
+                    disabled
                     label="Contacto posventa"
                     value={formik.values.AfterSalesContactName}
                   />
@@ -823,9 +826,10 @@ export const CompanyViewContainer = () => {
                       labelId="AfterSalesContactPositionLabel"
                       id="AfterSalesContactPosition"
                       name="AfterSalesContactPosition"
+                      disabled
                       value={formik.values.AfterSalesContactPosition}
                     >
-                      {positions?.map((position: any) => (
+                      {positions?.map((position: MasterTable) => (
                         <MenuItem
                           key={position.IdMasterTable}
                           value={position.IdMasterTable}
@@ -839,7 +843,7 @@ export const CompanyViewContainer = () => {
                 <div className="col-span-6">
                   <TextField
                     className="w-full"
-                    required
+                    disabled
                     id="AfterSalesContactEmail"
                     name="AfterSalesContactEmail"
                     label="Email Contacto posventa"
@@ -852,6 +856,7 @@ export const CompanyViewContainer = () => {
                     id="AfterSalesContactPhone"
                     name="AfterSalesContactPhone"
                     label="Teléfono contacto posventa"
+                    disabled
                     type="number"
                     value={formik.values.AfterSalesContactPhone}
                   />
@@ -862,6 +867,7 @@ export const CompanyViewContainer = () => {
                     id="AfterSalesContactCellphone"
                     name="AfterSalesContactCellphone"
                     label="Celular contacto posventa"
+                    disabled
                     type="number"
                     value={formik.values.AfterSalesContactCellphone}
                   />
@@ -883,108 +889,23 @@ export const CompanyViewContainer = () => {
                 label="PRINCIPAL"
               />
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showBillingFields}
-                    onChange={() => {
-                      if (!showBillingFields) {
-                        formik.setValues({
-                          ...formik.values,
-                          BillingContactName: "",
-                          BillingContactPosition: "",
-                          BillingContactEmail: "",
-                          BillingContactPhone: "",
-                          BillingContactCellphone: "",
-                        })
-                      }
-                      setShowBillingFields(!showBillingFields)
-                    }}
-                  />
-                }
+                control={<Checkbox checked={showBillingFields} disabled />}
                 label="COBRANZA"
               />
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showReportFields}
-                    onChange={() => {
-                      if (!showReportFields) {
-                        formik.setValues({
-                          ...formik.values,
-                          ReportContactName: "",
-                          ReportContactPosition: "",
-                          ReportContactEmail: "",
-                          ReportContactPhone: "",
-                          ReportContactCellphone: "",
-                        })
-                      }
-                      setShowReportFields(!showReportFields)
-                    }}
-                  />
-                }
+                control={<Checkbox checked={showReportFields} disabled />}
                 label="INFORME"
               />
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showPurchaseFields}
-                    onChange={() => {
-                      if (!showPurchaseFields) {
-                        formik.setValues({
-                          ...formik.values,
-                          PurchaseContactName: "",
-                          PurchaseContactPosition: "",
-                          PurchaseContactEmail: "",
-                          PurchaseContactPhone: "",
-                          PurchaseContactCellphone: "",
-                        })
-                      }
-                      setShowPurchaseFields(!showPurchaseFields)
-                    }}
-                  />
-                }
+                control={<Checkbox checked={showPurchaseFields} disabled />}
                 label="COMPRAS"
               />
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showWarehouseFields}
-                    onChange={() => {
-                      if (!showWarehouseFields) {
-                        formik.setValues({
-                          ...formik.values,
-                          WarehouseContactName: "",
-                          WarehouseContactPosition: "",
-                          WarehouseContactEmail: "",
-                          WarehouseContactPhone: "",
-                          WarehouseContactCellphone: "",
-                        })
-                      }
-                      setShowWarehouseFields(!showWarehouseFields)
-                    }}
-                  />
-                }
+                control={<Checkbox checked={showWarehouseFields} disabled />}
                 label="ALMACÉN"
               />
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showAfterSalesFields}
-                    onChange={() => {
-                      if (!showAfterSalesFields) {
-                        formik.setValues({
-                          ...formik.values,
-                          AfterSalesContactName: "",
-                          AfterSalesContactPosition: "",
-                          AfterSalesContactEmail: "",
-                          AfterSalesContactPhone: "",
-                          AfterSalesContactCellphone: "",
-                        })
-                      }
-                      setShowAfterSalesFields(!showAfterSalesFields)
-                    }}
-                  />
-                }
+                control={<Checkbox checked={showAfterSalesFields} disabled />}
                 label="POSVENTA"
               />
             </div>

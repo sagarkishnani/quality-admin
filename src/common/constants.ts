@@ -38,7 +38,10 @@ export const ConstantMessage = {
 export const ConstantCompanyMessage = {
     COMPANY_REGISTER_SUCCESS: 'La empresa se registró correctamente',
     COMPANY_LOGO_NOT_UPLOADED: 'Logo de empresa es obligatorio',
-    COMPANY_LOGO_ERROR: 'Error al subir imagen'
+    COMPANY_LOGO_ERROR: 'Error al subir imagen',
+    COMPANY_DELETE_QUESTION: '¿Está seguro de eliminar la empresa?',
+    COMPANY_DELETE_ERROR: 'Hubo un error al eliminar',
+    COMPANY_DELETE: 'La empresa se eliminó correctamente'
 }
 
 export const ConstantTicketMessage = {
@@ -51,6 +54,7 @@ export const ConstantTicketMessage = {
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
     TICKET_CANCEL_ERROR: 'Hubo un error al cancelar',
     TICKET_IMAGE_ERROR: 'Hubo un error al subir la imagen',
+    TICKET_SIGNATURE_ERROR: 'Hubo un error al subir la firma',
     TICKET_REGISTER_ERROR: 'Hubo un error al registrar el ticket',
     TICKET_SERVICE_REGISTER_ERROR: 'Hubo un error al registrar el servicio'
 }
@@ -101,7 +105,9 @@ export const ConstantLocalStorage = {
     TICKET_STEP_THREE_FORM_THREE: 'localStorageTicketStepThreeFormThree',
     TICKET_STEP_THREE_FORM_FOUR: 'localStorageTicketStepThreeFormFour',
     TICKET_STEP_THREE_FORM_FIVE: 'localStorageTicketStepThreeFormFive',
-    USER: 'localStorageUser'
+    TICKET_FACTURABLE: 'localStorageFacturable',
+    USER: 'localStorageUser',
+    LOCATION: 'localStorageLocation'
 }
 
 export const ConstantStorageBuckets = {

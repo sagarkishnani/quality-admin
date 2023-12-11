@@ -1,40 +1,40 @@
-import { HiSearch } from "react-icons/hi";
-import { Button } from "../../../../common/components/Button/Button";
-import { CompanyListTable } from "./CompanyListTable/CompanyListTable";
-import { useEffect, useState } from "react";
-import { CompanyService } from "../../../../common/services/CompanyService";
-import { Skeleton } from "@mui/material";
-import { Link } from "react-router-dom";
+import { HiSearch } from "react-icons/hi"
+import { Button } from "../../../../common/components/Button/Button"
+import { CompanyListTable } from "./CompanyListTable/CompanyListTable"
+import { useEffect, useState } from "react"
+import { CompanyService } from "../../../../common/services/CompanyService"
+import { Skeleton } from "@mui/material"
+import { Link } from "react-router-dom"
 
 export const CompanyListTableContainer = () => {
-  const [companies, setCompanies] = useState([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [companies, setCompanies] = useState([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [searchValue, setSearchValue] = useState<string>("")
 
   async function getCompanies() {
-    const data = await CompanyService.getCompanies();
+    const data = await CompanyService.getCompanies()
     if (data) {
-      setCompanies(data);
+      setCompanies(data)
     }
   }
 
   async function getAll() {
-    setIsLoading(true);
-    await getCompanies();
-    setIsLoading(false);
+    setIsLoading(true)
+    await getCompanies()
+    setIsLoading(false)
   }
 
   const filteredCompanies = companies.filter((company: any) => {
-    const searchText = searchValue.toLowerCase();
+    const searchText = searchValue.toLowerCase()
     return (
       company?.Ruc.toString().includes(searchText) ||
       company?.Name.toLowerCase().includes(searchText)
-    );
-  });
+    )
+  })
 
   useEffect(() => {
-    getAll();
-  }, []);
+    getAll()
+  }, [])
 
   return (
     <div className="p-8 flex-1">
@@ -75,7 +75,9 @@ export const CompanyListTableContainer = () => {
           <Skeleton height={40} animation="wave" />
         </div>
       )}
-      {!isLoading && <CompanyListTable rows={filteredCompanies} />}
+      {!isLoading && (
+        <CompanyListTable rows={filteredCompanies} handleReload={getAll} />
+      )}
     </div>
-  );
-};
+  )
+}

@@ -17,30 +17,7 @@ import { TicketRegisterViewFormFour } from "../../TicketRegisterView/TicketRegis
 import { TicketRegisterViewFormFive } from "../../TicketRegisterView/TicketRegisterViewContainer/TicketRegisterViewFormFive/TicketRegisterViewFormFive"
 import { TicketRegisterViewFormSix } from "../../TicketRegisterView/TicketRegisterViewContainer/TicketRegisterViewFormSix/TicketRegisterViewFormSix"
 
-const validationSchema = yup.object({
-  // Dni: yup
-  //   .string()
-  //   .required()
-  //   .matches(/^[0-9]+$/, "Deben ser solo números")
-  //   .min(8, "El DNI debe tener como mínimo 8 caracteres")
-  //   .max(8, "El DNI debe tener como máximo 8 caracteres"),
-  // Name: yup
-  //   .string()
-  //   .required("Nombre es obligatorio")
-  //   .min(3, "El Nombre debe tener como mínimo 3 caracteres"),
-  // PhoneNumber: yup.number().required("Celular es obligatorio"),
-  // IdRole: yup.string().required("Rol es obligatorio"),
-  // IdCompany: yup.string().required("Empresa es obligatorio"),
-  // Position: yup.string().required("Cargo es obligatorio"),
-  // email: yup
-  //   .string()
-  //   .required("Correo es obligatorio")
-  //   .email("Debe ser un correo"),
-  // password: yup
-  //   .string()
-  //   .min(6, "La contraseña debe tener como mínimo 6 caracteres")
-  //   .required("Contraseña es obligatoria"),
-})
+const validationSchema = yup.object({})
 
 export const TicketRegisterStepFourContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)

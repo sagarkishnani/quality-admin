@@ -27,10 +27,9 @@ import { TicketRegisterStepFour } from "../../../pages/Ticket/TicketRegisterStep
 import { TicketRegisterView } from "../../../pages/Ticket/TicketRegisterView/TicketRegisterView"
 import { WelcomeScreen } from "../../../pages/Welcome/WelcomeScreen/WelcomeScreen"
 import { Welcome } from "../../../pages/Welcome/Welcome"
+import { CompanyEdit } from "../../../pages/Company/CompanyEdit/CompanyEdit"
 
 export const Layout = () => {
-  const { user } = useAuth()
-
   return (
     <>
       <Sidebar />
@@ -64,6 +63,7 @@ export const Layout = () => {
             <Route path="/empresas" element={<Company />}>
               <Route index element={<CompanyList />} />
               <Route path="nueva" element={<CompanyRegister />} />
+              <Route path="editar" element={<CompanyEdit />} />
               <Route path="ver" element={<CompanyView />} />
             </Route>
             <Route path="/usuarios" element={<User />}>

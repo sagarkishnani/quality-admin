@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
-import { Link } from "react-router-dom";
-import { Button } from "../../../../common/components/Button/Button";
-import { Skeleton } from "@mui/material";
-import { UserListTable } from "./UserListTable/UserListTable";
-import { HiSearch } from "react-icons/hi";
-import { UserService } from "../../../../common/services/UserService";
+import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
+import { Button } from "../../../../common/components/Button/Button"
+import { Skeleton } from "@mui/material"
+import { UserListTable } from "./UserListTable/UserListTable"
+import { HiSearch } from "react-icons/hi"
+import { UserService } from "../../../../common/services/UserService"
 
 export const UserListTableContainer = () => {
-  const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [users, setUsers] = useState([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [searchValue, setSearchValue] = useState<string>("")
 
   async function getUsers() {
-    const data = await UserService.getUsers();
+    const data = await UserService.getUsers()
     if (data) {
       const output_data = data.map((entry) => ({
         IdUser: entry.IdUser,
@@ -23,28 +22,28 @@ export const UserListTableContainer = () => {
         PhoneNumber: entry.PhoneNumber,
         Company: entry?.Company.Name,
         Role: entry?.Role.Name,
-      }));
-      setUsers(output_data);
+      }))
+      setUsers(output_data)
     }
   }
 
   async function getAll() {
-    setIsLoading(true);
-    await getUsers();
-    setIsLoading(false);
+    setIsLoading(true)
+    await getUsers()
+    setIsLoading(false)
   }
 
   const filteredUsers = users.filter((user: any) => {
-    const searchText = searchValue.toLowerCase();
+    const searchText = searchValue.toLowerCase()
     return (
       user?.Name.toLowerCase().includes(searchText) ||
       (user?.Dni).toString().toLowerCase().includes(searchText)
-    );
-  });
+    )
+  })
 
   useEffect(() => {
-    getAll();
-  }, []);
+    getAll()
+  }, [])
 
   return (
     <div className="p-8 flex-1">
@@ -89,5 +88,5 @@ export const UserListTableContainer = () => {
         <UserListTable rows={filteredUsers} handleReload={getAll} />
       )}
     </div>
-  );
-};
+  )
+}

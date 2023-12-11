@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid"
 import { useState, useEffect } from "react"
 import { UserService } from "../../../common/services/UserService"
 import { ConstantStorageBuckets } from "../../../common/constants"
+import unknownUser from "../../../assets/images/user/unknown.png"
 
 export const ProfileForm = () => {
   const supabaseImgUrl =
@@ -67,7 +68,11 @@ export const ProfileForm = () => {
             <div className="w-52 h-52 rounded-full bg-qBlue">
               <img
                 className=" rounded-full w-full h-full object-cover"
-                src={supabaseUrl + supabaseImgUrl + "/" + user?.ImageUrl}
+                src={
+                  user?.ImageUrl == null
+                    ? unknownUser
+                    : supabaseUrl + supabaseImgUrl + "/" + user?.ImageUrl
+                }
                 alt="perfil"
               />
             </div>
@@ -131,7 +136,7 @@ export const ProfileForm = () => {
               className="w-full"
               id="Company"
               name="Company"
-              label="Empresa"
+              label="Empresa / Local Actual"
               value={user?.Company.Name}
             />
           </div>

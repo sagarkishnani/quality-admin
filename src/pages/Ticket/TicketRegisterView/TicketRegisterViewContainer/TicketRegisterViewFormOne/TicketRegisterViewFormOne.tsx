@@ -197,19 +197,19 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             label="Usuario"
           />
         </div>
-        {ticket?.TicketStatus?.Name == "Pendiente" ||
-          (ticket?.TicketStatus?.Name == "En progreso" && (
-            <div className="col-span-12">
-              <textarea
-                className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2 bg-white text-gray-400"
-                disabled
-                name="ReportedFailure"
-                id="ReportedFailure"
-                rows={3}
-                value={formik.values.ReportedFailure}
-              ></textarea>
-            </div>
-          ))}
+        {(ticket?.TicketStatus?.Name == "Pendiente" ||
+          ticket?.TicketStatus?.Name == "En progreso") && (
+          <div className="col-span-12">
+            <textarea
+              className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2 bg-white text-gray-400"
+              disabled
+              name="ReportedFailure"
+              id="ReportedFailure"
+              rows={3}
+              value={formik.values.ReportedFailure}
+            ></textarea>
+          </div>
+        )}
         {ticket?.TicketStatus?.Name == "En progreso" && (
           <div className="col-span-12">
             <TextField
@@ -218,7 +218,12 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
               className="w-full"
               id="IdTechnician"
               name="IdTechnician"
-              value={formik.values.IdTechnician}
+              value={
+                formik.values.IdTechnician === "" ||
+                formik.values.IdTechnician === null
+                  ? "Técnico de garantía"
+                  : formik.values.IdTechnician
+              }
               label="Técnico"
             />
           </div>
@@ -232,6 +237,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
           <div className="flex flex-row space-x-2 mt-4">
             {pictures.map((picture, index) => (
               <div
+                key={index}
                 className="w-16 h-16 relative cursor-pointer"
                 onClick={() =>
                   handleOpenImageModal(
@@ -240,7 +246,6 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
                 }
               >
                 <img
-                  key={index}
                   className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
                   src={supabaseUrl + bucketUrl + picture.FileUrl}
                 />

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { TicketListTable } from "./TicketListTable/TicketListTable"
-import { HiSearch } from "react-icons/hi"
+import { HiRefresh, HiSearch } from "react-icons/hi"
 import { Button } from "../../../../common/components/Button/Button"
 import { TicketService } from "../../../../common/services/TicketService"
 import { Link } from "react-router-dom"
-import { Skeleton } from "@mui/material"
+import { Skeleton, Tooltip } from "@mui/material"
 import { FilteredTicketsRequest } from "../../../../common/interfaces/Ticket.interface"
 import { useTicket } from "../../../../common/contexts/TicketContext"
 import { useAuth } from "../../../../common/contexts/AuthContext"
@@ -47,7 +47,12 @@ export const TicketListTableContainer = () => {
         Status: entry?.Status,
         Type: entry.Type !== null ? entry.Type : "NO DEFINIDO",
         Technician:
-          entry?.IdTechnician !== null ? entry?.Technician : "NO ASIGNADO",
+          entry?.IdTechnician !== null
+            ? entry?.Technician
+            : entry?.Technician == null && entry?.IsGuaranteeTechnician
+            ? "Técnico de garantía"
+            : "NO ASIGNADO",
+        IsGuaranteeTechnician: entry?.IsGuaranteeTechnician,
         RecordCreationDate: entry.RecordCreationDate,
         AppointmentDate: entry.AppointmentDate,
       }))
@@ -61,7 +66,12 @@ export const TicketListTableContainer = () => {
         Status: entry?.Status,
         Type: entry.Type !== null ? entry.Type : "NO DEFINIDO",
         Technician:
-          entry?.IdTechnician !== null ? entry?.Technician : "NO ASIGNADO",
+          entry?.IdTechnician !== null
+            ? entry?.Technician
+            : entry?.Technician == null && entry?.IsGuaranteeTechnician
+            ? "Técnico de garantía"
+            : "NO ASIGNADO",
+        IsGuaranteeTechnician: entry?.IsGuaranteeTechnician,
         RecordCreationDate: entry.RecordCreationDate,
         AppointmentDate: entry.AppointmentDate,
       }))
@@ -108,8 +118,15 @@ export const TicketListTableContainer = () => {
               onChange={(e) => setSearchValue(e.target.value)}
             />
           </div>
+          {/* <div className="cursor-pointer ml-4">
+            <Tooltip title="Refrescar">
+              <button onClick={getAll}>
+                <HiRefresh color="#989898" size={"20"} />
+              </button>
+            </Tooltip>
+          </div> */}
         </div>
-        {user?.IdRole !== ConstantRoles.TECNICO && (
+        {user?.IdRole === ConstantRoles.USUARIO && (
           <div className="mr-6">
             <Link to={"nuevo"}>
               <Button type="button" color="#74C947" label="Agregar ticket" />

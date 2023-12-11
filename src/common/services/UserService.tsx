@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import {
+  UserCompanyRegister,
   UserEditRequest,
   UserRegisterRequest,
 } from "../interfaces/User.interface"
@@ -30,7 +31,7 @@ async function getUserById(IdUser: string) {
   try {
     const { data, error } = await supabase
       .from("User")
-      .select("*, Company (Name), Role (Name)")
+      .select("*, Company (IdCompany, Name, Address, Ruc, Local), Role (Name)")
       .eq("IdUser", IdUser)
 
     if (error) {
@@ -64,11 +65,102 @@ async function getUsersByRole(IdRole: string) {
   }
 }
 
+// async function registerUserFunc(request: UserRegisterRequest) {
+//   try {
+//     const { data, error } = await supabase.functions.invoke("register-user", {
+//       body: request,
+//     })
+//     if (error) {
+//       console.warn(error)
+//       return error
+//     } else if (data) {
+//       return data
+//     }
+//   } catch (error) {
+//     console.error("Error al registrar usuario:", error)
+//     return error
+//   }
+// }
+
 async function registerUser(request: UserRegisterRequest) {
   try {
-    const { data, error } = await supabase.functions.invoke("register-user", {
-      body: request,
+    const { user, error } = await signUpUser(request.email, request.password)
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (user) {
+      const { IdUser, error: errorData } = await registerUserBase(
+        user.id,
+        request
+      )
+      if (errorData) {
+        console.warn(error)
+        return error
+      } else if (IdUser) {
+        return IdUser
+      }
+    }
+  } catch (error) {
+    console.error("Error al registrar usuario:", error)
+    return error
+  }
+}
+
+// async function editUser(request: UserEditRequest) {
+//   try {
+//     const { data, error } = await supabase.functions.invoke("edit-user", {
+//       body: request,
+//     })
+//     if (error) {
+//       console.warn(error)
+//       return error
+//     } else if (data) {
+//       return data
+//     }
+//   } catch (error) {
+//     console.error("Error al editar usuario:", error)
+//     return error
+//   }
+// }
+
+async function registerUserBase(idUser: string, request: UserRegisterRequest) {
+  try {
+    const { data, error } = await supabase
+      .from("User")
+      .insert([
+        {
+          IdUser: idUser,
+          email: request.email,
+          Name: request.Name,
+          PhoneNumber: request.PhoneNumber,
+          IdRole: request.IdRole,
+          IdCompany: request.IdCompany,
+          Dni: request.Dni,
+          ImageUrl: request.ImageUrl,
+          Position: request.Position,
+        },
+      ])
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return data[0]
+    }
+  } catch (error) {
+    console.error("Error al registrar usuario:", error)
+    return error
+  }
+}
+
+async function signUpUser(email: string, password: string) {
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
     })
+
     if (error) {
       console.warn(error)
       return error
@@ -83,14 +175,16 @@ async function registerUser(request: UserRegisterRequest) {
 
 async function editUser(request: UserEditRequest) {
   try {
-    const { data, error } = await supabase.functions.invoke("edit-user", {
-      body: request,
-    })
+    // const { user, error } = await editSignUpUser(request.email)
+    // if (error) {
+    //   console.warn(error)
+    //   return error
+    const { IdUser, error } = await editUserBase(request.IdUser, request)
     if (error) {
       console.warn(error)
       return error
-    } else if (data) {
-      return data
+    } else if (IdUser) {
+      return IdUser
     }
   } catch (error) {
     console.error("Error al editar usuario:", error)
@@ -98,11 +192,12 @@ async function editUser(request: UserEditRequest) {
   }
 }
 
-// async function deleteUser(idUser: string) {
+// async function editSignUpUser(email: string) {
 //   try {
-//     const { data, error } = await supabase.functions.invoke("delete-user", {
-//       body: idUser,
+//     const { data, error } = await supabase.auth.updateUser({
+//       email,
 //     })
+
 //     if (error) {
 //       console.warn(error)
 //       return error
@@ -110,10 +205,83 @@ async function editUser(request: UserEditRequest) {
 //       return data
 //     }
 //   } catch (error) {
-//     console.error("Error al eliminar usuario:", error)
+//     console.error("Error al editar usuario:", error)
 //     return error
 //   }
 // }
+
+async function editUserBase(idUser: string, request: UserEditRequest) {
+  try {
+    const { data, error } = await supabase
+      .from("User")
+      .update([
+        {
+          email: request.email,
+          Name: request.Name,
+          PhoneNumber: request.PhoneNumber,
+          IdRole: request.IdRole,
+          IdCompany: request.IdCompany,
+          Dni: request.Dni,
+          Position: request.Position,
+        },
+      ])
+      .eq("IdUser", idUser)
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return data[0]
+    }
+  } catch (error) {
+    console.error("Error al editar usuario:", error)
+    return error
+  }
+}
+
+async function registerUserCompany(request: UserCompanyRegister) {
+  try {
+    const { data, error, status } = await supabase
+      .from("UserCompany")
+      .insert([
+        {
+          IdUser: request.IdUser,
+          IdCompany: request.IdCompany,
+        },
+      ])
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar compañía del usuario:", error)
+    return error
+  }
+}
+
+async function deleteUserCompany(idUser: string) {
+  try {
+    const { error, status } = await supabase
+      .from("UserCompany")
+      .delete()
+      .eq("IdUser", idUser)
+
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (status) {
+      return { status }
+    }
+  } catch (error) {
+    console.error("Error al editar compañía del usuario:", error)
+    return error
+  }
+}
 
 async function deleteUser(idUser: string) {
   try {
@@ -213,10 +381,12 @@ export const UserService = {
   getUserById,
   getUsersByRole,
   registerUser,
+  registerUserCompany,
   editUser,
   deleteUser,
   loginUser,
   logoutUser,
   uploadUserPicture,
   updatePicture,
+  deleteUserCompany,
 }

@@ -1,77 +1,81 @@
-import { useFormik } from "formik";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
+import { useFormik } from "formik"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
 import {
+  Box,
+  Chip,
   FormControl,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   Skeleton,
   TextField,
-} from "@mui/material";
-import { Link } from "react-router-dom";
-import { HiChevronLeft } from "react-icons/hi";
-import { useEffect, useState } from "react";
-import secureLocalStorage from "react-secure-storage";
+} from "@mui/material"
+import { Link } from "react-router-dom"
+import { HiChevronLeft } from "react-icons/hi"
+import { useEffect, useState } from "react"
+import secureLocalStorage from "react-secure-storage"
 import {
   ConstantLocalStorage,
   ConstantStorageBuckets,
   ConstantsMasterTable,
-} from "../../../../common/constants";
-import { CompanyService } from "../../../../common/services/CompanyService";
-import { UserService } from "../../../../common/services/UserService";
-import { RoleService } from "../../../../common/services/RoleService";
-import { useAuth } from "../../../../common/contexts/AuthContext";
+} from "../../../../common/constants"
+import { UserService } from "../../../../common/services/UserService"
+import { RoleService } from "../../../../common/services/RoleService"
+import unknownUser from "../../../../assets/images/user/unknown.png"
+import { UserCompanyService } from "../../../../common/services/UserCompanyService"
+import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 
 export const UserViewContainer = () => {
   const supabaseImgUrl =
     import.meta.env.VITE_REACT_APP_SUPABASE_STORAGE_URL +
-    ConstantStorageBuckets.USER;
-  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
+    ConstantStorageBuckets.USER
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [userData, setUserData] = useState<any>(null);
-  const [companies, setCompanies] = useState<any[]>([]);
-  const [roles, setRoles] = useState<any[]>([]);
-  const [positions, setPositions] = useState<any[]>([]);
-  const { user } = useAuth();
-
-  async function getCompanies() {
-    const data = await CompanyService.getCompanies();
-    if (data) {
-      setCompanies(data);
-    }
-  }
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [userData, setUserData] = useState<any>(null)
+  const [userCompanies, setUserCompanies] = useState<any[]>([])
+  const [roles, setRoles] = useState<any[]>([])
+  const [positions, setPositions] = useState<MasterTable[]>([])
 
   async function getRoles() {
-    const data = await RoleService.getRoles();
+    const data = await RoleService.getRoles()
     if (data) {
-      setRoles(data);
+      setRoles(data)
     }
   }
 
   async function getPositions() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.POSITIONS
-    );
+    )
     if (data) {
-      setPositions(data);
+      setPositions(data)
     }
   }
 
   async function getUserById(idUser: string) {
-    const data = await UserService.getUserById(idUser);
+    const data = await UserService.getUserById(idUser)
     if (data) {
-      setUserData(data);
+      setUserData(data)
+    }
+  }
+
+  async function getUserCompanies(idUser: string) {
+    const data = await UserCompanyService.getUserCompanies(idUser)
+    if (data) {
+      const onlyCompanies = data.map((item) => item.Company)
+      setUserCompanies(onlyCompanies)
     }
   }
 
   async function getAll(idUser: string) {
-    setIsLoading(true);
-    await getCompanies();
-    await getRoles();
-    await getPositions();
-    await getUserById(idUser);
-    setIsLoading(false);
+    setIsLoading(true)
+    await getRoles()
+    await getPositions()
+    await getUserById(idUser)
+    await getUserCompanies(idUser)
+    setIsLoading(false)
   }
 
   const formik = useFormik({
@@ -85,14 +89,14 @@ export const UserViewContainer = () => {
       email: "",
     },
     onSubmit: (values) => {},
-  });
+  })
 
   useEffect(() => {
-    const idUser = secureLocalStorage.getItem(ConstantLocalStorage.ID_USER);
+    const idUser = secureLocalStorage.getItem(ConstantLocalStorage.ID_USER)
     if (idUser !== null) {
-      getAll(idUser);
+      getAll(idUser)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (userData) {
@@ -104,9 +108,9 @@ export const UserViewContainer = () => {
         PhoneNumber: userData.PhoneNumber || 0,
         Position: userData.Position || "",
         email: userData.email || "",
-      });
+      })
     }
-  }, [userData]);
+  }, [userData])
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
@@ -127,7 +131,14 @@ export const UserViewContainer = () => {
                   <div className="w-20 h-20 rounded-full bg-qBlue">
                     <img
                       className=" rounded-full w-full h-full object-cover"
-                      src={supabaseUrl + supabaseImgUrl + "/" + user?.ImageUrl}
+                      src={
+                        userData?.ImageUrl !== null
+                          ? supabaseUrl +
+                            supabaseImgUrl +
+                            "/" +
+                            userData?.ImageUrl
+                          : unknownUser
+                      }
                       alt="perfil"
                     />
                   </div>
@@ -185,7 +196,7 @@ export const UserViewContainer = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div className="col-span-6">
+              {/* <div className="col-span-6">
                 <FormControl fullWidth>
                   <InputLabel id="CompanyLabel">Empresa</InputLabel>
                   <Select
@@ -205,7 +216,7 @@ export const UserViewContainer = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </div>
+              </div> */}
               <div className="col-span-6">
                 <FormControl fullWidth>
                   <InputLabel id="PositionLabel">Cargo</InputLabel>
@@ -216,7 +227,7 @@ export const UserViewContainer = () => {
                     name="Position"
                     value={formik.values.Position}
                   >
-                    {positions?.map((position: any) => (
+                    {positions?.map((position: MasterTable) => (
                       <MenuItem
                         key={position.IdMasterTable}
                         value={position.IdMasterTable}
@@ -237,6 +248,32 @@ export const UserViewContainer = () => {
                   value={formik.values.email}
                   label="Correo"
                 />
+              </div>
+              <div className="col-span-12">
+                <FormControl fullWidth>
+                  <InputLabel id="CompanyLabel">Empresas</InputLabel>
+                  <Select
+                    disabled
+                    labelId="CompanyLabel"
+                    id="Companies"
+                    value={userCompanies}
+                    input={
+                      <OutlinedInput id="Companies" label="CompanyLabel" />
+                    }
+                    renderValue={() => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {userCompanies.map((company) => {
+                          return (
+                            <Chip
+                              key={company?.IdCompany}
+                              label={company?.Name}
+                            />
+                          )
+                        })}
+                      </Box>
+                    )}
+                  ></Select>
+                </FormControl>
               </div>
             </div>
           )}
@@ -268,17 +305,14 @@ export const UserViewContainer = () => {
               </h4>
             </div>
             <div className="col-span-2 text-sm text-qBlack">
-              1. El usuario podrá cambiar su contraseña en el login en "Olvidé
-              contraseña"
+              1. El usuario solo podrá cambiar su foto de perfil en "Mis Datos".{" "}
               <br /> <br />
-              2. El usuario solo podrá cambiar su foto de perfil en "Mis Datos".{" "}
-              <br /> <br />
-              3. Siempre mantener datos del usuario actualizados para envío de
+              2. Siempre mantener datos del usuario actualizados para envío de
               correos. <br />
             </div>
           </div>
         </div>
       </div>
     </form>
-  );
-};
+  )
+}

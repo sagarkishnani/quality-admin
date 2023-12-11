@@ -200,6 +200,7 @@ async function registerTicketStepTwo(
       .from("Ticket")
       .update({
         IdTechnician: request.IdTechnician,
+        IsGuaranteeTechnician: request.IsGuaranteeTechnician,
         ScheduledAppointmentTime: request.ScheduledAppointmentTime,
         ScheduledAppointmentDate: request.ScheduledAppointmentDate,
         IdTicketStatus: ConstantTicketStatus.EN_PROGRESO,

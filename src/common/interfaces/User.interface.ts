@@ -1,3 +1,5 @@
+
+
 export interface UserRegisterRequest {
     Dni: number;
     Name: string;
@@ -5,18 +7,22 @@ export interface UserRegisterRequest {
     IdRole: string;
     IdCompany: string;
     ImageUrl?: string;
+    Companies: string[];
+    Position: string;
     email: string;
     password: string;
 }
 
 export interface UserEditRequest {
+    IdUser: string;
     Dni: number;
     Name: string;
     PhoneNumber: number;
     IdRole: string;
     IdCompany: string;
+    Companies: string[];
     ImageUrl?: string;
-    email: string;
+    Position: string;
 }
 
 export interface User {
@@ -39,5 +45,19 @@ export interface UserRole {
 }
 
 export interface UserCompany {
+    IdCompany: string;
+    Name: string;
+    Address: string;
+    Ruc: string;
+    Local: string;
+}
+
+export interface UserCompanyRegister {
+    IdUser: string;
+    IdCompany: string;
+}
+
+export interface GetUserCompany {
+    IdCompany: string;
     Name: string;
 }

@@ -214,6 +214,7 @@ export const TicketRegisterCompleteFormOne = ({
             <div className="flex flex-row space-x-2 mt-4">
               {pictures?.map((picture, index) => (
                 <div
+                  key={index}
                   className="w-16 h-16 relative cursor-pointer"
                   onClick={() =>
                     handleOpenImageModal(
@@ -222,7 +223,6 @@ export const TicketRegisterCompleteFormOne = ({
                   }
                 >
                   <img
-                    key={index}
                     className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
                     src={supabaseUrl + bucketUrl + picture.FileUrl}
                   />

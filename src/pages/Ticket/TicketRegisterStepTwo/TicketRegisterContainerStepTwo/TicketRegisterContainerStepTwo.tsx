@@ -13,7 +13,6 @@ import {
 } from "@mui/material"
 import { Button } from "../../../../common/components/Button/Button"
 import { Modal } from "../../../../common/components/Modal/Modal"
-import { useAuth } from "../../../../common/contexts/AuthContext"
 import { TicketService } from "../../../../common/services/TicketService"
 import secureLocalStorage from "react-secure-storage"
 import {
@@ -55,8 +54,6 @@ export const TicketRegisterContainerStepTwo = () => {
   const [modalMessage, setModalMessage] = useState("")
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [technicians, setTechnicians] = useState<any[]>([])
-  const [areas, setAreas] = useState<MasterTable[]>([])
-  const [floors, setFloors] = useState<MasterTable[]>([])
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const navigate = useNavigate()
@@ -74,24 +71,6 @@ export const TicketRegisterContainerStepTwo = () => {
 
   const handleCloseImageModal = () => {
     setIsImageModal(false)
-  }
-
-  async function getAreas() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.AREAS
-    )
-    if (data) {
-      setAreas(data)
-    }
-  }
-
-  async function getFloors() {
-    const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.FLOORS
-    )
-    if (data) {
-      setFloors(data)
-    }
   }
 
   async function getTechnicians() {
@@ -112,8 +91,6 @@ export const TicketRegisterContainerStepTwo = () => {
     setIsLoading(true)
     await getTicketById(idTicket)
     await getTechnicians()
-    await getAreas()
-    await getFloors()
     setIsLoading(false)
   }
 
@@ -158,7 +135,14 @@ export const TicketRegisterContainerStepTwo = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      registerTicketStepTwo(values)
+      const request: TicketRegisterStepTwoRequest = {
+        IdTechnician: values.IdTechnician == "-1" ? null : values.IdTechnician,
+        IsGuaranteeTechnician: values.IdTechnician == "-1" ? true : false,
+        ScheduledAppointmentDate: values.ScheduledAppointmentDate,
+        ScheduledAppointmentTime: values.ScheduledAppointmentTime,
+      }
+
+      registerTicketStepTwo(request)
     },
   })
 
@@ -281,6 +265,7 @@ export const TicketRegisterContainerStepTwo = () => {
                   <div className="flex flex-row space-x-2 mt-4">
                     {ticket?.TicketFile?.map((picture, index) => (
                       <div
+                        key={index}
                         className="w-16 h-16 relative cursor-pointer"
                         onClick={() =>
                           handleOpenImageModal(
@@ -289,7 +274,6 @@ export const TicketRegisterContainerStepTwo = () => {
                         }
                       >
                         <img
-                          key={index}
                           className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
                           src={supabaseUrl + bucketUrl + picture.FileUrl}
                         />
@@ -373,6 +357,7 @@ export const TicketRegisterContainerStepTwo = () => {
                     value={formik.values.IdTechnician}
                     onChange={formik.handleChange}
                   >
+                    <MenuItem value={"-1"}>Técnico de garantía</MenuItem>
                     {technicians?.map((technician: any) => (
                       <MenuItem
                         key={technician.IdUser}

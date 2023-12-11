@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
+import { v4 as uuidv4 } from "uuid"
 import {
+  ConstantFilePurpose,
   ConstantHttpErrors,
   ConstantLocalStorage,
   ConstantMessage,
@@ -10,6 +12,7 @@ import {
 import { useFormik } from "formik"
 import {
   GetTicketById,
+  TicketRegisterAndUploadImage,
   TicketRegisterStepThreeRequest,
 } from "../../../../../common/interfaces/Ticket.interface"
 import { Link, useNavigate } from "react-router-dom"
@@ -28,6 +31,8 @@ import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { ModalTicket } from "./ModalTicket/ModalTicket"
 import { TicketAnswerService } from "../../../../../common/services/TicketAnswerService"
+import { TicketRegisterStepThreePicture } from "../../../../../common/interfaces/Ticket.interface"
+import { dataURLtoFile } from "../../../../../common/utils"
 
 const validationSchema = yup.object({
   Comment: yup
@@ -76,8 +81,32 @@ export const TicketRegisterCompleteFormSix = () => {
   const [modalMessage, setModalMessage] = useState("")
   const firstSignature = useRef(null)
   const secondSignature = useRef(null)
+  const [firstSignatureImg, setFirstSignatureImg] = useState<string>("")
+  const [secondSignatureImg, setSecondSignatureImg] = useState<string>("")
   const navigate = useNavigate()
   const { setTicketStep } = useTicket()
+
+  const onChangeFirstSignature = (e: any) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setFirstSignatureImg(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const onChangeSecondSignature = (e: any) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setSecondSignatureImg(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   async function getTicketById(idTicket: string) {
     const data = await TicketService.getTicketById(idTicket)
@@ -143,6 +172,18 @@ export const TicketRegisterCompleteFormSix = () => {
       : secondSignature?.current.clear()
   }
 
+  const handleSaveCanvasOne = () => {
+    if (firstSignature.current) {
+      return firstSignature.current.canvas.drawing.toDataURL()
+    }
+  }
+
+  const handleSaveCanvasTwo = () => {
+    if (secondSignature.current) {
+      return secondSignature.current.canvas.drawing.toDataURL()
+    }
+  }
+
   const handleCloseModal = () => {
     setIsModalOpen(false)
   }
@@ -163,8 +204,10 @@ export const TicketRegisterCompleteFormSix = () => {
       StepSix: {
         Comment: formik.values.Comment,
         Recommendation: formik.values.Recommendation,
+        ResponsibleSignature: validateSignature(true),
         ResponsibleDni: formik.values.ResponsibleDni,
         ResponsibleName: formik.values.ResponsibleName,
+        TechnicianSignature: validateSignature(false),
         TechnicianDni: formik.values.TechnicianDni,
         TechnicianName: formik.values.TechnicianName,
       },
@@ -184,6 +227,70 @@ export const TicketRegisterCompleteFormSix = () => {
       )
 
       if (status == ConstantHttpErrors.CREATED) {
+        for (const picture of request.StepTwo.Pictures) {
+          const picReq: TicketRegisterAndUploadImage = {
+            IdTicket: ticket.IdTicket,
+            file: dataURLtoFile(picture.Content),
+            FilePurpose: ConstantFilePurpose.IMAGEN_TECNICO,
+            imgName: uuidv4(),
+          }
+
+          const { status: picStatus }: any =
+            await TicketService.ticketRegisterAndUploadImage(picReq)
+
+          if (
+            picStatus !== ConstantHttpErrors.CREATED &&
+            picStatus !== ConstantHttpErrors.OK
+          ) {
+            setIsLoadingAction(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
+            return
+          }
+
+          const signOneRequest: TicketRegisterAndUploadImage = {
+            IdTicket: ticket.IdTicket,
+            file: dataURLtoFile(request.StepSix.ResponsibleSignature.Content),
+            FilePurpose: request.StepSix.ResponsibleSignature.FilePurpose,
+            imgName: uuidv4(),
+          }
+
+          const { status: signOneStatus }: any =
+            await TicketService.ticketRegisterAndUploadImage(signOneRequest)
+
+          if (
+            signOneStatus !== ConstantHttpErrors.CREATED &&
+            signOneStatus !== ConstantHttpErrors.OK
+          ) {
+            setIsLoadingAction(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_SIGNATURE_ERROR)
+            return
+          }
+
+          const signTwoRequest: TicketRegisterAndUploadImage = {
+            IdTicket: ticket.IdTicket,
+            file: dataURLtoFile(request.StepSix.TechnicianSignature.Content),
+            FilePurpose: request.StepSix.TechnicianSignature.FilePurpose,
+            imgName: uuidv4(),
+          }
+
+          const { status: signTwoStatus }: any =
+            await TicketService.ticketRegisterAndUploadImage(signTwoRequest)
+
+          if (
+            signTwoStatus !== ConstantHttpErrors.CREATED &&
+            signTwoStatus !== ConstantHttpErrors.OK
+          ) {
+            setIsLoadingAction(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_SIGNATURE_ERROR)
+            return
+          }
+        }
         setIsModalTicketOpen(false)
         setIsModalOpen(true)
         setModalType("success")
@@ -202,6 +309,26 @@ export const TicketRegisterCompleteFormSix = () => {
         setIsModalOpen(true)
         setModalType("error")
         setModalMessage(ConstantMessage.SERVICE_ERROR)
+      }
+    }
+  }
+
+  const validateSignature = (
+    isResponsible: boolean
+  ): TicketRegisterStepThreePicture => {
+    if (formik.values.Firma == "U") {
+      return {
+        Content: isResponsible ? firstSignatureImg : secondSignatureImg,
+        FilePurpose: isResponsible
+          ? ConstantFilePurpose.FIRMA_USUARIO
+          : ConstantFilePurpose.FIRMA_TECNICO,
+      }
+    } else {
+      return {
+        Content: isResponsible ? handleSaveCanvasOne() : handleSaveCanvasTwo(),
+        FilePurpose: isResponsible
+          ? ConstantFilePurpose.FIRMA_USUARIO
+          : ConstantFilePurpose.FIRMA_TECNICO,
       }
     }
   }
@@ -327,7 +454,7 @@ export const TicketRegisterCompleteFormSix = () => {
         </div>
         {formik.values.Firma === "W" && (
           <>
-            <div className="col-span-5 border-gray-400 border-2 rounded-md">
+            <div className="col-span-5 border-gray-400 border-2 rounded-md relative h-32">
               <CanvasDraw
                 ref={firstSignature}
                 canvasHeight={120}
@@ -335,10 +462,11 @@ export const TicketRegisterCompleteFormSix = () => {
                 hideInterface={true}
                 brushRadius={2}
                 brushColor="black"
+                // className="absolute"
               />
             </div>
             <div className="col-span-2"></div>
-            <div className="col-span-5 border-gray-400 border-2 rounded-md">
+            <div className="col-span-5 border-gray-400 border-2 rounded-md relative h-32">
               <CanvasDraw
                 ref={secondSignature}
                 canvasHeight={120}
@@ -346,6 +474,7 @@ export const TicketRegisterCompleteFormSix = () => {
                 hideInterface={true}
                 brushRadius={2}
                 brushColor="black"
+                // className="absolute"
               />
             </div>
             <div className="col-span-5 -mt-3">
@@ -363,6 +492,42 @@ export const TicketRegisterCompleteFormSix = () => {
                   <AiOutlineClear size={20} color={"#00A0DF"} />
                 </button>
               </div>
+              <p>Firma del técnico responsable</p>
+            </div>
+          </>
+        )}
+        {formik.values.Firma === "U" && (
+          <>
+            <div className="col-span-5">
+              <div className="flex flex-row space-x-2">
+                <div className="register_profile_image">
+                  <input
+                    type="file"
+                    accept=".png, .jpg, .gif, .svg, .webp"
+                    onChange={onChangeFirstSignature}
+                    className="border-none bg-none text-qBlue underline font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-span-2"></div>
+            <div className="col-span-5">
+              <div className="flex flex-row space-x-2">
+                <div className="register_profile_image">
+                  <input
+                    type="file"
+                    accept=".png, .jpg, .gif, .svg, .webp"
+                    onChange={onChangeSecondSignature}
+                    className="border-none bg-none text-qBlue underline font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-span-5">
+              <p>Firma del responsable (*)</p>
+            </div>
+            <div className="col-span-2"></div>
+            <div className="col-span-5">
               <p>Firma del técnico responsable</p>
             </div>
           </>

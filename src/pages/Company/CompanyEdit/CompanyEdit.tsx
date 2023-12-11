@@ -1,5 +1,5 @@
-import { ConfigurationEditContainer } from "./CompanyEditContainer.tsx/CompanyEditContainer";
+import { CompanyEditContainer } from "./CompanyEditContainer.tsx/CompanyEditContainer"
 
-export const ConfigurationEdit = () => {
-  return <ConfigurationEditContainer />;
-};
+export const CompanyEdit = () => {
+  return <CompanyEditContainer />
+}
