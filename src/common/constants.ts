@@ -108,3 +108,9 @@ export const ConstantStorageBuckets = {
     COMPANY: 'companies',
     USER: 'users'
 }
+
+export const ConstantMailConfig = {
+    FROM:'dev@qualitysumprint.com',
+    SUBJECT: 'QualitySumPrint Resumen',
+    HTML: '<p>VLLC</p>'
+}

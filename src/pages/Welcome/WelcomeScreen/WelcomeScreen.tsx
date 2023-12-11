@@ -1,51 +1,220 @@
 import {
-  HiOutlineHome,
-  HiOutlineOfficeBuilding,
-  HiOutlineTicket,
-} from "react-icons/hi"
-import { useAuth } from "../../../common/contexts/AuthContext"
-import { WelcomeCard } from "../WelcomeCard/WelcomeCard"
-import { ConstantRoles } from "../../../common/constants"
+    HiOutlineHome,
+    HiOutlineOfficeBuilding,
+    HiOutlineTicket,
+} from "react-icons/hi";
+import { useAuth } from "../../../common/contexts/AuthContext";
+import { WelcomeCard } from "../WelcomeCard/WelcomeCard";
+import { ConstantMailConfig, ConstantRoles } from "../../../common/constants";
+import { Button } from "@mui/material";
+import html2pdf from "html2pdf.js";
+import ReactDOMServer from "react-dom/server";
+import TechnicalServiceReport from "../../../common/mailTemplates/technicalServiceReport";
+import {
+    Attachement,
+    MailService,
+    SendEmailRequest,
+} from "../../../common/services/MailService";
+
+const data = {
+    date: "01/01/2023",
+    init_hour: "08:00",
+    end_hour: "12:00",
+    business: "business",
+    address: "address",
+    local: "local",
+    floor: "floor",
+    area: "area",
+    user: "user",
+    equipments: [
+        {
+            equipment: "q.1",
+            ns: "asdasdas",
+            counter: "3r4",
+            guide: "894",
+        },
+        {
+            equipment: "eq.1",
+            ns: "asdasdas",
+            counter: "3r4",
+            guide: "894",
+        },
+    ],
+    userIssue: "userIssue",
+    fixerIssue: "fixerIssue",
+    revision: {
+        b1: "b",
+        b2: "b",
+        b3: "b",
+        b4: "b",
+        b5: "b",
+        b6: "b",
+        b7: "b",
+        b8: "b",
+        b9: "b",
+        b10: "b",
+        b11: "b",
+        b12: "b",
+    },
+    procedure: {
+        p1: "p",
+        p2: "p",
+        p3: "p",
+        p4: "p",
+        p5: "p",
+        p6: "p",
+        p7: "p",
+        p8: "p",
+        p9: "p",
+        p10: "p",
+        p11: "p",
+        p12: "p",
+        p13: "p",
+        p14: "p",
+        p15: "p",
+        p16: "p",
+        p17: "p",
+        p18: "p",
+        p19: "p",
+        p20: "p",
+        p21: "p",
+        p22: "p",
+        p23: "p",
+        p24: "p",
+        p25: "p",
+        p26: "p",
+        p27: "p",
+        p28: "p",
+        p29: "p",
+        p30: "p",
+        p31: "p",
+        p32: "p",
+        p33: "p",
+        p34: "p",
+        p35: "p",
+        p36: "p",
+    },
+    comments: {
+        c1: "c",
+        c2: "c",
+        c3: "c",
+        c4: "c",
+        c5: "c",
+        c6: "c",
+        c7: "c",
+        c8: "c",
+        c9: "c",
+        c10: "c",
+        c11: "c",
+        c12: "c",
+        c13: "c",
+        c14: "c",
+    },
+    instalation: "x",
+    guarantee: "x",
+    negligence: "x",
+    visit: "x",
+    maintenance: "x",
+    comment: "comment",
+    recomendation: "recomendation",
+};
 
 export const WelcomeScreen = () => {
-  const { user } = useAuth()
-  return (
-    <div className="flex flex-row flex-wrap flex-1">
-      <div className="p-4 lg:p-8 flex-1">
-        <h2 className="font-semibold text-lg">
-          ¡Te damos la bienvenida, {user?.Name}!
-        </h2>
-        <div className="flex flex-row">
-          <div className="flex flex-col">
-            <WelcomeCard
-              key={1}
-              title={"Bienvenido " + user?.Name}
-              description="Familiarízate con el dashboard, accede a todas las secciones desde este panel."
-              link="/"
-              icon={<HiOutlineHome color="#00A0DF" size={"26"} />}
-            />
-            <WelcomeCard
-              key={2}
-              title={"Accede a tus tickets"}
-              description="Accede a tus tickets de manera rápida y fácil, registra y realiza anotaciones para las solicitudes."
-              link="/tickets"
-              icon={<HiOutlineTicket color="#00A0DF" size={"26"} />}
-            />
-            {user?.IdRole ===
-              (ConstantRoles.LIDER_FUNCIONAL ||
-                ConstantRoles.ADMINISTRADOR_TI) && (
-              <WelcomeCard
-                key={3}
-                title={"Accede a las empresas registadas"}
-                description="Crea, edita y visualiza los datos de las empresas que pertenecen a la mesa de ayuda."
-                link="/empresas"
-                icon={<HiOutlineOfficeBuilding color="#00A0DF" size={"26"} />}
-              />
-            )}
-          </div>
-          <div></div>
+    const { user } = useAuth();
+
+    // const onClickTest = () => {
+    //     const printElement = ReactDOMServer.renderToString(
+    //         TechnicalServiceReport({ data })
+    //     );
+    //     let opt = {
+    //         format: "a4",
+    //         margin: 1,
+    //         html2canvas: {
+    //             dpi: 192,
+    //             scale: 4,
+    //             letterRendering: true,
+    //             useCORS: true,
+    //         },
+    //         devicePixelRatio: 1.5,
+    //     };
+
+    //     html2pdf()
+    //         .from(printElement)
+    //         .set(opt)
+    //         .outputPdf()
+    //         .then(async (pdf) => {
+    //             let base64 = btoa(pdf);
+
+    //             let attachemnts: Attachement = {
+    //                 filename: "test.pdf",
+    //                 content: base64,
+    //             };
+
+    //             let request: SendEmailRequest = {
+    //                 from: ConstantMailConfig.FROM,
+    //                 to: ["rz.jorge21@gmail.com"],
+    //                 subject: ConstantMailConfig.SUBJECT,
+    //                 html: ConstantMailConfig.HTML,
+    //                 attachments: [attachemnts],
+    //             };
+    //             const resp = await MailService.sendEmail(request);
+    //             console.log("resp", resp);
+    //         });
+    // };
+
+    //   return(
+    //     <>
+    //     <Test1 data={data}></Test1>
+    //     <Button variant="contained" onClick={onClickTest}>
+    //                 Test Button
+    //             </Button>
+    //     </>
+    //   )
+
+    return (
+        <div id="test_pdf" className="flex flex-row flex-wrap flex-1">
+            <div className="p-4 lg:p-8 flex-1">
+                <h2 className="font-semibold text-lg">
+                    ¡Te damos la bienvenida, {user?.Name}!
+                </h2>
+                <div className="flex flex-row">
+                    <div className="flex flex-col">
+                        <WelcomeCard
+                            key={1}
+                            title={"Bienvenido " + user?.Name}
+                            description="Familiarízate con el dashboard, accede a todas las secciones desde este panel."
+                            link="/"
+                            icon={<HiOutlineHome color="#00A0DF" size={"26"} />}
+                        />
+                        <WelcomeCard
+                            key={2}
+                            title={"Accede a tus tickets"}
+                            description="Accede a tus tickets de manera rápida y fácil, registra y realiza anotaciones para las solicitudes."
+                            link="/tickets"
+                            icon={
+                                <HiOutlineTicket color="#00A0DF" size={"26"} />
+                            }
+                        />
+                        {user?.IdRole ===
+                            (ConstantRoles.LIDER_FUNCIONAL ||
+                                ConstantRoles.ADMINISTRADOR_TI) && (
+                            <WelcomeCard
+                                key={3}
+                                title={"Accede a las empresas registadas"}
+                                description="Crea, edita y visualiza los datos de las empresas que pertenecen a la mesa de ayuda."
+                                link="/empresas"
+                                icon={
+                                    <HiOutlineOfficeBuilding
+                                        color="#00A0DF"
+                                        size={"26"}
+                                    />
+                                }
+                            />
+                        )}
+                    </div>
+                    <div></div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
-}
+    );
+};
