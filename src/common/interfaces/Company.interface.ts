@@ -48,7 +48,6 @@ export interface CompanyEditRequest {
     Ruc: string;
     Ubigeo: number;
     Address: string;
-    ImgUrl: string;
     Local: string;
     MainContactName: string;
     MainContactPosition: string;

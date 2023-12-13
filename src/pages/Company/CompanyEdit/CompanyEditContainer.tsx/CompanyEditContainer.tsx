@@ -17,7 +17,10 @@ import { Link, useNavigate } from "react-router-dom"
 import { HiChevronLeft } from "react-icons/hi"
 import { useEffect, useState } from "react"
 import {
+  ConstantCompanyMessage,
+  ConstantHttpErrors,
   ConstantLocalStorage,
+  ConstantMessage,
   ConstantsMasterTable,
 } from "../../../../common/constants"
 import * as yup from "yup"
@@ -27,6 +30,8 @@ import { CompanyService } from "../../../../common/services/CompanyService"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 import unknownUser from "../../../../assets/images/user/unknown.png"
 import { Modal } from "../../../../common/components/Modal/Modal"
+import { CompanyEditRequest } from "../../../../common/interfaces/Company.interface"
+import { Button } from "../../../../common/components/Button/Button"
 
 const validationSchema = yup.object({
   Name: yup.string().required("Nombre de empresa es obligatorio"),
@@ -70,6 +75,7 @@ const validationSchema = yup.object({
 
 export const CompanyEditContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [company, setCompany] = useState<any>()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
@@ -81,16 +87,12 @@ export const CompanyEditContainer = () => {
   const [currencies, setCurrencies] = useState<MasterTable[]>([])
   const [positions, setPositions] = useState<MasterTable[]>([])
   const [banks, setBanks] = useState<MasterTable[]>([])
-  const [filteredCurrencies, setFilteredCurrencies] = useState<MasterTable[]>(
-    []
-  )
   const [selectedCurrencies, setSelectedCurrencies] = useState<MasterTable[]>(
     []
   )
   const [paymentConditions, setPaymentConditions] = useState<MasterTable[]>([])
   const [ce, setCe] = useState<MasterTable[]>([])
-  const [filteredBanks, setFilteredBanks] = useState<MasterTable[]>([])
-  const [selectedBanks, setSelectedBanks] = useState<MasterTable[]>([])
+  const [selectedBanks, setSelectedBanks] = useState([])
 
   const [showBillingFields, setShowBillingFields] = useState(false)
   const [showReportFields, setShowReportFields] = useState(false)
@@ -147,6 +149,7 @@ export const CompanyEditContainer = () => {
     const data = await UbigeoService.getUbigeoById(idUbigeo)
     if (data) {
       setUbigeo(data)
+      console.log(data)
     }
   }
 
@@ -164,12 +167,12 @@ export const CompanyEditContainer = () => {
       ConstantsMasterTable.CURRENCIES
     )
     if (data) {
+      const filteredCurrencies = data
+        .filter(({ IdMasterTable }) => currenciesStr.includes(IdMasterTable))
+        .map(({ IdMasterTable }) => IdMasterTable)
+
       setCurrencies(data)
-      setSelectedCurrencies(
-        data.filter((currency) =>
-          currenciesStr.includes(currency?.IdMasterTable)
-        )
-      )
+      setSelectedCurrencies(filteredCurrencies)
     }
   }
 
@@ -197,10 +200,36 @@ export const CompanyEditContainer = () => {
     )
 
     if (data) {
+      const filteredBanks = data
+        .filter(({ IdMasterTable }) => banksStr.includes(IdMasterTable))
+        .map(({ IdMasterTable }) => IdMasterTable)
+
       setBanks(data)
-      setSelectedBanks(
-        data.filter((bank) => banksStr?.includes(bank?.IdMasterTable))
-      )
+      setSelectedBanks(filteredBanks)
+    }
+  }
+
+  async function editCompany(request: CompanyEditRequest) {
+    setIsLoadingAction(true)
+    const { data, status }: any = await CompanyService.editCompany(
+      company.IdCompany,
+      request
+    )
+
+    if (status == ConstantHttpErrors.OK) {
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantCompanyMessage.COMPANY_EDIT_SUCCESS)
+
+      setIsLoadingAction(false)
+      setTimeout(() => {
+        navigate("/empresas")
+      }, 2000)
+    } else {
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantMessage.SERVICE_ERROR)
     }
   }
 
@@ -249,7 +278,12 @@ export const CompanyEditContainer = () => {
       AfterSalesContactPhone: "",
       AfterSalesContactCellphone: "",
     },
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      values.Ubigeo = values.Ubigeo.id_ubigeo
+      values.MainContactCurrency = selectedCurrencies.join(", ")
+      values.MainContactBanks = selectedBanks.join(", ")
+      editCompany(values)
+    },
   })
 
   useEffect(() => {
@@ -263,15 +297,11 @@ export const CompanyEditContainer = () => {
 
   useEffect(() => {
     if (company && ubigeo) {
+      console.log(company)
       formik.setValues({
         Name: company?.Name || "",
         Ruc: company?.Ruc || "",
-        Ubigeo:
-          ubigeo?.distrito +
-            ", " +
-            ubigeo?.provincia +
-            ", " +
-            ubigeo?.departamento || "",
+        Ubigeo: ubigeo || "",
         Address: company?.Address || "",
         ImgUrl: company?.ImgUrl || "",
         Local: company?.Local || "",
@@ -398,20 +428,22 @@ export const CompanyEditContainer = () => {
                   options
                     .filter(
                       (item: any) =>
-                        item.departamento
+                        item?.departamento
                           .toLowerCase()
                           .includes(inputValue.toLowerCase()) ||
-                        item.provincia
+                        item?.provincia
                           .toLowerCase()
                           .includes(inputValue.toLowerCase()) ||
-                        item.distrito
+                        item?.distrito
                           .toLowerCase()
                           .includes(inputValue.toLowerCase())
                     )
                     .slice(0, 25)
                 }
                 getOptionLabel={(option: any) =>
-                  `${option.departamento} - ${option.provincia} - ${option.distrito}`
+                  option?.departamento
+                    ? `${option?.departamento} - ${option?.provincia} - ${option?.distrito}`
+                    : ""
                 }
                 renderInput={(params) => (
                   <TextField
@@ -595,9 +627,9 @@ export const CompanyEditContainer = () => {
                   }
                   renderValue={() => (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                      {selectedCurrencies.map(({ IdMasterTable }) => {
+                      {selectedCurrencies.map((currencyId: string) => {
                         const currency = currencies.find(
-                          (c: MasterTable) => c.IdMasterTable === IdMasterTable
+                          (c: MasterTable) => c.IdMasterTable === currencyId
                         )
                         return (
                           <Chip
@@ -614,8 +646,8 @@ export const CompanyEditContainer = () => {
                   </MenuItem>
                   {currencies.map((currency: MasterTable) => (
                     <MenuItem
-                      key={currency.IdMasterTable}
-                      value={currency.IdMasterTable}
+                      key={currency?.IdMasterTable}
+                      value={currency?.IdMasterTable}
                     >
                       {currency.Name}
                     </MenuItem>
@@ -648,6 +680,7 @@ export const CompanyEditContainer = () => {
                 <Select
                   labelId="MainContactBanksLabel"
                   id="MainContactBanks"
+                  multiple
                   value={selectedBanks}
                   onChange={handleBankChange}
                   input={
@@ -655,10 +688,9 @@ export const CompanyEditContainer = () => {
                   }
                   renderValue={() => (
                     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                      {selectedBanks.map((selectedBank) => {
+                      {selectedBanks.map((bankId: string) => {
                         const bank = banks.find(
-                          (c: MasterTable) =>
-                            c.IdMasterTable === selectedBank.IdMasterTable
+                          (c: MasterTable) => c.IdMasterTable === bankId
                         )
                         return (
                           <Chip key={bank?.IdMasterTable} label={bank?.Name} />
@@ -672,8 +704,8 @@ export const CompanyEditContainer = () => {
                   </MenuItem>
                   {banks.map((bank: MasterTable) => (
                     <MenuItem
-                      key={bank.IdMasterTable}
-                      value={bank.IdMasterTable}
+                      key={bank?.IdMasterTable}
+                      value={bank?.IdMasterTable}
                     >
                       {bank.Name}
                     </MenuItem>
@@ -1395,6 +1427,15 @@ export const CompanyEditContainer = () => {
                 label="POSVENTA"
               />
             </div>
+          </div>
+          <div className="flex justify-center mt-8">
+            <Button
+              color="#74C947"
+              label="Guardar registro"
+              disabled={!formik.isValid || isLoadingAction}
+              isLoading={isLoadingAction}
+              type="submit"
+            />
           </div>
         </div>
       </div>

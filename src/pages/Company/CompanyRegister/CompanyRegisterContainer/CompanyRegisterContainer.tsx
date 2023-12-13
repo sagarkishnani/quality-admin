@@ -352,7 +352,9 @@ export const CompanyRegisterContainer = () => {
                     .slice(0, 25)
                 }
                 getOptionLabel={(option: any) =>
-                  `${option.departamento} - ${option.provincia} - ${option.distrito}`
+                  option?.departamento
+                    ? `${option?.departamento} - ${option?.provincia} - ${option?.distrito}`
+                    : ""
                 }
                 renderInput={(params) => (
                   <TextField
