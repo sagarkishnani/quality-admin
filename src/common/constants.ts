@@ -37,6 +37,7 @@ export const ConstantMessage = {
 
 export const ConstantCompanyMessage = {
     COMPANY_REGISTER_SUCCESS: 'La empresa se registró correctamente',
+    COMPANY_EDIT_SUCCESS: 'La empresa se actualizó correctamente',
     COMPANY_LOGO_NOT_UPLOADED: 'Logo de empresa es obligatorio',
     COMPANY_LOGO_ERROR: 'Error al subir imagen',
     COMPANY_DELETE_QUESTION: '¿Está seguro de eliminar la empresa?',
@@ -116,7 +117,17 @@ export const ConstantStorageBuckets = {
 }
 
 export const ConstantMailConfig = {
-    FROM:'dev@qualitysumprint.com',
+    FROM: 'dev@qualitysumprint.com',
     SUBJECT: 'QualitySumPrint Resumen',
     HTML: '<p>VLLC</p>'
+}
+
+export const ConstantMailTicketPending = {
+    FROM: 'dev@qualitysumprint.com',
+    SUBJECT: 'Registro de Ticket',
+}
+
+export const ConstantMailTicketInProgress = {
+    FROM: 'dev@qualitysumprint.com',
+    SUBJECT: 'Asignación de técnico',
 }

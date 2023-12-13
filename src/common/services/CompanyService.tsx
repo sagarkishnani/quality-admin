@@ -126,7 +126,6 @@ async function editCompany(idCompany: string, request: CompanyEditRequest) {
           Ruc: request.Ruc,
           Ubigeo: request.Ubigeo,
           Address: request.Address,
-          ImgUrl: supabaseUrl + supabaseImgUrl + "/" + request.ImgUrl,
           Local: request.Local,
           MainContactName: request.MainContactName,
           MainContactPosition: request.MainContactPosition,

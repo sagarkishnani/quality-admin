@@ -18,6 +18,7 @@ import secureLocalStorage from "react-secure-storage"
 import {
   ConstantHttpErrors,
   ConstantLocalStorage,
+  ConstantMailTicketInProgress,
   ConstantMessage,
   ConstantRoles,
   ConstantTicketMessage,
@@ -33,6 +34,10 @@ import {
 } from "../../../../common/interfaces/Ticket.interface"
 import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { UserService } from "../../../../common/services/UserService"
+import {
+  MailService,
+  SendEmailRequest,
+} from "../../../../common/services/MailService"
 
 const validationSchema = yup.object({
   ScheduledAppointmentDate: yup
@@ -103,6 +108,29 @@ export const TicketRegisterContainerStepTwo = () => {
     )
 
     if (status == ConstantHttpErrors.OK) {
+      const html = `<p>Se ha asignado ${
+        request.IdTechnician == null
+          ? "a un técnico de garantía"
+          : "al técnico <strong>" + request.IdTechnician
+      }</strong>. Asimismo, se programó una visita para el <strong>${moment(
+        request.ScheduledAppointmentDate
+      ).format("DD/MM/YYYY")}</strong> a las <strong>${moment(
+        request.ScheduledAppointmentTime
+      ).format("HH:MM")}</strong> en <strong>${ticket.Company.Name} - ${
+        ticket.Company.Address
+      } - Piso ${
+        ticket.CompanyFloor
+      }</strong>. </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://qualitysumprint.com/wp-content/uploads/2023/04/impresora-medio-ambiente-2.png" alt="">`
+
+      const requestMail: SendEmailRequest = {
+        from: ConstantMailTicketInProgress.FROM,
+        to: ["sagarkishnani67@gmail.com", "aakashkishnani67@gmail.com"],
+        subject: ConstantMailTicketInProgress.SUBJECT,
+        html: html,
+        attachments: [],
+      }
+      const resp = await MailService.sendEmail(requestMail)
+
       setIsModalOpen(true)
       setModalType("success")
       setModalMessage(ConstantTicketMessage.TICKET_ASSIGNED_SUCCESS)

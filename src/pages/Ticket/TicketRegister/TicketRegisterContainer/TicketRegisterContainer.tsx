@@ -19,6 +19,8 @@ import { TicketService } from "../../../../common/services/TicketService"
 import {
   ConstantFilePurpose,
   ConstantHttpErrors,
+  ConstantMailConfig,
+  ConstantMailTicketPending,
   ConstantTicketMessage,
   ConstantTicketStatus,
   ConstantsMasterTable,
@@ -33,6 +35,10 @@ import { MasterTable } from "../../../../common/interfaces/MasterTable.interface
 import { ImageModal } from "../../../../common/components/ImageModal/ImageModal"
 import moment from "moment"
 import { dataURLtoFile } from "../../../../common/utils"
+import {
+  MailService,
+  SendEmailRequest,
+} from "../../../../common/services/MailService"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -116,7 +122,6 @@ export const TicketRegisterContainer = () => {
   }
 
   async function registerTicket(request: TicketRegisterStepOneRequest) {
-    debugger
     setIsLoadingAction(true)
 
     request.IdTicketCompany = user!.Company.IdCompany
@@ -148,6 +153,17 @@ export const TicketRegisterContainer = () => {
           setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
           return
         } else {
+          const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user?.Name}</strong> de la empresa <strong>${user?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://qualitysumprint.com/wp-content/uploads/2023/04/impresora-medio-ambiente-2.png" alt="">`
+
+          const request: SendEmailRequest = {
+            from: ConstantMailTicketPending.FROM,
+            to: ["sagarkishnani67@gmail.com"],
+            subject: ConstantMailTicketPending.SUBJECT,
+            html: html,
+            attachments: [],
+          }
+          const resp = await MailService.sendEmail(request)
+
           setIsModalOpen(true)
           setModalType("success")
           setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
