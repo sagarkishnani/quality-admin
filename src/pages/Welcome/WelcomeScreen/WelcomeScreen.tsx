@@ -25,110 +25,113 @@ import { CompanyModal } from "../../../common/components/CompanyModal/CompanyMod
 import { GetUserCompany } from "../../../common/interfaces/User.interface";
 import secureLocalStorage from "react-secure-storage";
 
-const data = {
-    date: "01/01/2023",
-    init_hour: "08:00",
-    end_hour: "12:00",
-    business: "business",
-    address: "address",
-    local: "local",
-    floor: "floor",
-    area: "area",
-    user: "user",
-    equipments: [
-        {
-            equipment: "q.1",
-            ns: "asdasdas",
-            counter: "3r4",
-            guide: "894",
-        },
-        {
-            equipment: "eq.1",
-            ns: "asdasdas",
-            counter: "3r4",
-            guide: "894",
-        },
-    ],
-    userIssue: "userIssue",
-    fixerIssue: "fixerIssue",
-    revision: {
-        b1: "b",
-        b2: "b",
-        b3: "b",
-        b4: "b",
-        b5: "b",
-        b6: "b",
-        b7: "b",
-        b8: "b",
-        b9: "b",
-        b10: "b",
-        b11: "b",
-        b12: "b",
+const pdfData = {
+    RecordCreationDate: "01/01/2023",
+    AppointmentInitTime: "08:00",
+    AppointmentEndTime: "12:00",
+    Company: "Clínica Javier Prado",
+    Address: "Av. Javier Prado Este 499",
+    Local: "Local San Isidro",
+    CompanyFloor: "6",
+    CompanyArea: "Recursos Humanos",
+    User: "Sagar Kishnani",
+    DeviceOne: "ALTALINK B8055",
+    SeriesNumberOne: "T-32423",
+    CounterOne: "340",
+    GuideOne: "4523232",
+    DeviceTwo: "LASERJET ENTERPRISE M606N",
+    SeriesNumberTwo: "L-43321",
+    CounterTwo: "10",
+    GuideTwo: "4523232",
+    ReportedFailure:
+      "La impresora se atascó y ya no está funcionando correctamente.",
+    FoundFailure:
+      "Se encontró que la impresora estaba fallando porque había sufrido una caída y la bandeja tuvo un daño.",
+    Revision: {
+      BandejaUno: "B",
+      BandejaDos: "L",
+      BandejaSalida: "B",
+      BisagraEscaner: "G",
+      BandejaADF: "B",
+      CristalCamaPlana: "B",
+      ConectorUSB: "B",
+      ConectorRJ: "L",
+      PanelControl: "L",
+      Engranaje: "L",
+      LaminaTeplon: "G",
+      RodilloPresion: "G",
     },
-    procedure: {
-        p1: "p",
-        p2: "p",
-        p3: "p",
-        p4: "p",
-        p5: "p",
-        p6: "p",
-        p7: "p",
-        p8: "p",
-        p9: "p",
-        p10: "p",
-        p11: "p",
-        p12: "p",
-        p13: "p",
-        p14: "p",
-        p15: "p",
-        p16: "p",
-        p17: "p",
-        p18: "p",
-        p19: "p",
-        p20: "p",
-        p21: "p",
-        p22: "p",
-        p23: "p",
-        p24: "p",
-        p25: "p",
-        p26: "p",
-        p27: "p",
-        p28: "p",
-        p29: "p",
-        p30: "p",
-        p31: "p",
-        p32: "p",
-        p33: "p",
-        p34: "p",
-        p35: "p",
-        p36: "p",
+    Procedure: {
+      Instalacion: "X",
+      Cambio: "X",
+      Mantenimiento: "X",
+      Reparacion: "X",
+      Retiro: "X",
+      Revision: "X",
+      MantImpresora: "X",
+      MantOptico: "",
+      MantOpticoEscaner: "",
+      MantSistema: "",
+      ActualFirmware: "X",
+      EtiquetaFusor: "X",
+      EtiquetaFusorTeflon: "X",
+      RevCartucho: "X",
+      RevFusor: "X",
+      RevImagen: "X",
+      RevADF: "X",
+      RevRodilloBUno: "X",
+      RevRodilloBDos: "X",
+      RevSeparador: "X",
+      RevDuplex: "X",
+      CambioCartucho: "",
+      CambioFusor: "",
+      CambioImagen: "",
+      CambioRodillo: "",
+      CambioTeflon: "",
+      CambioRodilloBUno: "",
+      CambioRodilloBDos: "",
+      CambioSeparador: "",
+      CambioDrive: "",
+      CambioSwing: "",
+      CambioAOF: "",
+      CambioDC: "X"
     },
-    comments: {
-        c1: "c",
-        c2: "c",
-        c3: "c",
-        c4: "c",
-        c5: "c",
-        c6: "c",
-        c7: "c",
-        c8: "c",
-        c9: "c",
-        c10: "c",
-        c11: "c",
-        c12: "c",
-        c13: "c",
-        c14: "c",
+    Comments: {
+      UsoPapelHumedo: "",
+      UsoPapelReciclado: "",
+      UsoPapelGrapas: "",
+      UsoEtiquetas: "",
+      ConectadoPared: "X",
+      ConectadoSupresor: "X",
+      ConectadoEstabilizador: "X",
+      ConectadoUPS: "",
+      Operativo: "",
+      PegadoEtiquetaGarantia: "",
+      EnObservacion: "",
+      EquipoRequiereCambio: "",
+      EquipoRequiereMantenimiento: "X",
+      CartuchoOtroProveedor: "",
+      CartuchoDanado: "",
     },
-    instalation: "x",
-    guarantee: "x",
-    negligence: "x",
-    visit: "x",
-    maintenance: "x",
-    comment: "comment",
-    recomendation: "recomendation",
-    responsibleSign: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/XXXTentacion_signature.svg/565px-XXXTentacion_signature.svg.png",
-    responsibleTechSign: "https://signaturely.com/wp-content/uploads/2020/04/unreadable-letters-signaturely.svg"
-};
+    Instalacion: "X",
+    ServicioGarantia: "",
+    Negligencia: "X",
+    Maintenance: "X", //ESTE CAMPO FALTÓ AGREGAR
+    FacturableVisit: "X",
+    Comment: "No hay comentarios.",
+    Recommendation:
+      "Se recomienda que tengan más cuidado a la hora de cargar la impresora.",
+    Signature: {
+      ResponsibleName: "Sagar Kishnani",
+      ResponsibleDni: "45895675",
+      ResponsibleSignature:
+        "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/6f970d16-055a-4747-9ee9-79f43386abe3",
+      TechnicianName: "Jorge Ramón",
+      TechnicianSignature:
+        "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/ab55aec9-d675-429e-86ab-aa3e8a0ce2b7",
+    },
+  }
+  
 
 export const WelcomeScreen = () => {
     const { user } = useAuth();
@@ -175,7 +178,7 @@ export const WelcomeScreen = () => {
 
     // const onClickTest = () => {
     //     const printElement = ReactDOMServer.renderToString(
-    //         TechnicalServiceReport({ data })
+    //         TechnicalServiceReport({ data: pdfData })
     //     );
     //     let opt = {
     //         format: "a4",
@@ -221,7 +224,7 @@ export const WelcomeScreen = () => {
 
     // return (
     //     <>
-    //         <TechnicalServiceReport data={data}></TechnicalServiceReport>
+    //         <TechnicalServiceReport data={pdfData}></TechnicalServiceReport>
     //         <Button variant="contained" onClick={onClickTest}>
     //             Test Button
     //         </Button>

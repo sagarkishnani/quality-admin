@@ -1,109 +1,224 @@
 import logo from "../../assets/mailBackgrounds/technicalServiceReportBG.svg";
 
-// const dataExample = {
-//     date: '01/01/2023',
-//     init_hour: '08:00',
-//     end_hour: '12:00',
-//     business: 'business',
-//     address: 'address',
-//     local: 'local',
-//     floor: 'floor',
-//     area: 'area',
-//     user: 'user',
-//     equipments: [
-//         {
-//             equipment: "q.1",
-//             ns: "asdasdas",
-//             counter: "3r4",
-//             guide: "894"
-//         },
-//         {
-//             equipment: "eq.1",
-//             ns: "asdasdas",
-//             counter: "3r4",
-//             guide: "894"
-//         },
-//     ],
-//     userIssue: "userIssue",
-//     fixerIssue: "fixerIssue",
-//     revision: {
-//         b1: "b",
-//         b2: "b",
-//         b3: "b",
-//         b4: "b",
-//         b5: "b",
-//         b6: "b",
-//         b7: "b",
-//         b8: "b",
-//         b9: "b",
-//         b10: "b",
-//         b11: "b",
-//         b12: "b",
-//     },
-//     procedure: {
-//         p1: "p",
-//         p2: "p",
-//         p3: "p",
-//         p4: "p",
-//         p5: "p",
-//         p6: "p",
-//         p7: "p",
-//         p8: "p",
-//         p9: "p",
-//         p10: "p",
-//         p11: "p",
-//         p12: "p",
-//         p13: "p",
-//         p14: "p",
-//         p15: "p",
-//         p16: "p",
-//         p17: "p",
-//         p18: "p",
-//         p19: "p",
-//         p20: "p",
-//         p21: "p",
-//         p22: "p",
-//         p23: "p",
-//         p24: "p",
-//         p25: "p",
-//         p26: "p",
-//         p27: "p",
-//         p28: "p",
-//         p29: "p",
-//         p30: "p",
-//         p31: "p",
-//         p32: "p",
-//         p33: "p",
-//         p34: "p",
-//         p35: "p",
-//         p36: "p",
-//     },
-//     comments: {
-//         c1: "c",
-//         c2: "c",
-//         c3: "c",
-//         c4: "c",
-//         c5: "c",
-//         c6: "c",
-//         c7: "c",
-//         c8: "c",
-//         c9: "c",
-//         c10: "c",
-//         c11: "c",
-//         c12: "c",
-//         c13: "c",
-//         c14: "c",
-//     },
-//     instalation: "x",
-//     guarantee: "x",
-//     negligence: "x",
-//     visit: "x",
-//     maintenance: "x",
-//     comment: "comment",
-//     recomendation: "recomendation"
-// }
+export interface PDFData {
+    RecordCreationDate: string
+    AppointmentInitTime: string
+    AppointmentEndTime: string
+    Company: string
+    Address: string
+    Local: string
+    CompanyFloor: string
+    CompanyArea: string
+    User: string
+    DeviceOne: string
+    SeriesNumberOne: string
+    CounterOne: string
+    GuideOne: string
+    DeviceTwo: string
+    SeriesNumberTwo: string
+    CounterTwo: string
+    GuideTwo: string
+    ReportedFailure: string
+    FoundFailure: string
+    Revision: Revision
+    Procedure: Procedure
+    Comments: Comments
+    Instalacion: string
+    ServicioGarantia: string
+    Negligencia: string
+    Maintenance: string
+    FacturableVisit: string
+    Comment: string
+    Recommendation: string
+    Signature: Signature
+  }
+  
+  export interface Revision {
+    BandejaUno: string
+    BandejaDos: string
+    BandejaSalida: string
+    BisagraEscaner: string
+    BandejaADF: string
+    CristalCamaPlana: string
+    ConectorUSB: string
+    ConectorRJ: string
+    PanelControl: string
+    Engranaje: string
+    LaminaTeplon: string
+    RodilloPresion: string
+  }
+  
+  export interface Procedure {
+    Instalacion: string
+    Cambio: string
+    Mantenimiento: string
+    Reparacion: string
+    Retiro: string
+    Revision: string
+    MantImpresora: string
+    MantOptico: string
+    MantOpticoEscaner: string
+    MantSistema: string
+    ActualFirmware: string
+    EtiquetaFusor: string
+    EtiquetaFusorTeflon: string
+    RevCartucho: string
+    RevFusor: string
+    RevImagen: string
+    RevADF: string
+    RevRodilloBUno: string
+    RevRodilloBDos: string
+    RevSeparador: string
+    RevDuplex: string
+    CambioCartucho: string
+    CambioFusor: string
+    CambioImagen: string
+    CambioRodillo: string
+    CambioTeflon: string
+    CambioRodilloBUno: string
+    CambioRodilloBDos: string
+    CambioSeparador: string
+    CambioDrive: string
+    CambioSwing: string
+    CambioAOF: string
+    CambioDC: string
+  }
+  
+  export interface Comments {
+    UsoPapelHumedo: string
+    UsoPapelReciclado: string
+    UsoPapelGrapas: string
+    UsoEtiquetas: string
+    ConectadoPared: string
+    ConectadoSupresor: string
+    ConectadoEstabilizador: string
+    ConectadoUPS: string
+    Operativo: string
+    PegadoEtiquetaGarantia: string
+    EnObservacion: string
+    EquipoRequiereCambio: string
+    EquipoRequiereMantenimiento: string
+    CartuchoOtroProveedor: string
+    CartuchoDanado: string
+  }
+  
+  export interface Signature {
+    ResponsibleName: string
+    ResponsibleDni: string
+    ResponsibleSignature: string
+    TechnicianName: string
+    TechnicianSignature: string
+  }
 
-export default function TechnicalServiceReport({ data }) {
+  //DATA EXAMPLE
+//   const pdfData = {
+//     RecordCreationDate: "01/01/2023",
+//     AppointmentInitTime: "08:00",
+//     AppointmentEndTime: "12:00",
+//     Company: "Clínica Javier Prado",
+//     Address: "Av. Javier Prado Este 499",
+//     Local: "Local San Isidro",
+//     CompanyFloor: "6",
+//     CompanyArea: "Recursos Humanos",
+//     User: "Sagar Kishnani",
+//     DeviceOne: "ALTALINK B8055",
+//     SeriesNumberOne: "T-32423",
+//     CounterOne: "340",
+//     GuideOne: "4523232",
+//     DeviceTwo: "LASERJET ENTERPRISE M606N",
+//     SeriesNumberTwo: "L-43321",
+//     CounterTwo: "10",
+//     GuideTwo: "4523232",
+//     ReportedFailure:
+//       "La impresora se atascó y ya no está funcionando correctamente.",
+//     FoundFailure:
+//       "Se encontró que la impresora estaba fallando porque había sufrido una caída y la bandeja tuvo un daño.",
+//     Revision: {
+//       BandejaUno: "B",
+//       BandejaDos: "L",
+//       BandejaSalida: "B",
+//       BisagraEscaner: "G",
+//       BandejaADF: "B",
+//       CristalCamaPlana: "B",
+//       ConectorUSB: "B",
+//       ConectorRJ: "L",
+//       PanelControl: "L",
+//       Engranaje: "L",
+//       LaminaTeplon: "G",
+//       RodilloPresion: "G",
+//     },
+//     Procedure: {
+//       Instalacion: "X",
+//       Cambio: "X",
+//       Mantenimiento: "X",
+//       Reparacion: "X",
+//       Retiro: "X",
+//       Revision: "X",
+//       MantImpresora: "X",
+//       MantOptico: "",
+//       MantOpticoEscaner: "",
+//       MantSistema: "",
+//       ActualFirmware: "X",
+//       EtiquetaFusor: "X",
+//       EtiquetaFusorTeflon: "X",
+//       RevCartucho: "X",
+//       RevFusor: "X",
+//       RevImagen: "X",
+//       RevADF: "X",
+//       RevRodilloBUno: "X",
+//       RevRodilloBDos: "X",
+//       RevSeparador: "X",
+//       RevDuplex: "X",
+//       CambioCartucho: "",
+//       CambioFusor: "",
+//       CambioImagen: "",
+//       CambioRodillo: "",
+//       CambioTeflon: "",
+//       CambioRodilloBUno: "",
+//       CambioRodilloBDos: "",
+//       CambioSeparador: "",
+//       CambioDrive: "",
+//       CambioSwing: "",
+//       CambioAOF: "",
+//       CambioDC: "X"
+//     },
+//     Comments: {
+//       UsoPapelHumedo: "",
+//       UsoPapelReciclado: "",
+//       UsoPapelGrapas: "",
+//       UsoEtiquetas: "",
+//       ConectadoPared: "X",
+//       ConectadoSupresor: "X",
+//       ConectadoEstabilizador: "X",
+//       ConectadoUPS: "",
+//       Operativo: "",
+//       PegadoEtiquetaGarantia: "",
+//       EnObservacion: "",
+//       EquipoRequiereCambio: "",
+//       EquipoRequiereMantenimiento: "X",
+//       CartuchoOtroProveedor: "",
+//       CartuchoDanado: "",
+//     },
+//     Instalacion: "X",
+//     ServicioGarantia: "",
+//     Negligencia: "X",
+//     Maintenance: "X", //ESTE CAMPO FALTÓ AGREGAR
+//     FacturableVisit: "X",
+//     Comment: "No hay comentarios.",
+//     Recommendation:
+//       "Se recomienda que tengan más cuidado a la hora de cargar la impresora.",
+//     Signature: {
+//       ResponsibleName: "Sagar Kishnani",
+//       ResponsibleDni: "45895675",
+//       ResponsibleSignature:
+//         "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/6f970d16-055a-4747-9ee9-79f43386abe3",
+//       TechnicianName: "Jorge Ramón",
+//       TechnicianSignature:
+//         "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/ab55aec9-d675-429e-86ab-aa3e8a0ce2b7",
+//     },
+//   }
+
+export default function TechnicalServiceReport({ data }: {data: PDFData}) {
     return (
         <div style={{ position: "relative", fontSize: "12px", width: "780px" }}>
             <img src={logo} width="100%" />
@@ -121,7 +236,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.date}
+                    {data.RecordCreationDate}
                 </div>
                 <div
                     style={{
@@ -135,7 +250,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.init_hour}
+                    {data.AppointmentInitTime}
                 </div>
                 <div
                     style={{
@@ -149,7 +264,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.end_hour}
+                    {data.AppointmentEndTime}
                 </div>
                 <div
                     style={{
@@ -163,7 +278,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.business}
+                    {data.Company}
                 </div>
                 <div
                     style={{
@@ -177,7 +292,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.address}
+                    {data.Address}
                 </div>
                 <div
                     style={{
@@ -191,7 +306,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.local}
+                    {data.Local}
                 </div>
                 <div
                     style={{
@@ -205,7 +320,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.floor}
+                    {data.CompanyFloor}
                 </div>
                 <div
                     style={{
@@ -219,7 +334,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.area}
+                    {data.CompanyArea}
                 </div>
                 <div
                     style={{
@@ -233,7 +348,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.user}
+                    {data.User}
                 </div>
             </div>
 
@@ -249,9 +364,10 @@ export default function TechnicalServiceReport({ data }) {
                         display: "flex",
                         justifyContent: "end",
                         alignItems: "center",
+                        whiteSpace: 'nowrap'
                     }}
                 >
-                    {data.equipments[0].equipment}
+                    {data.DeviceOne}
                 </div>
                 <div
                     style={{
@@ -266,7 +382,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.equipments[0].ns}
+                    {data.SeriesNumberOne}
                 </div>
                 <div
                     style={{
@@ -281,7 +397,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.equipments[0].counter}
+                    {data.CounterOne}
                 </div>
                 <div
                     style={{
@@ -296,7 +412,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.equipments[0].guide}
+                    {data.GuideOne}
                 </div>
 
                 <div
@@ -310,9 +426,10 @@ export default function TechnicalServiceReport({ data }) {
                         display: "flex",
                         justifyContent: "end",
                         alignItems: "center",
+                        whiteSpace: 'nowrap'
                     }}
                 >
-                    {data.equipments[1].equipment}
+                    {data.DeviceTwo}
                 </div>
                 <div
                     style={{
@@ -327,7 +444,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.equipments[1].ns}
+                    {data.SeriesNumberTwo}
                 </div>
                 <div
                     style={{
@@ -342,7 +459,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.equipments[1].counter}
+                    {data.CounterTwo}
                 </div>
                 <div
                     style={{
@@ -357,7 +474,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.equipments[1].guide}
+                    {data.GuideTwo}
                 </div>
             </div>
 
@@ -374,7 +491,7 @@ export default function TechnicalServiceReport({ data }) {
                         textIndent: "290px",
                     }}
                 >
-                    {data.userIssue}
+                    {data.ReportedFailure}
                 </div>
                 <div
                     style={{
@@ -388,7 +505,7 @@ export default function TechnicalServiceReport({ data }) {
                         textIndent: "190px",
                     }}
                 >
-                    {data.fixerIssue}
+                    {data.FoundFailure}
                 </div>
             </div>
 
@@ -407,7 +524,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b1}
+                        {data.Revision.BandejaUno}
                     </div>
                     <div
                         style={{
@@ -422,7 +539,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b2}
+                        {data.Revision.BandejaDos}
                     </div>
                     <div
                         style={{
@@ -437,7 +554,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b3}
+                        {data.Revision.BandejaSalida}
                     </div>
                 </div>
                 <div>
@@ -454,7 +571,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b4}
+                        {data.Revision.BisagraEscaner}
                     </div>
                     <div
                         style={{
@@ -469,7 +586,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b5}
+                        {data.Revision.BandejaADF}
                     </div>
                     <div
                         style={{
@@ -484,7 +601,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b6}
+                        {data.Revision.CristalCamaPlana}
                     </div>
                 </div>
                 <div>
@@ -501,7 +618,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b7}
+                        {data.Revision.ConectorUSB}
                     </div>
                     <div
                         style={{
@@ -516,7 +633,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b8}
+                        {data.Revision.ConectorRJ}
                     </div>
                     <div
                         style={{
@@ -531,7 +648,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b9}
+                        {data.Revision.PanelControl}
                     </div>
                 </div>
                 <div>
@@ -548,7 +665,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b10}
+                        {data.Revision.Engranaje}
                     </div>
                     <div
                         style={{
@@ -563,7 +680,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b11}
+                        {data.Revision.LaminaTeplon}
                     </div>
                     <div
                         style={{
@@ -578,7 +695,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.revision.b12}
+                        {data.Revision.RodilloPresion}
                     </div>
                 </div>
             </div>
@@ -598,7 +715,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p1}
+                        {data.Procedure.Instalacion}
                     </div>
                     <div
                         style={{
@@ -613,7 +730,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p2}
+                        {data.Procedure.Cambio}
                     </div>
                     <div
                         style={{
@@ -628,7 +745,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p3}
+                        {data.Procedure.Mantenimiento}
                     </div>
                     <div
                         style={{
@@ -643,7 +760,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p4}
+                        {data.Procedure.Reparacion}
                     </div>
                     <div
                         style={{
@@ -658,7 +775,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p5}
+                        {data.Procedure.Retiro}
                     </div>
                     <div
                         style={{
@@ -673,37 +790,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p6}
-                    </div>
-                    <div
-                        style={{
-                            position: "absolute",
-                            height: "12px",
-                            width: "19px",
-                            top: "502px",
-                            left: "230px",
-                            zIndex: "99",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        {data.procedure.p7}
-                    </div>
-                    <div
-                        style={{
-                            position: "absolute",
-                            height: "12px",
-                            width: "19px",
-                            top: "514px",
-                            left: "230px",
-                            zIndex: "99",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        {data.procedure.p8}
+                        {data.Procedure.Revision}
                     </div>
                 </div>
 
@@ -721,7 +808,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p9}
+                        {data.Procedure.MantImpresora}
                     </div>
                     <div
                         style={{
@@ -736,7 +823,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p10}
+                        {data.Procedure.MantOptico}
                     </div>
                     <div
                         style={{
@@ -751,7 +838,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p11}
+                        {data.Procedure.MantOpticoEscaner}
                     </div>
                     <div
                         style={{
@@ -766,7 +853,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p12}
+                        {data.Procedure.MantSistema}
                     </div>
                     <div
                         style={{
@@ -781,7 +868,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p13}
+                        {data.Procedure.ActualFirmware}
                     </div>
                     <div
                         style={{
@@ -796,7 +883,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p14}
+                        {data.Procedure.EtiquetaFusor}
                     </div>
                     <div
                         style={{
@@ -811,22 +898,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p15}
-                    </div>
-                    <div
-                        style={{
-                            position: "absolute",
-                            height: "12px",
-                            width: "19px",
-                            top: "514px",
-                            left: "373px",
-                            zIndex: "99",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}
-                    >
-                        {data.procedure.p16}
+                        {data.Procedure.EtiquetaFusorTeflon}
                     </div>
                 </div>
 
@@ -844,7 +916,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p17}
+                        {data.Procedure.RevCartucho}
                     </div>
                     <div
                         style={{
@@ -859,7 +931,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p18}
+                        {data.Procedure.RevFusor}
                     </div>
                     <div
                         style={{
@@ -874,7 +946,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p19}
+                        {data.Procedure.RevImagen}
                     </div>
                     <div
                         style={{
@@ -889,7 +961,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p20}
+                        {data.Procedure.RevADF}
                     </div>
                     <div
                         style={{
@@ -904,7 +976,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p21}
+                        {data.Procedure.RevRodilloBUno}
                     </div>
                     <div
                         style={{
@@ -919,7 +991,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p22}
+                        {data.Procedure.RevRodilloBDos}
                     </div>
                     <div
                         style={{
@@ -934,7 +1006,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p23}
+                        {data.Procedure.RevSeparador}
                     </div>
                     <div
                         style={{
@@ -949,7 +1021,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p24}
+                        {data.Procedure.RevDuplex}
                     </div>
                 </div>
 
@@ -967,7 +1039,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p25}
+                        {data.Procedure.CambioCartucho}
                     </div>
                     <div
                         style={{
@@ -982,14 +1054,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p26}
+                        {data.Procedure.CambioFusor}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "450px",
+                            top: "452px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -997,14 +1069,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p27}
+                        {data.Procedure.CambioImagen}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "462px",
+                            top: "464px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1012,14 +1084,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p28}
+                        {data.Procedure.CambioRodillo}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "474px",
+                            top: "477px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1027,14 +1099,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p29}
+                        {data.Procedure.CambioTeflon}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "488px",
+                            top: "490px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1042,7 +1114,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p30}
+                        {data.Procedure.CambioRodilloBUno}
                     </div>
                     <div
                         style={{
@@ -1057,7 +1129,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p31}
+                        {data.Procedure.CambioRodilloBDos}
                     </div>
                     <div
                         style={{
@@ -1072,7 +1144,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p32}
+                        {data.Procedure.CambioSeparador}
                     </div>
 
                     <div
@@ -1080,7 +1152,7 @@ export default function TechnicalServiceReport({ data }) {
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "526px",
+                            top: "527px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1088,14 +1160,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p33}
+                        {data.Procedure.CambioDrive}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "538px",
+                            top: "540px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1103,14 +1175,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p34}
+                        {data.Procedure.CambioSwing}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "551px",
+                            top: "553px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1118,14 +1190,14 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p35}
+                        {data.Procedure.CambioAOF}
                     </div>
                     <div
                         style={{
                             position: "absolute",
                             height: "12px",
                             width: "19px",
-                            top: "564px",
+                            top: "567px",
                             left: "660px",
                             zIndex: "99",
                             display: "flex",
@@ -1133,7 +1205,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.procedure.p36}
+                        {data.Procedure.CambioDC}
                     </div>
                 </div>
             </div>
@@ -1153,7 +1225,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c1}
+                        {data.Comments.UsoPapelHumedo}
                     </div>
                     <div
                         style={{
@@ -1168,7 +1240,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c2}
+                        {data.Comments.UsoPapelReciclado}
                     </div>
                     <div
                         style={{
@@ -1183,7 +1255,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c3}
+                        {data.Comments.UsoPapelGrapas}
                     </div>
                     <div
                         style={{
@@ -1198,7 +1270,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c4}
+                        {data.Comments.UsoEtiquetas}
                     </div>
                 </div>
 
@@ -1216,7 +1288,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c5}
+                        {data.Comments.ConectadoPared}
                     </div>
                     <div
                         style={{
@@ -1231,7 +1303,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c6}
+                        {data.Comments.ConectadoSupresor}
                     </div>
                     <div
                         style={{
@@ -1246,7 +1318,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c7}
+                        {data.Comments.ConectadoEstabilizador}
                     </div>
                     <div
                         style={{
@@ -1261,7 +1333,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c8}
+                        {data.Comments.ConectadoUPS}
                     </div>
                 </div>
 
@@ -1279,7 +1351,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c9}
+                        {data.Comments.Operativo}
                     </div>
                     <div
                         style={{
@@ -1294,7 +1366,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c10}
+                        {data.Comments.PegadoEtiquetaGarantia}
                     </div>
                     <div
                         style={{
@@ -1309,7 +1381,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c11}
+                        {data.Comments.EnObservacion}
                     </div>
                     <div
                         style={{
@@ -1324,7 +1396,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c12}
+                        {data.Comments.EquipoRequiereCambio}
                     </div>
                 </div>
 
@@ -1342,7 +1414,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c13}
+                        {data.Comments.CartuchoOtroProveedor}
                     </div>
                     <div
                         style={{
@@ -1357,7 +1429,7 @@ export default function TechnicalServiceReport({ data }) {
                             alignItems: "center",
                         }}
                     >
-                        {data.comments.c14}
+                        {data.Comments.CartuchoDanado}
                     </div>
                 </div>
             </div>
@@ -1376,7 +1448,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.instalation}
+                    {data.Instalacion}
                 </div>
                 <div
                     style={{
@@ -1391,7 +1463,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.guarantee}
+                    {data.ServicioGarantia}
                 </div>
                 <div
                     style={{
@@ -1406,7 +1478,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.negligence}
+                    {data.Negligencia}
                 </div>
                 <div
                     style={{
@@ -1421,7 +1493,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.maintenance}
+                    {data.FacturableVisit}
                 </div>
                 <div
                     style={{
@@ -1436,7 +1508,7 @@ export default function TechnicalServiceReport({ data }) {
                         alignItems: "center",
                     }}
                 >
-                    {data.visit}
+                    {data.Maintenance}
                 </div>
             </div>
 
@@ -1453,7 +1525,7 @@ export default function TechnicalServiceReport({ data }) {
                         textIndent: "67px",
                     }}
                 >
-                    {data.comment}
+                    {data.Comment}
                 </div>
                 <div
                     style={{
@@ -1467,7 +1539,7 @@ export default function TechnicalServiceReport({ data }) {
                         textIndent: "95px",
                     }}
                 >
-                    {data.recomendation}
+                    {data.Recommendation}
                 </div>
             </div>
 
@@ -1484,7 +1556,42 @@ export default function TechnicalServiceReport({ data }) {
                         justifyContent: "center",
                         alignItems: "center",
                     }}
-                ><img style={{height: '100%', objectFit: 'contain'}} src={data.responsibleSign}></img></div>
+                >
+                    <img
+                        style={{ height: "100%", objectFit: "contain" }}
+                        src={data.Signature.ResponsibleSignature}
+                    ></img>
+                </div>
+                
+                <div
+                    style={{
+                        position: "absolute",
+                        height: "20px",
+                        width: "300px",
+                        top: "930px",
+                        left: "179px",
+                        zIndex: "99",
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    {data.Signature.ResponsibleName}
+                </div>
+                <div
+                    style={{
+                        position: "absolute",
+                        height: "20px",
+                        width: "300px",
+                        top: "943px",
+                        left: "179px",
+                        zIndex: "99",
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    {data.Signature.ResponsibleDni}
+                </div>
+
                 <div
                     style={{
                         position: "absolute",
@@ -1497,7 +1604,27 @@ export default function TechnicalServiceReport({ data }) {
                         justifyContent: "center",
                         alignItems: "center",
                     }}
-                ><img style={{height: '100%', objectFit: 'contain'}} src={data.responsibleTechSign}></img></div>
+                >
+                    <img
+                        style={{ height: "100%", objectFit: "contain" }}
+                        src={data.Signature.TechnicianSignature}
+                    ></img>
+                </div>
+
+                <div
+                    style={{
+                        position: "absolute",
+                        height: "20px",
+                        width: "300px",
+                        top: "930px",
+                        left: "450px",
+                        zIndex: "99",
+                        display: "flex",
+                        alignItems: "center",
+                    }}
+                >
+                    {data.Signature.TechnicianName}
+                </div>
             </div>
         </div>
     );
