@@ -116,10 +116,9 @@ export const ConstantStorageBuckets = {
     USER: 'users'
 }
 
-export const ConstantMailConfig = {
+export const ConstantMailConfigNonFacturable = {
     FROM: 'dev@qualitysumprint.com',
-    SUBJECT: 'QualitySumPrint Resumen',
-    HTML: '<p>VLLC</p>'
+    SUBJECT: 'Finalización servicio - No facturable',
 }
 
 export const ConstantMailTicketPending = {

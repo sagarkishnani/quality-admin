@@ -114,7 +114,13 @@ export const Sidebar = () => {
             <div className="p-2">
               <h3 className="font-semibold">
                 <span>
-                  <BsWhatsapp className="inline" size={"20"} />
+                  <a
+                    href="https://api.whatsapp.com/send?phone=51940294820&text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <BsWhatsapp className="inline" size={"20"} />
+                  </a>
                 </span>
               </h3>
             </div>
@@ -167,10 +173,16 @@ export const Sidebar = () => {
             <div className="flex flex-row justify-between hover:text-qGreen cursor-pointer">
               <div className="basis-4/5">
                 <h3 className="font-semibold">
-                  <span className="pr-2">
-                    <BsWhatsapp className="inline" size={"20"} />
-                  </span>
-                  Contáctanos
+                  <a
+                    href="https://api.whatsapp.com/send?phone=51940294820&text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="pr-2">
+                      <BsWhatsapp className="inline" size={"20"} />
+                    </span>
+                    Contáctanos
+                  </a>
                 </h3>
               </div>
               <div className="basis-1/5">
@@ -179,7 +191,7 @@ export const Sidebar = () => {
             </div>
           </div>
           <div className="absolute bottom-0">
-            <img src={pattern} alt="patrón" />
+            <img className="w-28" src={pattern} alt="patrón" />
           </div>
         </div>
       </div>

@@ -6,6 +6,8 @@ import {
   ConstantFilePurpose,
   ConstantHttpErrors,
   ConstantLocalStorage,
+  ConstantMailConfig,
+  ConstantMailConfigNonFacturable,
   ConstantMessage,
   ConstantTicketMessage,
 } from "../../../../../common/constants"
@@ -18,10 +20,12 @@ import {
 import { Link, useNavigate } from "react-router-dom"
 import { TicketService } from "../../../../../common/services/TicketService"
 import {
+  Alert,
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
+  Snackbar,
   TextField,
 } from "@mui/material"
 import moment from "moment"
@@ -33,6 +37,14 @@ import { ModalTicket } from "./ModalTicket/ModalTicket"
 import { TicketAnswerService } from "../../../../../common/services/TicketAnswerService"
 import { TicketRegisterStepThreePicture } from "../../../../../common/interfaces/Ticket.interface"
 import { dataURLtoFile } from "../../../../../common/utils"
+import TechnicalServiceReport from "../../../../../common/mailTemplates/technicalServiceReport"
+import ReactDOMServer from "react-dom/server"
+import html2pdf from "html2pdf.js"
+import {
+  Attachement,
+  MailService,
+  SendEmailRequest,
+} from "../../../../../common/services/MailService"
 
 const validationSchema = yup.object({
   Comment: yup
@@ -78,6 +90,7 @@ export const TicketRegisterCompleteFormSix = () => {
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
   >("none")
+  const [open, setOpen] = useState(false)
   const [modalMessage, setModalMessage] = useState("")
   const firstSignature = useRef(null)
   const secondSignature = useRef(null)
@@ -192,6 +205,21 @@ export const TicketRegisterCompleteFormSix = () => {
     setIsModalTicketOpen(false)
   }
 
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return
+    }
+
+    setOpen(false)
+  }
+
   async function registerTicketStepThree(isFacturable: boolean) {
     setIsLoadingAction(true)
 
@@ -300,9 +328,183 @@ export const TicketRegisterCompleteFormSix = () => {
             : ConstantTicketMessage.TICKET_FINISHED_SUCCESS
         )
         setIsLoadingAction(false)
+
+        if (!isFacturable) {
+          const pdfData = {
+            RecordCreationDate: moment(ticket?.RecordCreationDate).format(
+              "DD/MM/YYYY"
+            ),
+            AppointmentInitTime: moment(
+              request.StepOne.ScheduledAppointmentInitTime
+            ).format("HH:MM"),
+            AppointmentEndTime: moment(
+              request.StepOne.ScheduledAppointmentEndTime
+            ).format("HH:MM"),
+            Company: ticket?.Company.Name,
+            Address: ticket?.Company.Address,
+            Local: "Local San Isidro",
+            CompanyFloor: ticket?.CompanyFloor,
+            CompanyArea: ticket?.CompanyArea,
+            User: ticket?.User.Name,
+            DeviceOne: request.StepTwo.DeviceOne,
+            SeriesNumberOne: request.StepTwo.SeriesNumberOne,
+            CounterOne: request.StepTwo.CounterOne,
+            GuideOne: request.StepTwo.GuideOne,
+            DeviceTwo: request.StepTwo.DeviceTwo,
+            SeriesNumberTwo: request.StepTwo.SeriesNumberTwo,
+            CounterTwo: request.StepTwo.CounterTwo,
+            GuideTwo: request.StepTwo.GuideTwo,
+            ReportedFailure: ticket?.ReportedFailure,
+            FoundFailure: request.StepTwo.FoundFailure,
+            Revision: {
+              BandejaUno: request.StepThree.BandejaUno,
+              BandejaDos: request.StepThree.BandejaDos,
+              BandejaSalida: request.StepThree.BandejaSalida,
+              BisagraEscaner: request.StepThree.BisagraEscaner,
+              BandejaADF: request.StepThree.BandejaADF,
+              CristalCamaPlana: request.StepThree.CristalCamaPlana,
+              ConectorUSB: request.StepThree.ConectorUSB,
+              ConectorRJ: request.StepThree.ConectorRJ,
+              PanelControl: request.StepThree.PanelControl,
+              Engranaje: request.StepThree.Engranaje,
+              LaminaTeplon: request.StepThree.LaminaTeplon,
+              RodilloPresion: request.StepThree.RodilloPresion,
+            },
+            Procedure: {
+              Instalacion: request.StepFour.Instalacion ? "X" : "",
+              Cambio: request.StepFour.Cambio ? "X" : "",
+              Mantenimiento: request.StepFour.Mantenimiento ? "X" : "",
+              Reparacion: request.StepFour.Reparacion ? "X" : "",
+              Retiro: request.StepFour.Retiro ? "X" : "",
+              Revision: request.StepFour.Revision ? "X" : "",
+              MantImpresora: request.StepFour.MantImpresora ? "X" : "",
+              MantOptico: request.StepFour.MantOptico ? "X" : "",
+              MantOpticoEscaner: request.StepFour.MantOpticoEscaner ? "X" : "",
+              MantSistema: request.StepFour.MantSistema ? "X" : "",
+              ActualFirmware: request.StepFour.ActualFirmware ? "X" : "",
+              EtiquetaFusor: request.StepFour.EtiquetaFusor ? "X" : "",
+              EtiquetaFusorTeflon: request.StepFour.EtiquetaFusorTeflon
+                ? "X"
+                : "",
+              RevCartucho: request.StepFour.RevCartucho ? "X" : "",
+              RevFusor: request.StepFour.RevFusor ? "X" : "",
+              RevImagen: request.StepFour.RevImagen ? "X" : "",
+              RevADF: request.StepFour.RevADF ? "X" : "",
+              RevRodilloBUno: request.StepFour.RevRodilloBUno ? "X" : "",
+              RevRodilloBDos: request.StepFour.RevRodilloBDos ? "X" : "",
+              RevSeparador: request.StepFour.RevSeparador ? "X" : "",
+              RevDuplex: request.StepFour.RevDuplex ? "X" : "",
+              CambioCartucho: request.StepFour.CambioCartucho ? "X" : "",
+              CambioFusor: request.StepFour.CambioFusor ? "X" : "",
+              CambioImagen: request.StepFour.CambioImagen ? "X" : "",
+              CambioRodillo: request.StepFour.CambioRodillo ? "X" : "",
+              CambioTeflon: request.StepFour.CambioTeflon ? "X" : "",
+              CambioRodilloBUno: request.StepFour.CambioRodilloBUno ? "X" : "",
+              CambioRodilloBDos: request.StepFour.CambioRodilloBDos ? "X" : "",
+              CambioSeparador: request.StepFour.CambioSeparador ? "X" : "",
+              CambioDrive: request.StepFour.CambioDrive ? "X" : "",
+              CambioSwing: request.StepFour.CambioSwing ? "X" : "",
+              CambioAOF: request.StepFour.CambioAOF ? "X" : "",
+              CambioDC: request.StepFour.CambioDC ? "X" : "",
+            },
+            Comments: {
+              UsoPapelHumedo: request.StepFive.UsoPapelHumedo ? "X" : "",
+              UsoPapelReciclado: request.StepFive.UsoPapelReciclado ? "X" : "",
+              UsoPapelGrapas: request.StepFive.UsoPapelGrapas ? "X" : "",
+              UsoEtiquetas: request.StepFive.UsoEtiquetas ? "X" : "",
+              ConectadoPared: request.StepFive.ConectadoPared ? "X" : "",
+              ConectadoSupresor: request.StepFive.ConectadoSupresor ? "X" : "",
+              ConectadoEstabilizador: request.StepFive.ConectadoEstabilizador
+                ? "X"
+                : "",
+              ConectadoUPS: request.StepFive.ConectadoUPS ? "X" : "",
+              Operativo: request.StepFive.Operativo ? "X" : "",
+              PegadoEtiquetaGarantia: request.StepFive.PegadoEtiquetaGarantia
+                ? "X"
+                : "",
+              EnObservacion: request.StepFive.EnObservacion ? "X" : "",
+              EquipoRequiereCambio: request.StepFive.EquipoRequiereCambio
+                ? "X"
+                : "",
+              EquipoRequiereMantenimiento: request.StepFive
+                .EquipoRequiereMantenimiento
+                ? "X"
+                : "",
+              CartuchoOtroProveedor: request.StepFive.CartuchoOtroProveedor
+                ? "X"
+                : "",
+              CartuchoDanado: request.StepFive.CartuchoDanado ? "X" : "",
+            },
+            Instalacion: request.StepFive.Instalacion ? "X" : "",
+            ServicioGarantia: request.StepFive.ServicioGarantia ? "X" : "",
+            Negligencia: request.StepFive.Negligencia ? "X" : "",
+            Mantenimiento: request.StepFive.Mantenimiento ? "X" : "",
+            FacturableVisit: isFacturable ? "X" : "",
+            Comment: request.StepSix.Comment,
+            Recommendation: request.StepSix.Recommendation,
+            Signature: {
+              ResponsibleName: request.StepSix.ResponsibleName,
+              ResponsibleDni: request.StepSix.ResponsibleDni,
+              ResponsibleSignature:
+                "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/6f970d16-055a-4747-9ee9-79f43386abe3",
+              TechnicianName: request.StepSix.TechnicianName,
+              TechnicianSignature:
+                "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/ab55aec9-d675-429e-86ab-aa3e8a0ce2b7",
+            },
+          }
+
+          const html = `<p>Se dio por finalizado el ticket. Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.png?t=2023-12-15T05%3A23%3A41.891Z" alt="">`
+
+          const printElement = ReactDOMServer.renderToString(
+            TechnicalServiceReport({ data: pdfData })
+          )
+          const opt = {
+            format: "a4",
+            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            margin: 1,
+            html2canvas: {
+              dpi: 192,
+              scale: 4,
+              letterRendering: true,
+              useCORS: true,
+            },
+            devicePixelRatio: 1.5,
+          }
+
+          html2pdf().from(printElement).set(opt).save()
+
+          html2pdf()
+            .from(printElement)
+            .set(opt)
+            .outputPdf()
+            .then(async (pdf) => {
+              const base64 = btoa(pdf)
+
+              const attachments: Attachement = {
+                filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+                content: base64,
+              }
+
+              const request: SendEmailRequest = {
+                from: ConstantMailConfigNonFacturable.FROM,
+                to: ["sagarkishnani67@gmail.com"],
+                subject: ConstantMailConfigNonFacturable.SUBJECT,
+                html: html,
+                attachments: [attachments],
+              }
+              await MailService.sendEmail(request)
+            })
+        }
+
         setTimeout(() => {
           navigate("/tickets")
         }, 2000)
+
+        return (
+          <>
+            <TechnicalServiceReport data={pdfData}></TechnicalServiceReport>
+          </>
+        )
       } else {
         setIsModalTicketOpen(false)
         setIsLoadingAction(false)
@@ -342,6 +544,18 @@ export const TicketRegisterCompleteFormSix = () => {
   }
 
   const handleForm = () => {
+    if (formik.values.Firma == "") return handleOpen()
+    if (
+      formik.values.Firma == "W" &&
+      (firstSignature.current == null || secondSignature.current == null)
+    )
+      return handleOpen()
+    if (
+      formik.values.Firma == "U" &&
+      (firstSignatureImg == "" || secondSignatureImg == "")
+    )
+      return handleOpen()
+
     setIsModalTicketOpen(true)
     setModalTicketType("question")
     setModalTicketMessage(ConstantTicketMessage.TICKET_FACTURABLE)
@@ -372,12 +586,12 @@ export const TicketRegisterCompleteFormSix = () => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
@@ -387,6 +601,7 @@ export const TicketRegisterCompleteFormSix = () => {
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
             required
+            placeholder="Escribir comentario..."
             name="Comment"
             id="Comment"
             rows={2}
@@ -410,6 +625,7 @@ export const TicketRegisterCompleteFormSix = () => {
           <textarea
             className="w-full border-2 border-gray-300 rounded-md focus:outline-qGreen p-2"
             required
+            placeholder="Escribir recomendaciones para el usuario..."
             name="Recommendation"
             id="Recommendation"
             rows={2}
@@ -454,7 +670,7 @@ export const TicketRegisterCompleteFormSix = () => {
         </div>
         {formik.values.Firma === "W" && (
           <>
-            <div className="col-span-5 border-gray-400 border-2 rounded-md relative h-32">
+            <div className="order-1 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md relative h-32">
               <CanvasDraw
                 ref={firstSignature}
                 canvasHeight={120}
@@ -465,8 +681,8 @@ export const TicketRegisterCompleteFormSix = () => {
                 // className="absolute"
               />
             </div>
-            <div className="col-span-2"></div>
-            <div className="col-span-5 border-gray-400 border-2 rounded-md relative h-32">
+            <div className="hidden md:block col-span-12 md:col-span-2"></div>
+            <div className="order-5 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md relative h-32">
               <CanvasDraw
                 ref={secondSignature}
                 canvasHeight={120}
@@ -477,7 +693,7 @@ export const TicketRegisterCompleteFormSix = () => {
                 // className="absolute"
               />
             </div>
-            <div className="col-span-5 -mt-3">
+            <div className="order-2 md:order-none col-span-12 md:col-span-5 -mt-3">
               <div className="flex justify-end pr-1">
                 <button onClick={() => clearSignature(1)} type="button">
                   <AiOutlineClear size={20} color={"#00A0DF"} />
@@ -485,8 +701,8 @@ export const TicketRegisterCompleteFormSix = () => {
               </div>
               <p>Firma del responsable (*)</p>
             </div>
-            <div className="col-span-2"></div>
-            <div className="col-span-5 -mt-3">
+            <div className="hidden md:block col-span-12 md:col-span-2"></div>
+            <div className="order-6 md:order-none col-span-12 md:col-span-5 -mt-3">
               <div className="flex justify-end pr-1">
                 <button onClick={() => clearSignature(2)} type="button">
                   <AiOutlineClear size={20} color={"#00A0DF"} />
@@ -498,9 +714,9 @@ export const TicketRegisterCompleteFormSix = () => {
         )}
         {formik.values.Firma === "U" && (
           <>
-            <div className="col-span-5">
-              <div className="flex flex-row space-x-2">
-                <div className="register_profile_image">
+            <div className="order-1 md:order-none col-span-12 md:col-span-5">
+              <div className="flex flex-col md:flex-row md:space-x-2">
+                <div className="register_profile_image overflow-x-hidden">
                   <input
                     type="file"
                     accept=".png, .jpg, .gif, .svg, .webp"
@@ -510,10 +726,10 @@ export const TicketRegisterCompleteFormSix = () => {
                 </div>
               </div>
             </div>
-            <div className="col-span-2"></div>
-            <div className="col-span-5">
-              <div className="flex flex-row space-x-2">
-                <div className="register_profile_image">
+            <div className="col-span-12 hidden md:block md:col-span-2"></div>
+            <div className="order-5 md:order-none col-span-12 md:col-span-5">
+              <div className="flex flex-col md:flex-row md:space-x-2">
+                <div className="register_profile_image overflow-x-hidden">
                   <input
                     type="file"
                     accept=".png, .jpg, .gif, .svg, .webp"
@@ -523,16 +739,16 @@ export const TicketRegisterCompleteFormSix = () => {
                 </div>
               </div>
             </div>
-            <div className="col-span-5">
+            <div className="order-2 md:order-none col-span-12 md:col-span-5">
               <p>Firma del responsable (*)</p>
             </div>
-            <div className="col-span-2"></div>
-            <div className="col-span-5">
-              <p>Firma del técnico responsable</p>
+            <div className="col-span-12 md:col-span-2"></div>
+            <div className="order-6 md:order-none col-span-12 md:col-span-5">
+              <p>Firma del técnico responsable (*)</p>
             </div>
           </>
         )}
-        <div className="col-span-5">
+        <div className="order-3 md:order-none col-span-12 md:col-span-5">
           <TextField
             required
             color="primary"
@@ -552,8 +768,8 @@ export const TicketRegisterCompleteFormSix = () => {
             label="Nombre"
           />
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5">
+        <div className="hidden md:block col-span-12 md:col-span-2"></div>
+        <div className="order-7 md:order-none col-span-12 md:col-span-5">
           <TextField
             required
             color="primary"
@@ -573,7 +789,7 @@ export const TicketRegisterCompleteFormSix = () => {
             label="Nombre técnico"
           />
         </div>
-        <div className="col-span-5">
+        <div className="order-4 md:order-none col-span-12 md:col-span-5">
           <TextField
             required
             color="primary"
@@ -593,8 +809,8 @@ export const TicketRegisterCompleteFormSix = () => {
             label="DNI"
           />
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5">
+        <div className="hidden md:block col-span-12 md:col-span-2"></div>
+        <div className="order-8 md:order-none col-span-12 md:col-span-5">
           <TextField
             required
             color="primary"
@@ -616,7 +832,7 @@ export const TicketRegisterCompleteFormSix = () => {
         </div>
       </div>
 
-      <div className="w-full mt-8 flex space-x-3 justify-end">
+      <div className="w-full mt-8 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={previousStep}
@@ -627,6 +843,7 @@ export const TicketRegisterCompleteFormSix = () => {
         <button
           className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}
           type="button"
+          disabled={!formik.isValid}
           onClick={handleForm}
         >
           Finalizar
@@ -648,6 +865,16 @@ export const TicketRegisterCompleteFormSix = () => {
         open={isModalOpen}
         handleClose={handleCloseModal}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="warning" sx={{ width: "100%" }}>
+          Debe escribir o subir ambas firmas
+        </Alert>
+      </Snackbar>
     </>
   )
 }

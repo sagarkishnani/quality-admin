@@ -46,6 +46,12 @@ body {
   background-image: url("./assets/images/login/bg_login.png");
 }
 
+.bg-printer {
+  background-image: url("./assets/images/printer/printer-ad.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .btn-dialog-ok {
   background-color: #74c947 !important;
   color: white !important;

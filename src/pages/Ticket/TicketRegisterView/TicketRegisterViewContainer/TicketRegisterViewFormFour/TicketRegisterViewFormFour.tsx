@@ -100,12 +100,12 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
@@ -113,7 +113,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
         <div className="col-span-12">
           <h4 className="font-semibold text-lg">Procedimiento</h4>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-col">
             <div>
               <FormControlLabel
@@ -178,7 +178,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
             </div>
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-row items-center space-x-2">
             <div
               onClick={() => setIsCollapsedCambio(!isCollapsedCambio)}
@@ -346,7 +346,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
             </div>
           </Collapse>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-row items-center space-x-2">
             <div
               onClick={() =>
@@ -428,7 +428,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
             </div>
           </Collapse>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-row items-center space-x-2">
             <div
               onClick={() => setIsCollapsedRevision(!isCollapsedRevision)}
@@ -552,7 +552,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
         </div>
       </div>
 
-      <div className="w-full mt-16 flex space-x-3 justify-end">
+      <div className="w-full mt-16 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}

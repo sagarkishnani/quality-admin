@@ -70,12 +70,12 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
@@ -102,29 +102,29 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
             value={formik.values.Recommendation}
           ></textarea>
         </div>
-        <div className="col-span-5 border-gray-400 border-2 rounded-md w-80 h-32">
+        <div className="order-1 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md w-full md:w-80 h-32">
           <img
             className="w-full h-full bg-cover"
             src={supabaseUrl + bucketUrl + firstSignature}
             alt=""
           />
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5 border-gray-400 border-2 rounded-md w-80 h-32">
+        <div className="hidden md:block col-span-2"></div>
+        <div className="order-5 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md w-full md:w-80 h-32">
           <img
             className="w-full h-full bg-cover"
             src={supabaseUrl + bucketUrl + secondSignature}
             alt=""
           />
         </div>
-        <div className="col-span-5 -mt-3">
+        <div className="order-2 md:order-none col-span-12 md:col-span-5 -mt-3">
           <p>Firma del responsable (*)</p>
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5 -mt-3">
+        <div className="hidden md:block col-span-2"></div>
+        <div className="order-6 md:order-none col-span-12 md:col-span-5 -mt-3">
           <p>Firma del técnico responsable</p>
         </div>
-        <div className="col-span-5">
+        <div className="order-3 md:order-none col-span-12 md:col-span-5">
           <TextField
             disabled
             color="primary"
@@ -135,8 +135,8 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
             label="Nombre"
           />
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5">
+        <div className="hidden md:block col-span-2"></div>
+        <div className="order-7 md:order-none col-span-12 md:col-span-5">
           <TextField
             disabled
             color="primary"
@@ -147,7 +147,7 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
             label="Nombre técnico"
           />
         </div>
-        <div className="col-span-5">
+        <div className="order-4 md:order-none col-span-12 md:col-span-5">
           <TextField
             disabled
             color="primary"
@@ -158,8 +158,8 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
             label="DNI"
           />
         </div>
-        <div className="col-span-2"></div>
-        <div className="col-span-5">
+        <div className="hidden md:block col-span-2"></div>
+        <div className="order-8 md:order-none col-span-12 md:col-span-5">
           <TextField
             disabled
             color="primary"
@@ -172,7 +172,7 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
         </div>
       </div>
 
-      <div className="w-full mt-8 flex space-x-3 justify-end">
+      <div className="w-full mt-8 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}

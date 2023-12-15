@@ -232,7 +232,7 @@ export const TicketListFilter = () => {
               />
             </div>
           </div>
-          <div className="col-span-2 xl:col-span-4">
+          <div className="col-span-4 md:col-span-2 xl:col-span-4">
             <h4 className="text-qGreen font-medium pb-2">Fecha de registro</h4>
             <div className="text-sm pb-2">
               <DatePicker

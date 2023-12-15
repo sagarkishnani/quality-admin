@@ -5,11 +5,13 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import {
+  Alert,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Skeleton,
+  Snackbar,
   TextField,
 } from "@mui/material"
 import { Button } from "../../../../common/components/Button/Button"
@@ -19,7 +21,6 @@ import { TicketService } from "../../../../common/services/TicketService"
 import {
   ConstantFilePurpose,
   ConstantHttpErrors,
-  ConstantMailConfig,
   ConstantMailTicketPending,
   ConstantTicketMessage,
   ConstantTicketStatus,
@@ -28,7 +29,6 @@ import {
 import {
   TicketRegisterAndUploadImage,
   TicketRegisterStepOneRequest,
-  UserTicketResponse,
 } from "../../../../common/interfaces/Ticket.interface"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
@@ -63,6 +63,7 @@ export const TicketRegisterContainer = () => {
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const { user } = useAuth()
+  const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
   const onChangePicture = (e: any) => {
@@ -94,6 +95,21 @@ export const TicketRegisterContainer = () => {
 
   const handleCloseImageModal = () => {
     setIsImageModal(false)
+  }
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return
+    }
+
+    setOpen(false)
   }
 
   async function getAreas() {
@@ -153,7 +169,7 @@ export const TicketRegisterContainer = () => {
           setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
           return
         } else {
-          const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user?.Name}</strong> de la empresa <strong>${user?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://qualitysumprint.com/wp-content/uploads/2023/04/impresora-medio-ambiente-2.png" alt="">`
+          const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user?.Name}</strong> de la empresa <strong>${user?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.png?t=2023-12-15T05%3A23%3A41.891Z" alt="">`
 
           const request: SendEmailRequest = {
             from: ConstantMailTicketPending.FROM,
@@ -196,7 +212,12 @@ export const TicketRegisterContainer = () => {
     onSubmit: (values) => {
       values.IdTicketStatus = ConstantTicketStatus.PENDIENTE
       values.IdTicketType = ""
-      registerTicket(values)
+      if (pictures?.length > 0) {
+        registerTicket(values)
+      } else {
+        handleOpen()
+        return
+      }
     },
   })
 
@@ -224,13 +245,13 @@ export const TicketRegisterContainer = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
-      <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
+      <div className="py-5 px-4 md:px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
         <div className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center">
           <Link to={"/tickets"}>
             <HiChevronLeft size={"32"} />
           </Link>
         </div>
-        <div className="bg-white col-span-8 shadow-sm p-6">
+        <div className="bg-white col-span-12 md:col-span-8 shadow-sm p-6">
           {!isLoading && (
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-8">
@@ -243,7 +264,7 @@ export const TicketRegisterContainer = () => {
                   {moment(Date.now()).format("DD/MM/YYYY")}
                 </h2>
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <TextField
                   disabled
                   color="primary"
@@ -254,7 +275,7 @@ export const TicketRegisterContainer = () => {
                   label="Empresa"
                 />
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <TextField
                   disabled
                   color="primary"
@@ -265,7 +286,7 @@ export const TicketRegisterContainer = () => {
                   label="Dirección"
                 />
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <FormControl fullWidth>
                   <InputLabel required id="FloorLabel">
                     Piso
@@ -285,7 +306,7 @@ export const TicketRegisterContainer = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <FormControl fullWidth>
                   <InputLabel required id="AreaLabel">
                     Área
@@ -344,9 +365,9 @@ export const TicketRegisterContainer = () => {
                 </div>
               </div>
               <div className="col-span-12">
-                <div className="flex flex-row space-x-2">
-                  <h3>Evidencia(s)</h3>
-                  <div className="register_profile_image">
+                <div className="flex flex-col md:flex-row md:space-x-2">
+                  <h3 className="mb-2 md:mb-0">Evidencia(s)</h3>
+                  <div className="register_profile_image overflow-x-hidden">
                     <input
                       id="profilePic"
                       type="file"
@@ -390,20 +411,52 @@ export const TicketRegisterContainer = () => {
                 </div>
               </div>
               <div className="p-4 grid grid-cols-12 gap-4">
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
               </div>
             </>
           )}
         </div>
 
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="bg-white grid grid-cols-2 shadow-sm p-4">
             <div className="col-span-2">
               <h4 className="text-sm text-qGray font-semibold py-2">
@@ -450,6 +503,16 @@ export const TicketRegisterContainer = () => {
         open={isImageModal}
         handleClose={handleCloseImageModal}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="warning" sx={{ width: "100%" }}>
+          Debe adjuntar por lo menos 1 evidencia
+        </Alert>
+      </Snackbar>
     </form>
   )
 }

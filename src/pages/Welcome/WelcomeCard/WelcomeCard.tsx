@@ -16,7 +16,7 @@ export const WelcomeCard = ({
 }: WelcomeCardInterface) => {
   return (
     <Link to={link}>
-      <div className="bg-white shadow-md p-10 w-[28rem] mt-4 hover:bg-neutral-100">
+      <div className="bg-white shadow-md p-10 w-full md:w-[28rem] mt-4 hover:bg-neutral-100">
         <div>{icon}</div>
         <h2 className="mt-2 font-bold">{title}</h2>
         <p className="mt-2">{description}</p>

@@ -91,12 +91,25 @@ export interface GetTicketById {
     IdTicketCompany: string;
     IdTicketType: string;
     IdTechnician: string | null;
+    User: GetTicketByIdAdditional;
     RecordCreationDate: Date;
     AppointmentDate: Date | null;
+    AppointmentInitTime: Date | null;
+    AppointmentEndTime: Date | null;
+    DeviceOne: string | null;
+    SeriesNumberOne: string | null;
+    CounterOne: number | null;
+    GuideOne: string | null;
+    DeviceTwo: string | null;
+    SeriesNumberTwo: string | null;
+    CounterTwo: number | null;
+    GuideTwo: string | null;
+    FoundFailure: string | null;
     Company: GetTicketByIdCompany;
     CompanyFloor: string;
     CompanyArea: string;
     ReportedFailure: string;
+    TicketAnswer: TicketRegisterStepThreeRequestFormThree;
     TicketStatus: GetTicketByIdAdditional;
     TicketType: GetTicketByIdAdditional;
     TicketFile: TicketFile[];
@@ -130,8 +143,10 @@ export interface TicketRegisterStepThreeRequestFormOne {
 
 export interface TicketRegisterStepThreeRequestFormTwo {
     DeviceOne: string;
+    SeriesNumberOne: string;
     CounterOne: string;
     GuideOne: string;
+    SeriesNumberTwo: string;
     DeviceTwo: string;
     CounterTwo: string;
     GuideTwo: string;
@@ -166,6 +181,7 @@ export interface TicketRegisterStepThreeRequestFormFour {
     ActualFirmware: boolean | null;
     EtiquetaFusor: boolean | null;
     EtiquetaFusorTeflon: boolean | null;
+    Cambio: boolean | null;
     CambioCartucho: boolean | null;
     CambioFusor: boolean | null;
     CambioImagen: boolean | null;
@@ -178,10 +194,12 @@ export interface TicketRegisterStepThreeRequestFormFour {
     CambioSwing: boolean | null;
     CambioAOF: boolean | null;
     CambioDC: boolean | null;
+    Mantenimiento: boolean | null;
     MantImpresora: boolean | null;
     MantOptico: boolean | null;
     MantOpticoEscaner: boolean | null;
     MantSistema: boolean | null;
+    Revision: boolean | null;
     RevCartucho: boolean | null;
     RevFusor: boolean | null;
     RevImagen: boolean | null;

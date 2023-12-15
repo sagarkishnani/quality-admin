@@ -127,7 +127,7 @@ export const TicketListTableContainer = () => {
           </div> */}
         </div>
         {user?.IdRole === ConstantRoles.USUARIO && (
-          <div className="mr-6">
+          <div className="text-center mt-5 md:mr-6 md:text-left md:mt-0">
             <Link to={"nuevo"}>
               <Button type="button" color="#74C947" label="Agregar ticket" />
             </Link>

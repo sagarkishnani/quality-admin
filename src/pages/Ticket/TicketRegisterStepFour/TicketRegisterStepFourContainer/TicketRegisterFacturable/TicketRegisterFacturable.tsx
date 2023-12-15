@@ -286,19 +286,19 @@ export const TicketRegisterFacturable = () => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
         </div>
         {ticketServices?.length == 0 && (
           <>
-            <div className="col-span-8">
+            <div className="col-span-12 md:col-span-8">
               <FormControl fullWidth>
                 <InputLabel id="ServiceLabel">Servicios</InputLabel>
                 <Select
@@ -316,7 +316,7 @@ export const TicketRegisterFacturable = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="col-span-4 flex items-center">
+            <div className="col-span-12 justify-center md:justify-normal md:col-span-4 flex items-center">
               <button
                 className={`px-8 py-2 font-medium rounded-md text-white ${
                   formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
@@ -335,7 +335,7 @@ export const TicketRegisterFacturable = () => {
                 )}
                 {selectedServices?.length !== 0 && (
                   <>
-                    <div className="flex-1 w-[80vw] lg:w-auto">
+                    <div className="flex-1 w-full md:w-[80vw] lg:w-auto">
                       <div style={{ height: "100%", width: "100%" }}>
                         <DataGrid
                           rows={selectedServices}

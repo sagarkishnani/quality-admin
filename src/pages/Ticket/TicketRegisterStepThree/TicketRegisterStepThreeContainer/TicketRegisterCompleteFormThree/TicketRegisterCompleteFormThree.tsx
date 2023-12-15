@@ -137,12 +137,12 @@ export const TicketRegisterCompleteFormThree = () => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
@@ -155,10 +155,10 @@ export const TicketRegisterCompleteFormThree = () => {
             B: BUEN ESTADO | L: LEVE DESGASTE | G: GASTADO | R: ROTO
           </p>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Bandeja 1</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -174,10 +174,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Bisagra de escaner</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -193,10 +193,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Bandeja 2</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -212,10 +212,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Bandeja ADF</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -231,10 +231,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Bandeja de salida</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -250,10 +250,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Cristal de cama plana</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -269,10 +269,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Conector USB</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -288,10 +288,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Engranaje</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -307,10 +307,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Conector RJ45</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -326,10 +326,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Lámina de teplon</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -345,10 +345,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Panel de control</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -364,10 +364,10 @@ export const TicketRegisterCompleteFormThree = () => {
             </RadioGroup>
           </FormControl>
         </div>
-        <div className="col-span-2 flex items-center">
+        <div className="col-span-12 md:col-span-2 flex items-center">
           <p className="text-sm font-semibold">Rodillo de presión</p>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl>
             <RadioGroup
               row
@@ -385,7 +385,7 @@ export const TicketRegisterCompleteFormThree = () => {
         </div>
       </div>
 
-      <div className="w-full mt-16 flex space-x-3 justify-end">
+      <div className="w-full mt-16 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}

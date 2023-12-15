@@ -32,9 +32,11 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
   const formik = useFormik({
     initialValues: {
       DeviceOne: "",
+      SeriesNumberOne: "",
       CounterOne: "",
       GuideOne: "",
       DeviceTwo: "",
+      SeriesNumberTwo: "",
       CounterTwo: "",
       GuideTwo: "",
       ReportedFailure: "",
@@ -48,9 +50,11 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
     if (ticket) {
       formik.setValues({
         DeviceOne: ticket?.DeviceOne || "",
+        SeriesNumberOne: ticket?.SeriesNumberOne || "",
         CounterOne: ticket?.CounterOne || "",
         GuideOne: ticket?.GuideOne || "",
         DeviceTwo: ticket?.DeviceTwo || "",
+        SeriesNumberTwo: ticket?.SeriesNumberTwo || "",
         CounterTwo: ticket?.CounterTwo || "",
         GuideTwo: ticket?.GuideTwo || "",
         ReportedFailure: ticket.ReportedFailure || "",
@@ -68,17 +72,17 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <TextField
             disabled
             color="primary"
@@ -89,7 +93,18 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
             label="Equipo"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
+          <TextField
+            disabled
+            color="primary"
+            className="w-full"
+            id="SeriesNumberOne"
+            name="SeriesNumberOne"
+            value={formik.values.SeriesNumberOne}
+            label="N/S"
+          />
+        </div>
+        <div className="col-span-12 md:col-span-2">
           <TextField
             disabled
             color="primary"
@@ -100,7 +115,7 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
             label="Contador"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
           <TextField
             disabled
             color="primary"
@@ -111,7 +126,7 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
             label="# Guía"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <TextField
             disabled
             color="primary"
@@ -122,7 +137,18 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
             label="Equipo (R)"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
+          <TextField
+            disabled
+            color="primary"
+            className="w-full"
+            id="SeriesNumberTwo"
+            name="SeriesNumberTwo"
+            value={formik.values.SeriesNumberTwo}
+            label="N/S"
+          />
+        </div>
+        <div className="col-span-12 md:col-span-2">
           <TextField
             disabled
             color="primary"
@@ -133,7 +159,7 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
             label="Contador"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
           <TextField
             disabled
             color="primary"
@@ -172,7 +198,7 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
               <div className="flex flex-row space-x-2">
                 <h3>Evidencia(s) del técnico</h3>
               </div>
-              <div className="flex flex-row space-x-2 mt-4">
+              <div className="flex flex-row space-x-2 flex-wrap mt-4">
                 {pictures.map((picture, index) => (
                   <div
                     key={index}
@@ -195,7 +221,7 @@ export const TicketRegisterViewFormTwo = ({ ticket }) => {
         </div>
       </div>
 
-      <div className="w-full mt-8 flex space-x-3 justify-end">
+      <div className="w-full mt-8 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}

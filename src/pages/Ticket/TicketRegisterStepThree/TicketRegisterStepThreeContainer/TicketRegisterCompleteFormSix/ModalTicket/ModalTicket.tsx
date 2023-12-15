@@ -35,7 +35,7 @@ export const ModalTicket = ({
 }: ModalTicketInterface) => {
   return (
     <Dialog className="" open={open} onClose={handleClose}>
-      <div className="w-[32rem]">
+      <div className="w-full md:w-[32rem]">
         <div className="flex justify-center pt-12 pb-4">
           {modalType === "none" ? null : modalType === "success" ? (
             <HiCheckCircle color="#3DAE2B" size={"60"} />

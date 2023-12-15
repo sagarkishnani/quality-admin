@@ -121,17 +121,17 @@ export const TicketRegisterCompleteFormOne = ({
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <InputLabel id="ScheduledAppointmentInitTime">Hora inicio</InputLabel>
           <TimePicker
             className="w-full"
@@ -141,7 +141,7 @@ export const TicketRegisterCompleteFormOne = ({
             }
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <InputLabel id="ScheduledAppointmentEndTime">Hora fin</InputLabel>
           <TimePicker
             className="w-full"
@@ -151,7 +151,7 @@ export const TicketRegisterCompleteFormOne = ({
             }
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -162,7 +162,7 @@ export const TicketRegisterCompleteFormOne = ({
             label="Empresa"
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -173,7 +173,7 @@ export const TicketRegisterCompleteFormOne = ({
             label="Dirección"
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -184,7 +184,7 @@ export const TicketRegisterCompleteFormOne = ({
             label="Piso"
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -232,7 +232,7 @@ export const TicketRegisterCompleteFormOne = ({
           </div>
         )}
       </div>
-      <div className="w-full mt-4 flex justify-end">
+      <div className="w-full mt-6 md:mt-4 flex justify-end">
         <button
           className={`px-10 py-2 font-medium rounded-full text-white ${
             formik.isValid

@@ -12,10 +12,12 @@ import {
   TicketRegisterStepThreeRequestFormTwo,
 } from "../../../../../common/interfaces/Ticket.interface"
 import {
+  Alert,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
+  Snackbar,
   TextField,
 } from "@mui/material"
 import moment from "moment"
@@ -32,9 +34,11 @@ interface TicketRegisterCompleteFormTwoInterface {
 
 const validationSchema = yup.object({
   DeviceOne: yup.string().required("Equipo es obligatorio"),
+  SeriesNumberOne: yup.string().required("Número de serie es obligatorio"),
   CounterOne: yup.number().required("Contador es obligatorio"),
   GuideOne: yup.string().required("# Guía es obligatoria"),
   DeviceTwo: yup.string().required("Equipo (R) es obligatorio"),
+  SeriesNumberTwo: yup.string().required("Número de serie es obligatorio"),
   CounterTwo: yup.number().required("Contador es obligatorio"),
   GuideTwo: yup.string().required("# Guía es obligatoria"),
   FoundFailure: yup
@@ -52,6 +56,7 @@ export const TicketRegisterCompleteFormTwo = ({
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const [pictures, setPictures] = useState<string[]>([])
+  const [open, setOpen] = useState(false)
   const { setTicketStep } = useTicket()
 
   const onChangePicture = (e: any) => {
@@ -81,6 +86,21 @@ export const TicketRegisterCompleteFormTwo = ({
     setIsImageModal(false)
   }
 
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return
+    }
+
+    setOpen(false)
+  }
+
   async function getDevices() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.DEVICES
@@ -96,12 +116,14 @@ export const TicketRegisterCompleteFormTwo = ({
   }
 
   async function registerTicketStep(isNext: boolean) {
-    if (formik.isValid) {
+    if (formik.isValid && pictures.length > 0) {
       const requestFormTwo: TicketRegisterStepThreeRequestFormTwo = {
         DeviceOne: formik.values.DeviceOne,
+        SeriesNumberOne: formik.values.SeriesNumberOne,
         CounterOne: formik.values.CounterOne,
         GuideOne: formik.values.GuideOne,
         DeviceTwo: formik.values.DeviceTwo,
+        SeriesNumberTwo: formik.values.SeriesNumberTwo,
         CounterTwo: formik.values.CounterTwo,
         GuideTwo: formik.values.GuideTwo,
         FoundFailure: formik.values.FoundFailure,
@@ -114,15 +136,20 @@ export const TicketRegisterCompleteFormTwo = ({
       )
 
       isNext ? setTicketStep(3) : setTicketStep(1)
+    } else {
+      handleOpen()
+      return
     }
   }
 
   const formik = useFormik({
     initialValues: {
       DeviceOne: "",
+      SeriesNumberOne: "",
       CounterOne: "",
       GuideOne: "",
       DeviceTwo: "",
+      SeriesNumberTwo: "",
       CounterTwo: "",
       GuideTwo: "",
       ReportedFailure: "",
@@ -146,9 +173,11 @@ export const TicketRegisterCompleteFormTwo = ({
     if (ticket) {
       formik.setValues({
         DeviceOne: ticketFormTwo?.DeviceOne || "",
+        SeriesNumberOne: ticketFormTwo?.SeriesNumberOne || "",
         CounterOne: ticketFormTwo?.CounterOne || "",
         GuideOne: ticketFormTwo?.GuideOne || "",
         DeviceTwo: ticketFormTwo?.DeviceTwo || "",
+        SeriesNumberTwo: ticketFormTwo?.SeriesNumberTwo || "",
         CounterTwo: ticketFormTwo?.CounterTwo || "",
         GuideTwo: ticketFormTwo?.GuideTwo || "",
         ReportedFailure: ticket.ReportedFailure || "",
@@ -161,17 +190,17 @@ export const TicketRegisterCompleteFormTwo = ({
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl fullWidth>
             <InputLabel id="DeviceOneLabel">Equipo</InputLabel>
             <Select
@@ -189,7 +218,26 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
+          <TextField
+            color="primary"
+            className="w-full"
+            id="SeriesNumberOne"
+            name="SeriesNumberOne"
+            value={formik.values.SeriesNumberOne}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.SeriesNumberOne &&
+              Boolean(formik.errors.SeriesNumberOne)
+            }
+            helperText={
+              formik.touched.SeriesNumberOne && formik.errors.SeriesNumberOne
+            }
+            label="N/S"
+          />
+        </div>
+        <div className="col-span-12 md:col-span-2">
           <TextField
             color="primary"
             className="w-full"
@@ -205,7 +253,7 @@ export const TicketRegisterCompleteFormTwo = ({
             label="Contador"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
           <TextField
             color="primary"
             className="w-full"
@@ -219,7 +267,7 @@ export const TicketRegisterCompleteFormTwo = ({
             label="# Guía"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-4">
           <FormControl fullWidth>
             <InputLabel id="DeviceTwoLabel">Equipo (R)</InputLabel>
             <Select
@@ -237,7 +285,26 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
+          <TextField
+            color="primary"
+            className="w-full"
+            id="SeriesNumberTwo"
+            name="SeriesNumberTwo"
+            value={formik.values.SeriesNumberTwo}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.SeriesNumberTwo &&
+              Boolean(formik.errors.SeriesNumberTwo)
+            }
+            helperText={
+              formik.touched.SeriesNumberTwo && formik.errors.SeriesNumberTwo
+            }
+            label="N/S"
+          />
+        </div>
+        <div className="col-span-12 md:col-span-2">
           <TextField
             color="primary"
             className="w-full"
@@ -253,7 +320,7 @@ export const TicketRegisterCompleteFormTwo = ({
             label="Contador"
           />
         </div>
-        <div className="col-span-4">
+        <div className="col-span-12 md:col-span-3">
           <TextField
             color="primary"
             className="w-full"
@@ -287,6 +354,7 @@ export const TicketRegisterCompleteFormTwo = ({
                 : "focus:outline-qGreen"
             }  p-2`}
             required
+            placeholder="Escribir falla encontrada..."
             name="FoundFailure"
             id="FoundFailure"
             rows={3}
@@ -307,9 +375,9 @@ export const TicketRegisterCompleteFormTwo = ({
           </div>
         </div>
         <div className="col-span-12">
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-col md:flex-row md:space-x-2">
             <h3>Evidencia(s)</h3>
-            <div className="register_profile_image">
+            <div className="register_profile_image overflow-hidden">
               <input
                 id="profilePic"
                 type="file"
@@ -320,7 +388,7 @@ export const TicketRegisterCompleteFormTwo = ({
               />
             </div>
           </div>
-          <div className="flex flex-row space-x-2 mt-4">
+          <div className="flex flex-row flex-wrap space-x-2 mt-4">
             {pictures.map((imgData, index) => (
               <div
                 key={index}
@@ -340,7 +408,7 @@ export const TicketRegisterCompleteFormTwo = ({
         </div>
       </div>
 
-      <div className="w-full mt-8 flex space-x-3 justify-end">
+      <div className="w-full mt-8 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}
@@ -365,6 +433,16 @@ export const TicketRegisterCompleteFormTwo = ({
         open={isImageModal}
         handleClose={handleCloseImageModal}
       />
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="warning" sx={{ width: "100%" }}>
+          Debe adjuntar por lo menos 1 evidencia
+        </Alert>
+      </Snackbar>
     </>
   )
 }

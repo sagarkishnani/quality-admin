@@ -82,12 +82,12 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
@@ -95,7 +95,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
         {ticket?.TicketStatus?.Name !== "Pendiente" &&
           ticket?.TicketStatus?.Name !== "En progreso" && (
             <>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <InputLabel id="ScheduledAppointmentInitTime">
                   Hora inicio
                 </InputLabel>
@@ -105,7 +105,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
                   value={moment(formik.values.ScheduledAppointmentInitTime)}
                 />
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <InputLabel id="ScheduledAppointmentEndTime">
                   Hora fin
                 </InputLabel>
@@ -120,7 +120,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
         {ticket?.TicketStatus?.Name == "Pendiente" ||
           (ticket?.TicketStatus?.Name == "En progreso" && (
             <>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <InputLabel id="ScheduledAppointmentDate">
                   Fecha programada de inicio
                 </InputLabel>
@@ -130,7 +130,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
                   value={moment(formik.values.ScheduledAppointmentDate)}
                 />
               </div>
-              <div className="col-span-6">
+              <div className="col-span-12 md:col-span-6">
                 <InputLabel id="ScheduledAppointmentTime">
                   Hora programada de inicio
                 </InputLabel>
@@ -142,7 +142,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
               </div>
             </>
           ))}
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -153,7 +153,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             label="Empresa"
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -164,7 +164,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             label="Dirección"
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"
@@ -175,7 +175,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             label="Piso"
           />
         </div>
-        <div className="col-span-6">
+        <div className="col-span-12 md:col-span-6">
           <TextField
             disabled
             color="primary"

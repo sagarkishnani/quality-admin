@@ -36,7 +36,7 @@ export const CompanyModal = ({
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <div className="w-[36rem] p-12 flex flex-col justify-center space-y-2">
+      <div className="w-full md:w-[36rem] p-12 flex flex-col justify-center space-y-2">
         <div className="m-auto">
           <HiLocationMarker color="#74C947" size={"60"} />
         </div>

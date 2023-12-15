@@ -108,34 +108,66 @@ export const TicketRegisterContainerStepThree = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
-      <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
+      <div className="py-5 px-4 md:px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
         <div
           onClick={handleRedirect}
           className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center cursor-pointer"
         >
           <HiChevronLeft size={"32"} />
         </div>
-        <div className="bg-white col-span-9 shadow-sm p-6">
+        <div className="bg-white col-span-12 md:col-span-9 shadow-sm p-6">
           {!isLoading && setStep(ticketStep)}
           {isLoading && (
             <>
               <div className="grid grid-cols-12 gap-4">
-                <div className="col-span-8">
+                <div className="col-span-12 md:col-span-8">
                   <h2 className="font-semibold text-xl pb-2">
                     Reporte de servicio técnico
                   </h2>
                 </div>
-                <div className="col-span-4 justify-end flex"></div>
+                <div className="col-span-12 md:col-span-4 justify-end flex"></div>
               </div>
               <div className="p-4 grid grid-cols-12 gap-4">
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
-                <Skeleton className="col-span-6" height={40} animation="wave" />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  className="col-span-12 md:col-span-6"
+                  height={40}
+                  animation="wave"
+                />
               </div>
             </>
           )}

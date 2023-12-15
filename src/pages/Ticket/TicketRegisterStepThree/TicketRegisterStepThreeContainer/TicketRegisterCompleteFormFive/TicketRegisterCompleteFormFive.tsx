@@ -158,12 +158,12 @@ export const TicketRegisterCompleteFormFive = () => {
   return (
     <>
       <div className="grid grid-cols-12 gap-4">
-        <div className="col-span-8">
+        <div className="col-span-12 md:col-span-8">
           <h2 className="font-semibold text-xl pb-2">
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-4 justify-end flex">
+        <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
@@ -171,7 +171,7 @@ export const TicketRegisterCompleteFormFive = () => {
         <div className="col-span-12">
           <h4 className="font-semibold text-lg">Comentario</h4>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-col">
             <div>
               <FormControlLabel
@@ -227,7 +227,7 @@ export const TicketRegisterCompleteFormFive = () => {
             </div>
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-col">
             <div>
               <FormControlLabel
@@ -283,7 +283,7 @@ export const TicketRegisterCompleteFormFive = () => {
             </div>
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-col">
             <FormControlLabel
               checked={formik.values.Operativo}
@@ -347,7 +347,7 @@ export const TicketRegisterCompleteFormFive = () => {
             </div>
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-col">
             <FormControlLabel
               checked={formik.values.CartuchoOtroProveedor}
@@ -373,7 +373,7 @@ export const TicketRegisterCompleteFormFive = () => {
             />
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <FormControlLabel
             checked={formik.values.Instalacion}
             onChange={() =>
@@ -383,7 +383,7 @@ export const TicketRegisterCompleteFormFive = () => {
             control={<Checkbox />}
           />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <FormControlLabel
             checked={formik.values.ServicioGarantia}
             onChange={() =>
@@ -396,7 +396,7 @@ export const TicketRegisterCompleteFormFive = () => {
             control={<Checkbox />}
           />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <FormControlLabel
             checked={formik.values.Negligencia}
             onChange={() =>
@@ -406,7 +406,7 @@ export const TicketRegisterCompleteFormFive = () => {
             control={<Checkbox />}
           />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="flex flex-col">
             <FormControlLabel
               checked={formik.values.Mantenimiento}
@@ -423,7 +423,7 @@ export const TicketRegisterCompleteFormFive = () => {
         </div>
       </div>
 
-      <div className="w-full mt-16 flex space-x-3 justify-end">
+      <div className="w-full mt-16 flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-3 md:justify-end">
         <button
           className={`bg-qBlue px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkerBlue`}
           onClick={() => registerTicketStep(false)}
