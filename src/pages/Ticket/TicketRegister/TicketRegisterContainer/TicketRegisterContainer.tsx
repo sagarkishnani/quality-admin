@@ -169,7 +169,7 @@ export const TicketRegisterContainer = () => {
           setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
           return
         } else {
-          const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user?.Name}</strong> de la empresa <strong>${user?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.png?t=2023-12-15T05%3A23%3A41.891Z" alt="">`
+          const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user?.Name}</strong> de la empresa <strong>${user?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
           const request: SendEmailRequest = {
             from: ConstantMailTicketPending.FROM,

@@ -18,6 +18,7 @@ export interface RegisterTicketAnswerRequest {
     ActualFirmware: boolean | null;
     EtiquetaFusor: boolean | null;
     EtiquetaFusorTeflon: boolean | null;
+    Cambio: boolean | null;
     CambioCartucho: boolean | null;
     CambioFusor: boolean | null;
     CambioImagen: boolean | null;
@@ -34,6 +35,7 @@ export interface RegisterTicketAnswerRequest {
     MantOptico: boolean | null;
     MantOpticoEscaner: boolean | null;
     MantSistema: boolean | null;
+    Revision: boolean | null;
     RevCartucho: boolean | null;
     RevFusor: boolean | null;
     RevImagen: boolean | null;

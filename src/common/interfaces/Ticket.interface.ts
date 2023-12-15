@@ -1,4 +1,5 @@
 import { Moment } from "moment";
+import { RegisterTicketAnswerRequest } from "./TicketAnswer.interface";
 
 export interface GetTicketsResponse {
     IdTicket: string;
@@ -91,7 +92,7 @@ export interface GetTicketById {
     IdTicketCompany: string;
     IdTicketType: string;
     IdTechnician: string | null;
-    User: GetTicketByIdAdditional;
+    User: GetTicketByIdUser;
     RecordCreationDate: Date;
     AppointmentDate: Date | null;
     AppointmentInitTime: Date | null;
@@ -109,7 +110,13 @@ export interface GetTicketById {
     CompanyFloor: string;
     CompanyArea: string;
     ReportedFailure: string;
-    TicketAnswer: TicketRegisterStepThreeRequestFormThree;
+    Comment: string | null;
+    Recommendation: string | null;
+    ResponsibleName: string | null;
+    ResponsibleDni: string | null;
+    TechncianName: string | null;
+    TechncianDni: string | null;
+    TicketAnswer: RegisterTicketAnswerRequest;
     TicketStatus: GetTicketByIdAdditional;
     TicketType: GetTicketByIdAdditional;
     TicketFile: TicketFile[];
@@ -117,16 +124,23 @@ export interface GetTicketById {
 
 export interface TicketFile {
     FileUrl: string;
+    FilePurpose: string;
 }
 
 export interface GetTicketByIdCompany {
     Name: string;
     ImgUrl: string;
     Address: string;
+    Local: string;
 }
 
 export interface GetTicketByIdAdditional {
     Name: string;
+}
+
+export interface GetTicketByIdUser {
+    Name: string;
+    email: string;
 }
 
 export interface TicketRegisterStepTwoRequest {

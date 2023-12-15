@@ -72,6 +72,7 @@ const validationSchema = yup.object({
 })
 
 export const TicketRegisterCompleteFormSix = () => {
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
@@ -221,6 +222,9 @@ export const TicketRegisterCompleteFormSix = () => {
   }
 
   async function registerTicketStepThree(isFacturable: boolean) {
+    let dataSignatureOne = {}
+    let dataSignatureTwo = {}
+
     setIsLoadingAction(true)
 
     const request: TicketRegisterStepThreeRequest = {
@@ -284,9 +288,10 @@ export const TicketRegisterCompleteFormSix = () => {
             imgName: uuidv4(),
           }
 
-          const { status: signOneStatus }: any =
+          const { status: signOneStatus, data: dataSignOne }: any =
             await TicketService.ticketRegisterAndUploadImage(signOneRequest)
 
+          if (dataSignOne) dataSignatureOne = dataSignOne[0]
           if (
             signOneStatus !== ConstantHttpErrors.CREATED &&
             signOneStatus !== ConstantHttpErrors.OK
@@ -305,9 +310,10 @@ export const TicketRegisterCompleteFormSix = () => {
             imgName: uuidv4(),
           }
 
-          const { status: signTwoStatus }: any =
+          const { status: signTwoStatus, data: dataSignTwo }: any =
             await TicketService.ticketRegisterAndUploadImage(signTwoRequest)
 
+          if (dataSignTwo) dataSignatureTwo = dataSignTwo[0]
           if (
             signTwoStatus !== ConstantHttpErrors.CREATED &&
             signTwoStatus !== ConstantHttpErrors.OK
@@ -329,7 +335,7 @@ export const TicketRegisterCompleteFormSix = () => {
         )
         setIsLoadingAction(false)
 
-        if (!isFacturable) {
+        if (!isFacturable && dataSignatureOne && dataSignatureTwo) {
           const pdfData = {
             RecordCreationDate: moment(ticket?.RecordCreationDate).format(
               "DD/MM/YYYY"
@@ -342,7 +348,7 @@ export const TicketRegisterCompleteFormSix = () => {
             ).format("HH:MM"),
             Company: ticket?.Company.Name,
             Address: ticket?.Company.Address,
-            Local: "Local San Isidro",
+            Local: ticket?.Company.Local,
             CompanyFloor: ticket?.CompanyFloor,
             CompanyArea: ticket?.CompanyArea,
             User: ticket?.User.Name,
@@ -445,15 +451,13 @@ export const TicketRegisterCompleteFormSix = () => {
             Signature: {
               ResponsibleName: request.StepSix.ResponsibleName,
               ResponsibleDni: request.StepSix.ResponsibleDni,
-              ResponsibleSignature:
-                "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/6f970d16-055a-4747-9ee9-79f43386abe3",
+              ResponsibleSignature: `${supabaseUrl}/storage/v1/object/public/media/${dataSignatureOne.FileUrl}`,
               TechnicianName: request.StepSix.TechnicianName,
-              TechnicianSignature:
-                "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/tickets/ab55aec9-d675-429e-86ab-aa3e8a0ce2b7",
+              TechnicianSignature: `${supabaseUrl}/storage/v1/object/public/media/${dataSignatureTwo.FileUrl}`,
             },
           }
 
-          const html = `<p>Se dio por finalizado el ticket. Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.png?t=2023-12-15T05%3A23%3A41.891Z" alt="">`
+          const html = `<p>Se dio por finalizado el ticket. Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
           const printElement = ReactDOMServer.renderToString(
             TechnicalServiceReport({ data: pdfData })
@@ -487,7 +491,7 @@ export const TicketRegisterCompleteFormSix = () => {
 
               const request: SendEmailRequest = {
                 from: ConstantMailConfigNonFacturable.FROM,
-                to: ["sagarkishnani67@gmail.com"],
+                to: [ticket?.User.email, "sagarkishnani67@gmail.com"],
                 subject: ConstantMailConfigNonFacturable.SUBJECT,
                 html: html,
                 attachments: [attachments],

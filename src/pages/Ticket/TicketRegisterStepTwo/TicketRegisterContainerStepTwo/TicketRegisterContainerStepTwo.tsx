@@ -118,7 +118,7 @@ export const TicketRegisterContainerStepTwo = () => {
         ticket.Company.Address
       } - Piso ${
         ticket.CompanyFloor
-      }</strong>. </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://qualitysumprint.com/wp-content/uploads/2023/04/impresora-medio-ambiente-2.png" alt="">`
+      }</strong>. </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
       const requestMail: SendEmailRequest = {
         from: ConstantMailTicketInProgress.FROM,

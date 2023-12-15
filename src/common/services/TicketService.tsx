@@ -38,7 +38,7 @@ async function getTicketById(idTicket: string) {
     const { data, error } = await supabase
       .from("Ticket")
       .select(
-        "*, Company (Name, ImgUrl, Address), TicketStatus (Name), TicketType (Name), User (Name), TicketAnswer(*), TicketFile (*)"
+        "*, Company (Name, ImgUrl, Address, Local), TicketStatus (Name), TicketType (Name), User (Name, email), TicketAnswer(*), TicketFile (*)"
       )
       .eq("IdTicket", idTicket)
 

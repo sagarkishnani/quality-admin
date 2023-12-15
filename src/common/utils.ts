@@ -39,3 +39,32 @@ export function loopPictures(pictures: string[], filePurpose: string) {
     }
     return pictureList;
 }
+
+export const generateTableHTML = (serviceList: any[]) => {
+    let tableRows = '';
+
+    serviceList.forEach((service) => {
+        tableRows += `
+        <tr>
+          <td>${service.Name}</td>
+          <td>$${service.Cost}</td>
+        </tr>
+      `;
+    });
+
+    const tableHTML = `
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Nombre del Servicio</th>
+            <th>Costo</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    `;
+
+    return tableHTML;
+};

@@ -95,7 +95,7 @@ export const WelcomeScreen = () => {
                   ConstantRoles.ADMINISTRADOR_TI) && (
                 <WelcomeCard
                   key={3}
-                  title={"Accede a las empresas registadas"}
+                  title={"Accede a las empresas registradas"}
                   description="Crea, edita y visualiza los datos de las empresas que pertenecen a la mesa de ayuda."
                   link="/empresas"
                   icon={<HiOutlineOfficeBuilding color="#00A0DF" size={"26"} />}

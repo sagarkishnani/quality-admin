@@ -11,8 +11,10 @@ import * as yup from "yup"
 import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
 import secureLocalStorage from "react-secure-storage"
 import {
+  ConstantFilePurpose,
   ConstantHttpErrors,
   ConstantLocalStorage,
+  ConstantMailConfigFacturable,
   ConstantMessage,
   ConstantTicketMessage,
   ConstantsMasterTable,
@@ -28,6 +30,15 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { HiOutlineTrash } from "react-icons/hi"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { useNavigate } from "react-router-dom"
+import TechnicalServiceReport from "../../../../../common/mailTemplates/technicalServiceReport"
+import ReactDOMServer from "react-dom/server"
+import html2pdf from "html2pdf.js"
+import {
+  Attachement,
+  MailService,
+  SendEmailRequest,
+} from "../../../../../common/services/MailService"
+import { generateTableHTML } from "../../../../../common/utils"
 
 const validationSchema = yup.object({})
 
@@ -43,6 +54,7 @@ interface Row {
 }
 
 export const TicketRegisterFacturable = () => {
+  const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
@@ -118,6 +130,178 @@ export const TicketRegisterFacturable = () => {
           return
         }
       }
+      debugger
+
+      const userSignature = ticket?.TicketFile.filter(
+        (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_USUARIO
+      )[0]
+
+      const technicianSignature = ticket?.TicketFile.filter(
+        (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_TECNICO
+      )[0]
+
+      const pdfData = {
+        RecordCreationDate: moment(ticket?.RecordCreationDate).format(
+          "DD/MM/YYYY"
+        ),
+        AppointmentInitTime: moment(ticket?.AppointmentInitTime).format(
+          "HH:MM"
+        ),
+        AppointmentEndTime: moment(ticket?.AppointmentEndTime).format("HH:MM"),
+        Company: ticket?.Company.Name,
+        Address: ticket?.Company.Address,
+        Local: ticket?.Company.Local,
+        CompanyFloor: ticket?.CompanyFloor,
+        CompanyArea: ticket?.CompanyArea,
+        User: ticket?.User.Name,
+        DeviceOne: ticket?.DeviceOne,
+        SeriesNumberOne: ticket?.SeriesNumberOne,
+        CounterOne: ticket?.CounterOne,
+        GuideOne: ticket?.GuideOne,
+        DeviceTwo: ticket?.DeviceTwo,
+        SeriesNumberTwo: ticket?.SeriesNumberTwo,
+        CounterTwo: ticket?.CounterTwo,
+        GuideTwo: ticket?.GuideTwo,
+        ReportedFailure: ticket?.ReportedFailure,
+        FoundFailure: ticket?.FoundFailure,
+        Revision: {
+          BandejaUno: ticket?.TicketAnswer?.BandejaUno,
+          BandejaDos: ticket?.TicketAnswer?.BandejaDos,
+          BandejaSalida: ticket?.TicketAnswer?.BandejaSalida,
+          BisagraEscaner: ticket?.TicketAnswer?.BisagraEscaner,
+          BandejaADF: ticket?.TicketAnswer?.BandejaADF,
+          CristalCamaPlana: ticket?.TicketAnswer?.CristalCamaPlana,
+          ConectorUSB: ticket?.TicketAnswer?.ConectorUSB,
+          ConectorRJ: ticket?.TicketAnswer?.ConectorRJ,
+          PanelControl: ticket?.TicketAnswer?.PanelControl,
+          Engranaje: ticket?.TicketAnswer?.Engranaje,
+          LaminaTeplon: ticket?.TicketAnswer?.LaminaTeplon,
+          RodilloPresion: ticket?.TicketAnswer?.RodilloPresion,
+        },
+        Procedure: {
+          Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
+          Cambio: ticket?.TicketAnswer?.Cambio ? "X" : "",
+          Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
+          Reparacion: ticket?.TicketAnswer?.Reparacion ? "X" : "",
+          Retiro: ticket?.TicketAnswer?.Retiro ? "X" : "",
+          Revision: ticket?.TicketAnswer?.Revision ? "X" : "",
+          MantImpresora: ticket?.TicketAnswer?.MantImpresora ? "X" : "",
+          MantOptico: ticket?.TicketAnswer?.MantOptico ? "X" : "",
+          MantOpticoEscaner: ticket?.TicketAnswer?.MantOpticoEscaner ? "X" : "",
+          MantSistema: ticket?.TicketAnswer?.MantSistema ? "X" : "",
+          ActualFirmware: ticket?.TicketAnswer?.ActualFirmware ? "X" : "",
+          EtiquetaFusor: ticket?.TicketAnswer?.EtiquetaFusor ? "X" : "",
+          EtiquetaFusorTeflon: ticket?.TicketAnswer?.EtiquetaFusorTeflon
+            ? "X"
+            : "",
+          RevCartucho: ticket?.TicketAnswer?.RevCartucho ? "X" : "",
+          RevFusor: ticket?.TicketAnswer?.RevFusor ? "X" : "",
+          RevImagen: ticket?.TicketAnswer?.RevImagen ? "X" : "",
+          RevADF: ticket?.TicketAnswer?.RevADF ? "X" : "",
+          RevRodilloBUno: ticket?.TicketAnswer?.RevRodilloBUno ? "X" : "",
+          RevRodilloBDos: ticket?.TicketAnswer?.RevRodilloBDos ? "X" : "",
+          RevSeparador: ticket?.TicketAnswer?.RevSeparador ? "X" : "",
+          RevDuplex: ticket?.TicketAnswer?.RevDuplex ? "X" : "",
+          CambioCartucho: ticket?.TicketAnswer?.CambioCartucho ? "X" : "",
+          CambioFusor: ticket?.TicketAnswer?.CambioFusor ? "X" : "",
+          CambioImagen: ticket?.TicketAnswer?.CambioImagen ? "X" : "",
+          CambioRodillo: ticket?.TicketAnswer?.CambioRodillo ? "X" : "",
+          CambioTeflon: ticket?.TicketAnswer?.CambioTeflon ? "X" : "",
+          CambioRodilloBUno: ticket?.TicketAnswer?.CambioRodilloBUno ? "X" : "",
+          CambioRodilloBDos: ticket?.TicketAnswer?.CambioRodilloBDos ? "X" : "",
+          CambioSeparador: ticket?.TicketAnswer?.CambioSeparador ? "X" : "",
+          CambioDrive: ticket?.TicketAnswer?.CambioDrive ? "X" : "",
+          CambioSwing: ticket?.TicketAnswer?.CambioSwing ? "X" : "",
+          CambioAOF: ticket?.TicketAnswer?.CambioAOF ? "X" : "",
+          CambioDC: ticket?.TicketAnswer?.CambioDC ? "X" : "",
+        },
+        Comments: {
+          UsoPapelHumedo: ticket?.TicketAnswer?.UsoPapelHumedo ? "X" : "",
+          UsoPapelReciclado: ticket?.TicketAnswer?.UsoPapelReciclado ? "X" : "",
+          UsoPapelGrapas: ticket?.TicketAnswer?.UsoPapelGrapas ? "X" : "",
+          UsoEtiquetas: ticket?.TicketAnswer?.UsoEtiquetas ? "X" : "",
+          ConectadoPared: ticket?.TicketAnswer?.ConectadoPared ? "X" : "",
+          ConectadoSupresor: ticket?.TicketAnswer?.ConectadoSupresor ? "X" : "",
+          ConectadoEstabilizador: ticket?.TicketAnswer?.ConectadoEstabilizador
+            ? "X"
+            : "",
+          ConectadoUPS: ticket?.TicketAnswer?.ConectadoUPS ? "X" : "",
+          Operativo: ticket?.TicketAnswer?.Operativo ? "X" : "",
+          PegadoEtiquetaGarantia: ticket?.TicketAnswer?.PegadoEtiquetaGarantia
+            ? "X"
+            : "",
+          EnObservacion: ticket?.TicketAnswer?.EnObservacion ? "X" : "",
+          EquipoRequiereCambio: ticket?.TicketAnswer?.EquipoRequiereCambio
+            ? "X"
+            : "",
+          EquipoRequiereMantenimiento: ticket?.TicketAnswer
+            ?.EquipoRequiereMantenimiento
+            ? "X"
+            : "",
+          CartuchoOtroProveedor: ticket?.TicketAnswer?.CartuchoOtroProveedor
+            ? "X"
+            : "",
+          CartuchoDanado: ticket?.TicketAnswer?.CartuchoDanado ? "X" : "",
+        },
+        Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
+        ServicioGarantia: ticket?.TicketAnswer?.ServicioGarantia ? "X" : "",
+        Negligencia: ticket?.TicketAnswer?.Negligencia ? "X" : "",
+        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
+        FacturableVisit: "X",
+        Comment: ticket?.Comment,
+        Recommendation: ticket?.Recommendation,
+        Signature: {
+          ResponsibleName: ticket?.ResponsibleName,
+          ResponsibleDni: ticket?.ResponsibleDni,
+          ResponsibleSignature: `${supabaseUrl}/storage/v1/object/public/media/${userSignature.FileUrl}`,
+          TechnicianName: ticket?.TechncianName,
+          TechnicianSignature: `${supabaseUrl}/storage/v1/object/public/media/${technicianSignature.FileUrl}`,
+        },
+      }
+
+      const servicesTableHTML = generateTableHTML(selectedServices)
+
+      const html = `<p>Se dio por finalizado el ticket. Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTableHTML} </br></br></br> <strong>El costo total del servicio es: $${total}</strong></br></br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+
+      const printElement = ReactDOMServer.renderToString(
+        TechnicalServiceReport({ data: pdfData })
+      )
+      const opt = {
+        format: "a4",
+        filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+        margin: 1,
+        html2canvas: {
+          dpi: 192,
+          scale: 4,
+          letterRendering: true,
+          useCORS: true,
+        },
+        devicePixelRatio: 1.5,
+      }
+
+      html2pdf().from(printElement).set(opt).save()
+
+      html2pdf()
+        .from(printElement)
+        .set(opt)
+        .outputPdf()
+        .then(async (pdf) => {
+          const base64 = btoa(pdf)
+
+          const attachments: Attachement = {
+            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            content: base64,
+          }
+
+          const request: SendEmailRequest = {
+            from: ConstantMailConfigFacturable.FROM,
+            to: [ticket?.User.email, "sagarkishnani67@gmail.com"],
+            subject: ConstantMailConfigFacturable.SUBJECT,
+            html: html,
+            attachments: [attachments],
+          }
+          await MailService.sendEmail(request)
+        })
 
       setIsModalOpen(true)
       setModalType("success")
