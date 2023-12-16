@@ -130,7 +130,6 @@ export const TicketRegisterFacturable = () => {
           return
         }
       }
-      debugger
 
       const userSignature = ticket?.TicketFile.filter(
         (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_USUARIO
@@ -254,7 +253,7 @@ export const TicketRegisterFacturable = () => {
           ResponsibleName: ticket?.ResponsibleName,
           ResponsibleDni: ticket?.ResponsibleDni,
           ResponsibleSignature: `${supabaseUrl}/storage/v1/object/public/media/${userSignature.FileUrl}`,
-          TechnicianName: ticket?.TechncianName,
+          TechnicianName: ticket?.TechnicianName,
           TechnicianSignature: `${supabaseUrl}/storage/v1/object/public/media/${technicianSignature.FileUrl}`,
         },
       }

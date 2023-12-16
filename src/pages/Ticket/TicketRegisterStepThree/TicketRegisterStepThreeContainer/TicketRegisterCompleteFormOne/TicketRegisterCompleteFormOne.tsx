@@ -21,12 +21,8 @@ interface TicketRegisterCompleteFormOneInterface {
 }
 
 const validationSchema = yup.object({
-  ScheduledAppointmentInitTime: yup
-    .date()
-    .required("Hora de inicio es obligatorio"),
-  ScheduledAppointmentEndTime: yup
-    .date()
-    .required("Hora de fin es obligatorio"),
+  AppointmentInitTime: yup.date().required("Hora de inicio es obligatorio"),
+  AppointmentEndTime: yup.date().required("Hora de fin es obligatorio"),
 })
 
 export const TicketRegisterCompleteFormOne = ({
@@ -44,9 +40,8 @@ export const TicketRegisterCompleteFormOne = ({
   function registerTicketStep() {
     if (formik.isValid) {
       const requestFormOne: TicketRegisterStepThreeRequestFormOne = {
-        ScheduledAppointmentInitTime:
-          formik.values.ScheduledAppointmentInitTime,
-        ScheduledAppointmentEndTime: formik.values.ScheduledAppointmentEndTime,
+        AppointmentInitTime: formik.values.AppointmentInitTime,
+        AppointmentEndTime: formik.values.AppointmentEndTime,
       }
 
       secureLocalStorage.setItem(
@@ -77,8 +72,10 @@ export const TicketRegisterCompleteFormOne = ({
       CompanyArea: "",
       IdTechnician: "",
       IdUser: "",
-      ScheduledAppointmentInitTime: moment(new Date()),
-      ScheduledAppointmentEndTime: moment(new Date()),
+      AppointmentInitTime: moment(new Date()),
+      AppointmentEndTime: moment(
+        new Date().setHours(new Date().getHours() + 1)
+      ),
       ReportedFailure: "",
     },
     validationSchema: validationSchema,
@@ -104,9 +101,8 @@ export const TicketRegisterCompleteFormOne = ({
         CompanyArea: ticket.CompanyArea || "",
         IdUser: ticket?.User?.Name || "",
         IdTechnician: "",
-        ScheduledAppointmentInitTime:
-          ticketFormOne?.ScheduledAppointmentInitTime,
-        ScheduledAppointmentEndTime: ticketFormOne?.ScheduledAppointmentEndTime,
+        AppointmentInitTime: ticketFormOne?.AppointmentInitTime,
+        AppointmentEndTime: ticketFormOne?.AppointmentEndTime,
         ReportedFailure: ticket.ReportedFailure || "",
       })
 
@@ -132,22 +128,22 @@ export const TicketRegisterCompleteFormOne = ({
           </h2>
         </div>
         <div className="col-span-12 md:col-span-6">
-          <InputLabel id="ScheduledAppointmentInitTime">Hora inicio</InputLabel>
+          <InputLabel id="AppointmentInitTime">Hora inicio</InputLabel>
           <TimePicker
             className="w-full"
-            value={moment(formik.values.ScheduledAppointmentInitTime)}
+            value={moment(formik.values.AppointmentInitTime)}
             onChange={(value) =>
-              formik.setFieldValue("ScheduledAppointmentInitTime", value, true)
+              formik.setFieldValue("AppointmentInitTime", value, true)
             }
           />
         </div>
         <div className="col-span-12 md:col-span-6">
-          <InputLabel id="ScheduledAppointmentEndTime">Hora fin</InputLabel>
+          <InputLabel id="AppointmentEndTime">Hora fin</InputLabel>
           <TimePicker
             className="w-full"
-            value={moment(formik.values.ScheduledAppointmentEndTime)}
+            value={moment(formik.values.AppointmentEndTime)}
             onChange={(value) =>
-              formik.setFieldValue("ScheduledAppointmentEndTime", value, true)
+              formik.setFieldValue("AppointmentEndTime", value, true)
             }
           />
         </div>

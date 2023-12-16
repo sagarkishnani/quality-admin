@@ -45,6 +45,7 @@ const validationSchema = yup.object({
     .date()
     .required("Hora de atención programada es obligatoria"),
   ReportedFailure: yup.string().required("Falla a reportar es obligatoria"),
+  IdTechnician: yup.string().required("Debe seleccionar a un técnico"),
 })
 
 export const TicketRegisterContainerStepTwo = () => {
@@ -122,7 +123,7 @@ export const TicketRegisterContainerStepTwo = () => {
 
       const requestMail: SendEmailRequest = {
         from: ConstantMailTicketInProgress.FROM,
-        to: ["sagarkishnani67@gmail.com", "aakashkishnani67@gmail.com"],
+        to: [ticket?.User.email, "sagarkishnani67@gmail.com"],
         subject: ConstantMailTicketInProgress.SUBJECT,
         html: html,
         attachments: [],

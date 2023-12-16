@@ -114,8 +114,8 @@ export interface GetTicketById {
     Recommendation: string | null;
     ResponsibleName: string | null;
     ResponsibleDni: string | null;
-    TechncianName: string | null;
-    TechncianDni: string | null;
+    TechnicianName: string | null;
+    TechnicianDni: string | null;
     TicketAnswer: RegisterTicketAnswerRequest;
     TicketStatus: GetTicketByIdAdditional;
     TicketType: GetTicketByIdAdditional;
@@ -151,8 +151,8 @@ export interface TicketRegisterStepTwoRequest {
 }
 
 export interface TicketRegisterStepThreeRequestFormOne {
-    ScheduledAppointmentInitTime: Moment;
-    ScheduledAppointmentEndTime: Moment;
+    AppointmentInitTime: Moment;
+    AppointmentEndTime: Moment;
 }
 
 export interface TicketRegisterStepThreeRequestFormTwo {

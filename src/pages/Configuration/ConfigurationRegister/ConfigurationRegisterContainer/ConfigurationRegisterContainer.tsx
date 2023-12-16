@@ -101,18 +101,18 @@ export const ConfigurationRegisterContainer = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
-      <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
+      <div className="py-5 px-4 md:px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
         <div className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center">
           <Link to={"/configuracion"}>
             <HiChevronLeft size={"32"} />
           </Link>
         </div>
-        <div className="bg-white col-span-8 shadow-sm p-6">
+        <div className="bg-white col-span-12 md:col-span-8 shadow-sm p-6">
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
               <h2 className="font-semibold text-xl pb-2">Registrar item</h2>
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 color="primary"
                 className="w-full"
@@ -132,7 +132,7 @@ export const ConfigurationRegisterContainer = () => {
                 label="IdMasterTable"
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 color="primary"
                 className="w-full"
@@ -152,7 +152,7 @@ export const ConfigurationRegisterContainer = () => {
                 label="IdMasterTableParent"
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 color="primary"
                 className="w-full"
@@ -167,7 +167,7 @@ export const ConfigurationRegisterContainer = () => {
                 label="Nombre"
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 color="primary"
                 className="w-full"
@@ -181,7 +181,7 @@ export const ConfigurationRegisterContainer = () => {
                 label="Valor"
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 color="primary"
                 className="w-full"
@@ -199,7 +199,7 @@ export const ConfigurationRegisterContainer = () => {
             </div>
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="bg-white grid grid-cols-2 shadow-sm p-4">
             <div className="col-span-2">
               <h4 className="text-sm text-qGray font-semibold py-2">ITEMS</h4>
@@ -224,7 +224,7 @@ export const ConfigurationRegisterContainer = () => {
               </div>
             )}
           </div>
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-8 mb-8 md:mb-0">
             <Button
               color="#74C947"
               label="Guardar registro"

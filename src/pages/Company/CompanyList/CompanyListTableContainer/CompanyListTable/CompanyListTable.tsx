@@ -176,7 +176,7 @@ export const CompanyListTable = ({
       )}
       {rows.length !== 0 && (
         <>
-          <div className="flex-1">
+          <div className="flex-1 w-[80vw] lg:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
                 getRowId={(row) => row.IdCompany}

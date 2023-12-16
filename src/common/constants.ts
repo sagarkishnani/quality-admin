@@ -121,6 +121,11 @@ export const ConstantMailConfigNonFacturable = {
     SUBJECT: 'Finalización servicio - No facturable',
 }
 
+export const ConstantMailConfigFacturableNoPDF = {
+    FROM: 'dev@qualitysumprint.com',
+    SUBJECT: 'Atención del servicio - Facturable',
+}
+
 export const ConstantMailConfigFacturable = {
     FROM: 'dev@qualitysumprint.com',
     SUBJECT: 'Finalización servicio - Facturable',

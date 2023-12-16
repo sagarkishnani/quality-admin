@@ -135,19 +135,19 @@ export const ConfigurationEditContainer = () => {
   return (
     <>
       <form onSubmit={formik.handleSubmit} autoComplete="off">
-        <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
+        <div className="py-5 px-4 md:px-8 bg-qLightGray grid grid-cols-12 gap-4 h-screen">
           <div className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center">
             <Link to={"/configuracion"}>
               <HiChevronLeft size={"32"} />
             </Link>
           </div>
-          <div className="bg-white col-span-8 shadow-sm p-6">
+          <div className="bg-white col-span-12 md:col-span-8 shadow-sm p-6">
             {!isLoading && (
               <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-12">
                   <h2 className="font-semibold text-xl pb-2">Editar item</h2>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -158,7 +158,7 @@ export const ConfigurationEditContainer = () => {
                     label="IdMasterTable"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -178,7 +178,7 @@ export const ConfigurationEditContainer = () => {
                     label="IdMasterTableParent"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -193,7 +193,7 @@ export const ConfigurationEditContainer = () => {
                     label="Nombre"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -207,7 +207,7 @@ export const ConfigurationEditContainer = () => {
                     label="Valor"
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     color="primary"
                     className="w-full"
@@ -231,37 +231,37 @@ export const ConfigurationEditContainer = () => {
                 </div>
                 <div className="p-4 grid grid-cols-12 gap-4">
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
                   <Skeleton
-                    className="col-span-6"
+                    className="col-span-12 md:col-span-6"
                     height={40}
                     animation="wave"
                   />
@@ -269,7 +269,7 @@ export const ConfigurationEditContainer = () => {
               </>
             )}
           </div>
-          <div className="col-span-3">
+          <div className="col-span-12 md:col-span-3">
             <div className="bg-white grid grid-cols-2 shadow-sm p-4">
               <div className="col-span-2">
                 <h4 className="text-sm text-qGray font-semibold py-2">ITEMS</h4>
@@ -295,7 +295,7 @@ export const ConfigurationEditContainer = () => {
               )}
             </div>
 
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-8 mb-8 md:mb-0">
               <Button
                 className="hover:bg-qDarkGreen"
                 color="#74C947"

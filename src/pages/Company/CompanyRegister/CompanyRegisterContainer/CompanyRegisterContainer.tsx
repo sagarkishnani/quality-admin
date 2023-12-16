@@ -273,13 +273,13 @@ export const CompanyRegisterContainer = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} autoComplete="off">
-      <div className="py-5 px-8 bg-qLightGray grid grid-cols-12 gap-4 h-full">
+      <div className="py-5 px-4 md:px-8 bg-qLightGray grid grid-cols-12 gap-4 h-full">
         <div className="col-span-1 w-8 h-8 rounded-full bg-white justify-center items-center">
           <Link to={"/empresas"}>
             <HiChevronLeft size={"32"} />
           </Link>
         </div>
-        <div className="bg-white col-span-8 shadow-sm p-6">
+        <div className="bg-white col-span-12 md:col-span-8 shadow-sm p-6">
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
               <h2 className="font-semibold text-xl pb-2">Registrar empresa</h2>
@@ -289,7 +289,7 @@ export const CompanyRegisterContainer = () => {
                 DATOS DE LA EMPRESA
               </h4>
             </div>
-            <div className="col-span-8">
+            <div className="col-span-12 md:col-span-8">
               <TextField
                 color="primary"
                 className="w-full"
@@ -304,7 +304,7 @@ export const CompanyRegisterContainer = () => {
                 label="Nombre de empresa"
               />
             </div>
-            <div className="col-span-4">
+            <div className="col-span-12 md:col-span-4">
               <TextField
                 className="w-full"
                 required
@@ -368,7 +368,7 @@ export const CompanyRegisterContainer = () => {
                 noOptionsText="No hay opciones"
               />
             </div>
-            <div className="col-span-9">
+            <div className="col-span-12 md:col-span-9">
               <TextField
                 className="w-full"
                 required
@@ -382,7 +382,7 @@ export const CompanyRegisterContainer = () => {
                 helperText={formik.touched.Address && formik.errors.Address}
               />
             </div>
-            <div className="flex col-span-3 items-center">
+            <div className="flex col-span-12 md:col-span-3 items-center">
               <input
                 className="hidden"
                 type="file"
@@ -417,7 +417,7 @@ export const CompanyRegisterContainer = () => {
                 CONTACTO PRINCIPAL
               </h4>
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 className="w-full"
                 required
@@ -437,7 +437,7 @@ export const CompanyRegisterContainer = () => {
                 }
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <FormControl fullWidth>
                 <InputLabel id="MainContactPositionLabel">
                   Cargo contacto principal
@@ -460,7 +460,7 @@ export const CompanyRegisterContainer = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 className="w-full"
                 required
@@ -480,7 +480,7 @@ export const CompanyRegisterContainer = () => {
                 }
               />
             </div>
-            <div className="col-span-6">
+            <div className="col-span-12 md:col-span-6">
               <TextField
                 className="w-full"
                 required
@@ -501,7 +501,7 @@ export const CompanyRegisterContainer = () => {
                 }
               />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-6 md:col-span-3">
               <FormControl fullWidth>
                 <InputLabel id="MainContactPaymentLabel">Cond. Pago</InputLabel>
                 <Select
@@ -522,7 +522,7 @@ export const CompanyRegisterContainer = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-6 md:col-span-3">
               <FormControl fullWidth>
                 <InputLabel id="MainContactCELabel">CE</InputLabel>
                 <Select
@@ -540,7 +540,7 @@ export const CompanyRegisterContainer = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-12 md:col-span-3">
               <FormControl fullWidth>
                 <InputLabel id="MainContactCurrencyLabel">Moneda</InputLabel>
                 <Select
@@ -582,7 +582,7 @@ export const CompanyRegisterContainer = () => {
                 </Select>
               </FormControl>
             </div>
-            <div className="col-span-3">
+            <div className="col-span-12 md:col-span-3">
               <TextField
                 className="w-full"
                 required
@@ -687,7 +687,7 @@ export const CompanyRegisterContainer = () => {
                     CONTACTO COBRANZA
                   </h4>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -707,7 +707,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <FormControl fullWidth>
                     <InputLabel id="BillingContactPositionLabel">
                       Cargo contacto cobranza
@@ -730,7 +730,7 @@ export const CompanyRegisterContainer = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -750,7 +750,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="BillingContactPhone"
@@ -770,7 +770,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="BillingContactCellphone"
@@ -800,7 +800,7 @@ export const CompanyRegisterContainer = () => {
                     CONTACTO INFORME
                   </h4>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -820,7 +820,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <FormControl fullWidth>
                     <InputLabel id="ReportContactPositionLabel">
                       Cargo contacto informe
@@ -843,7 +843,7 @@ export const CompanyRegisterContainer = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -863,7 +863,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="ReportContactPhone"
@@ -883,7 +883,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="ReportContactCellphone"
@@ -913,7 +913,7 @@ export const CompanyRegisterContainer = () => {
                     CONTACTO COMPRAS
                   </h4>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -933,7 +933,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <FormControl fullWidth>
                     <InputLabel id="PurchaseContactPositionLabel">
                       Cargo contacto compras
@@ -956,7 +956,7 @@ export const CompanyRegisterContainer = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -976,7 +976,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="PurchaseContactPhone"
@@ -996,7 +996,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="PurchaseContactCellphone"
@@ -1026,7 +1026,7 @@ export const CompanyRegisterContainer = () => {
                     CONTACTO ALMACÉN
                   </h4>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -1046,7 +1046,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <FormControl fullWidth>
                     <InputLabel id="WarehouseContactPositionLabel">
                       Cargo contacto almacén
@@ -1069,7 +1069,7 @@ export const CompanyRegisterContainer = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -1089,7 +1089,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="WarehouseContactPhone"
@@ -1109,7 +1109,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="WarehouseContactCellphone"
@@ -1139,7 +1139,7 @@ export const CompanyRegisterContainer = () => {
                     CONTACTO POSVENTA
                   </h4>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -1159,7 +1159,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <FormControl fullWidth>
                     <InputLabel id="AfterSalesContactPositionLabel">
                       Cargo contacto posventa
@@ -1182,7 +1182,7 @@ export const CompanyRegisterContainer = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     required
@@ -1202,7 +1202,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="AfterSalesContactPhone"
@@ -1222,7 +1222,7 @@ export const CompanyRegisterContainer = () => {
                     }
                   />
                 </div>
-                <div className="col-span-6">
+                <div className="col-span-12 md:col-span-6">
                   <TextField
                     className="w-full"
                     id="AfterSalesContactCellphone"
@@ -1246,7 +1246,7 @@ export const CompanyRegisterContainer = () => {
             )}
           </div>
         </div>
-        <div className="col-span-3">
+        <div className="col-span-12 md:col-span-3">
           <div className="bg-white grid grid-cols-2 shadow-sm p-4">
             <div className="col-span-2">
               <h4 className="text-sm text-qGray font-semibold py-2">

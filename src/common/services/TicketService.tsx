@@ -235,7 +235,9 @@ async function registerTicketStepThree(
         IdTicketType: isFacturable
           ? ConstantTicketTypes.FACTURABLE
           : ConstantTicketTypes.NO_FACTURABLE,
-        AppointmentDate: request.StepOne.ScheduledAppointmentInitTime,
+        AppointmentDate: request.StepOne.AppointmentInitTime,
+        AppointmentInitTime: request.StepOne.AppointmentInitTime,
+        AppointmentEndTime: request.StepOne.AppointmentEndTime,
         FoundFailure: request.StepTwo.FoundFailure,
         DeviceOne: request.StepTwo.DeviceOne,
         SeriesNumberOne: request.StepTwo.SeriesNumberOne,

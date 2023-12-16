@@ -46,13 +46,15 @@ export const UserListTableContainer = () => {
   }, [])
 
   return (
-    <div className="p-8 flex-1">
-      <div className="px-4 py-8 flex justify-between">
-        <div className="flex flex-row flex-wrap items-center">
+    <div className="p-4 lg:p-8 flex-1">
+      <div className="px-4 py-8 flex flex-col lg:flex-row lg:justify-between">
+        <div className="flex flex-col lg:flex-row lg:flex-wrap items-center">
           <div>
-            <h3 className="text-lg font-semibold mr-4">Usuarios</h3>
+            <h3 className="text-lg font-semibold my-3 lg:mr-4 lg:my-0">
+              Usuarios
+            </h3>
           </div>
-          <div className="flex flex-row items-center justify-center flex-wrap w-[28rem] rounded-full bg-qLightGray p-2 border-qGray border-2">
+          <div className="flex flex-row items-center justify-center flex-wrap w-full lg:w-[28rem] rounded-full bg-qLightGray p-2 border-qGray border-2">
             <div className="w-8 flex justify-center">
               <HiSearch color="#989898" size={"16"} />
             </div>
@@ -65,7 +67,7 @@ export const UserListTableContainer = () => {
             />
           </div>
         </div>
-        <div className="mr-6">
+        <div className="my-3 lg:mr-6 lg:my-0 flex justify-center lg:justify-start">
           <Link to={"nuevo"}>
             <Button type="button" color="#74C947" label="Agregar usuario" />
           </Link>
