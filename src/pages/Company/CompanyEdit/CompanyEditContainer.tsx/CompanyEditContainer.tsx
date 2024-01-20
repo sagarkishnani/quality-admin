@@ -11,6 +11,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Switch,
   TextField,
 } from "@mui/material"
 import { Link, useNavigate } from "react-router-dom"
@@ -240,6 +241,8 @@ export const CompanyEditContainer = () => {
       Address: "",
       ImgUrl: "",
       Local: "",
+      Mails: "",
+      RequiresOrder: false,
       MainContactName: "",
       MainContactPosition: "",
       MainContactEmail: "",
@@ -304,6 +307,8 @@ export const CompanyEditContainer = () => {
         Address: company?.Address || "",
         ImgUrl: company?.ImgUrl || "",
         Local: company?.Local || "",
+        Mails: company?.Mails || "",
+        RequiresOrder: company?.RequiresOrder || false,
         MainContactName: company?.MainContactName || "",
         MainContactPosition: company?.MainContactPosition || "",
         MainContactEmail: company?.MainContactEmail || "",
@@ -482,6 +487,31 @@ export const CompanyEditContainer = () => {
                 onBlur={formik.handleBlur}
                 error={formik.touched.Local && Boolean(formik.errors.Local)}
                 helperText={formik.touched.Local && formik.errors.Local}
+              />
+            </div>
+            <div className="col-span-12 md:col-span-8">
+              <TextField
+                color="primary"
+                className="w-full"
+                required
+                id="Mails"
+                name="Mails"
+                value={formik.values.Mails}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.Mails && Boolean(formik.errors.Mails)}
+                helperText={formik.touched.Mails && formik.errors.Mails}
+                label="Correos (separados por comas)"
+              />
+            </div>
+            <div className="col-span-12 md:col-span-4">
+              <FormControlLabel
+                name="RequiresOrder"
+                id="RequiresOrder"
+                value={formik.values.RequiresOrder}
+                onChange={formik.handleChange}
+                control={<Switch checked={formik.values.RequiresOrder} />}
+                label="Requiere orden de compra"
               />
             </div>
             <div className="col-span-12">
@@ -1308,14 +1338,14 @@ export const CompanyEditContainer = () => {
             )}
           </div>
         </div>
-        <div className="col-span-12 md:col-span-3">
+        <div className="col-span-12 xl:col-span-3">
           <div className="bg-white grid grid-cols-2 shadow-sm p-4">
             <div className="col-span-2">
               <h4 className="text-sm text-qGray font-semibold py-2">
                 CONTACTOS
               </h4>
             </div>
-            <div>
+            <div className="col-span-2">
               <FormControlLabel
                 control={<Checkbox checked={true} disabled />}
                 label="PRINCIPAL"

@@ -183,7 +183,7 @@ export const ConfigurationListTable = ({
       )}
       {rows.length !== 0 && (
         <>
-          <div className="flex-1 w-[80vw] lg:w-auto">
+          <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
                 className="overflow-x-auto"

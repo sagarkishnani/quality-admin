@@ -22,7 +22,7 @@ import {
   ConstantMessage,
   ConstantRoles,
   ConstantTicketMessage,
-  ConstantsMasterTable,
+  ConstantTicketStatus,
 } from "../../../../common/constants"
 import { ImageModal } from "../../../../common/components/ImageModal/ImageModal"
 import moment from "moment"
@@ -36,6 +36,10 @@ import {
   MailService,
   SendEmailRequest,
 } from "../../../../common/services/MailService"
+import { generateAssignTicketMail } from "../../../../common/utils"
+import { NotificationService } from "../../../../common/services/NotificationService"
+import { RegisterNotificationRequest } from "../../../../common/interfaces/Notification.interface"
+import { useAuth } from "../../../../common/contexts/AuthContext"
 
 const validationSchema = yup.object({
   ScheduledAppointmentDate: yup
@@ -61,11 +65,18 @@ export const TicketRegisterContainerStepTwo = () => {
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const navigate = useNavigate()
+  const { user } = useAuth()
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
   const bucketUrl = "/storage/v1/object/public/media/"
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+  }
+
+  const getTechnician = (idTechnician: string | null) => {
+    return technicians.filter(
+      (technician: any) => technician.IdUser === idTechnician
+    )[0].Name
   }
 
   const handleOpenImageModal = (imgData: string) => {
@@ -98,6 +109,23 @@ export const TicketRegisterContainerStepTwo = () => {
     setIsLoading(false)
   }
 
+  async function registerNotification(request: RegisterNotificationRequest) {
+    const { status } = await NotificationService.registerNotification(request)
+
+    if (
+      status !== ConstantHttpErrors.CREATED &&
+      status !== ConstantHttpErrors.OK
+    ) {
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage("Error al registrar notificación")
+      return false
+    } else {
+      return true
+    }
+  }
+
   async function registerTicketStepTwo(request: TicketRegisterStepTwoRequest) {
     setIsLoadingAction(true)
 
@@ -106,38 +134,59 @@ export const TicketRegisterContainerStepTwo = () => {
       ticket.IdTicket
     )
 
-    if (status == ConstantHttpErrors.OK) {
-      const html = `<p>Se ha asignado ${
-        request.IdTechnician == null
-          ? "a un técnico de garantía"
-          : "al técnico <strong>" + request.IdTechnician
-      }</strong>. Asimismo, se programó una visita para el <strong>${moment(
-        request.ScheduledAppointmentDate
-      ).format("DD/MM/YYYY")}</strong> a las <strong>${moment(
-        request.ScheduledAppointmentTime
-      ).format("HH:MM")}</strong> en <strong>${ticket.Company.Name} - ${
-        ticket.Company.Address
-      } - Piso ${
-        ticket.CompanyFloor
-      }</strong>. </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+    const companyMails = ticket?.Company.Mails.split(",")
+    companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
+    if (status == ConstantHttpErrors.OK) {
       const requestMail: SendEmailRequest = {
         from: ConstantMailTicketInProgress.FROM,
-        to: [ticket?.User.email, "sagarkishnani67@gmail.com"],
+        to: companyMails,
         subject: ConstantMailTicketInProgress.SUBJECT,
-        html: html,
+        html: generateAssignTicketMail(
+          request.IdTechnician === null
+            ? null
+            : getTechnician(request?.IdTechnician),
+          request.ScheduledAppointmentDate,
+          request.ScheduledAppointmentTime,
+          ticket.Company.Name,
+          ticket.Company.Address,
+          ticket.CompanyFloor,
+          "https://qa.qualitysumprint.com"
+        ),
         attachments: [],
       }
-      const resp = await MailService.sendEmail(requestMail)
 
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(ConstantTicketMessage.TICKET_ASSIGNED_SUCCESS)
+      const res = await MailService.sendEmail(requestMail)
 
-      setIsLoadingAction(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
+      if (res.ok) {
+        const requestNotification: RegisterNotificationRequest = {
+          IdTicket: ticket.IdTicket,
+          CodeTicket: ticket.CodeTicket,
+          IdCompany: ticket.IdTicketCompany,
+          IdTechnician: request.IdTechnician,
+          IdTicketStatus: ConstantTicketStatus.EN_PROGRESO,
+          IdUser: ticket.IdUser,
+        }
+
+        await registerNotification(requestNotification)
+
+        setIsModalOpen(true)
+        setModalType("success")
+        setModalMessage(ConstantTicketMessage.TICKET_ASSIGNED_SUCCESS)
+
+        setIsLoadingAction(false)
+        setTimeout(() => {
+          navigate("/tickets")
+        }, 2000)
+      } else {
+        setIsLoadingAction(false)
+        setIsModalOpen(true)
+        setModalType("error")
+        setModalMessage(ConstantTicketMessage.TICKET_MAIL_ASSIGN_ERROR)
+        setTimeout(() => {
+          navigate("/tickets")
+        }, 2000)
+      }
     } else {
       setIsLoadingAction(false)
       setIsModalOpen(true)

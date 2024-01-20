@@ -34,11 +34,16 @@ import { MasterTableService } from "../../../../common/services/MasterTableServi
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 import { ImageModal } from "../../../../common/components/ImageModal/ImageModal"
 import moment from "moment"
-import { dataURLtoFile } from "../../../../common/utils"
+import {
+  dataURLtoFile,
+  generateRegisterTicketMail,
+} from "../../../../common/utils"
 import {
   MailService,
   SendEmailRequest,
 } from "../../../../common/services/MailService"
+import { NotificationService } from "../../../../common/services/NotificationService"
+import { RegisterNotificationRequest } from "../../../../common/interfaces/Notification.interface"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -130,7 +135,24 @@ export const TicketRegisterContainer = () => {
     }
   }
 
-  async function getAll(idUser: string) {
+  async function registerNotification(request: RegisterNotificationRequest) {
+    const { status } = await NotificationService.registerNotification(request)
+
+    if (
+      status !== ConstantHttpErrors.CREATED &&
+      status !== ConstantHttpErrors.OK
+    ) {
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage("Error al registrar notificación")
+      return false
+    } else {
+      return true
+    }
+  }
+
+  async function getAll() {
     setIsLoading(true)
     await getAreas()
     await getFloors()
@@ -149,7 +171,7 @@ export const TicketRegisterContainer = () => {
 
     if (status == ConstantHttpErrors.CREATED && data) {
       for (const picture of pictures) {
-        const request: TicketRegisterAndUploadImage = {
+        const requestImg: TicketRegisterAndUploadImage = {
           IdTicket: data[0].IdTicket,
           file: dataURLtoFile(picture),
           FilePurpose: ConstantFilePurpose.IMAGEN_USUARIO,
@@ -157,7 +179,7 @@ export const TicketRegisterContainer = () => {
         }
 
         const { status }: any =
-          await TicketService.ticketRegisterAndUploadImage(request)
+          await TicketService.ticketRegisterAndUploadImage(requestImg)
 
         if (
           status !== ConstantHttpErrors.CREATED &&
@@ -169,24 +191,51 @@ export const TicketRegisterContainer = () => {
           setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
           return
         } else {
-          const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user?.Name}</strong> de la empresa <strong>${user?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+          const companyMails = user?.Company.Mails.split(",")
+          companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
-          const request: SendEmailRequest = {
+          const requestMail: SendEmailRequest = {
             from: ConstantMailTicketPending.FROM,
-            to: ["sagarkishnani67@gmail.com"],
+            to: companyMails,
             subject: ConstantMailTicketPending.SUBJECT,
-            html: html,
+            html: generateRegisterTicketMail(
+              user!.Name,
+              user!.Company.Name,
+              "https://qa.qualitysumprint.com"
+            ),
             attachments: [],
           }
-          const resp = await MailService.sendEmail(request)
 
-          setIsModalOpen(true)
-          setModalType("success")
-          setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
-          setIsLoadingAction(false)
-          setTimeout(() => {
-            navigate("/tickets")
-          }, 2000)
+          const res = await MailService.sendEmail(requestMail)
+
+          if (res.ok) {
+            const requestNotification: RegisterNotificationRequest = {
+              IdTicket: data[0].IdTicket,
+              CodeTicket: data[0].CodeTicket,
+              IdCompany: request.IdTicketCompany,
+              IdTechnician: null,
+              IdTicketStatus: request.IdTicketStatus,
+              IdUser: request.IdUser,
+            }
+
+            await registerNotification(requestNotification)
+
+            setIsModalOpen(true)
+            setModalType("success")
+            setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
+            setIsLoadingAction(false)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+          } else {
+            setIsLoadingAction(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_MAIL_REGISTER_ERROR)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+          }
         }
       }
     } else {
@@ -251,7 +300,7 @@ export const TicketRegisterContainer = () => {
             <HiChevronLeft size={"32"} />
           </Link>
         </div>
-        <div className="bg-white col-span-12 md:col-span-8 shadow-sm p-6">
+        <div className="bg-white col-span-12 lg:col-span-8 shadow-sm p-6">
           {!isLoading && (
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-8">
@@ -456,7 +505,7 @@ export const TicketRegisterContainer = () => {
           )}
         </div>
 
-        <div className="col-span-12 md:col-span-3">
+        <div className="col-span-12 lg:col-span-3">
           <div className="bg-white grid grid-cols-2 shadow-sm p-4">
             <div className="col-span-2">
               <h4 className="text-sm text-qGray font-semibold py-2">
@@ -481,7 +530,7 @@ export const TicketRegisterContainer = () => {
               <br />
             </div>
           </div>
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-8 mb-6 lg:mb-0">
             <Button
               color="#74C947"
               label="Registrar ticket"

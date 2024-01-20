@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { useFormik } from "formik"
 import { TextField } from "@mui/material"
 import moment from "moment"
@@ -184,8 +184,10 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
           user?.IdRole == ConstantRoles.LIDER_FUNCIONAL &&
           ticket?.TicketType?.Name == "Facturable" &&
           isFacturableView()) ||
-          (ticket?.TicketStatus?.Name == "Finalizado" &&
-            user?.IdRole == ConstantRoles.LIDER_FUNCIONAL &&
+          ((ticket?.TicketStatus?.Name == "Finalizado" ||
+            ticket?.TicketStatus?.Name == "En espera" ||
+            ticket?.TicketStatus?.Name == "Cancelado") &&
+            user?.IdRole !== ConstantRoles.TECNICO &&
             ticket?.TicketType?.Name == "Facturable")) && (
           <button
             className={`bg-qGreen px-10 py-2 font-medium rounded-full text-white hover:bg-qDarkGreen`}

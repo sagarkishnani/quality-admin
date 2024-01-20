@@ -28,6 +28,7 @@ import { TicketRegisterView } from "../../../pages/Ticket/TicketRegisterView/Tic
 import { WelcomeScreen } from "../../../pages/Welcome/WelcomeScreen/WelcomeScreen"
 import { Welcome } from "../../../pages/Welcome/Welcome"
 import { CompanyEdit } from "../../../pages/Company/CompanyEdit/CompanyEdit"
+import { TicketRegisterStepFive } from "../../../pages/Ticket/TicketRegisterStepFive/TicketRegisterStepFive"
 
 export const Layout = () => {
   return (
@@ -55,6 +56,10 @@ export const Layout = () => {
               <Route
                 path="registrar-facturable"
                 element={<TicketRegisterStepFour />}
+              />
+              <Route
+                path="confirmar-facturable"
+                element={<TicketRegisterStepFive />}
               />
             </Route>
             <Route path="/mis-datos" element={<Profile />}>

@@ -21,6 +21,8 @@ export const ConstantTicketStatus = {
     PENDIENTE: '95e1c52c-b66f-4c03-8a36-a76029d80f94',
     EN_PROGRESO: '99c38c1f-365c-4cf8-8a6c-0667f4693280',
     ATENDIDO: '6bcf6b09-cfb6-4132-a4ad-ae41d97d1dd5',
+    EN_ESPERA: '85da3a2f-f205-466b-b2f5-e825e68c4d93',
+    ABIERTO: 'ff5c4def-17f8-43f6-8ea2-8ff21b8143d8',
     FINALIZADO: '76371a4e-7e7c-48f0-bed3-dcecd6b18737',
     CANCELADO: '0ee92009-9ea0-41bd-b819-f8447ddf55d3',
 }
@@ -49,15 +51,21 @@ export const ConstantTicketMessage = {
     TICKET_REGISTER_SUCCESS: 'El ticket se registró correctamente',
     TICKET_ASSIGNED_SUCCESS: 'Se asignó a un técnico correctamente',
     TICKET_ATTENDED_SUCCESS: 'El ticket fue atendido correctamente',
+    TICKET_WAITING_SUCCESS: 'El ticket se encuentra a espera de confirmación',
+    TICKET_OPEN_SUCCESS: 'El ticket se estableció como abierto',
     TICKET_FINISHED_SUCCESS: 'El ticket se finalizó correctamente',
     TICKET_CANCEL_QUESTION: '¿Está seguro de cancelar el ticket?',
+    TICKET_CONFIRM_QUESTION: '¿Está de acuerdo con el costo de los servicios?',
     TICKET_FACTURABLE: 'El servicio técnico debe ser',
     TICKET_CANCEL_SUCCESS: 'El ticket se canceló correctamente',
     TICKET_CANCEL_ERROR: 'Hubo un error al cancelar',
     TICKET_IMAGE_ERROR: 'Hubo un error al subir la imagen',
     TICKET_SIGNATURE_ERROR: 'Hubo un error al subir la firma',
     TICKET_REGISTER_ERROR: 'Hubo un error al registrar el ticket',
-    TICKET_SERVICE_REGISTER_ERROR: 'Hubo un error al registrar el servicio'
+    TICKET_SERVICE_REGISTER_ERROR: 'Hubo un error al registrar el servicio',
+    TICKET_MAIL_REGISTER_ERROR: 'El ticket registró con éxito. Error al enviar correo',
+    TICKET_MAIL_ASSIGN_ERROR: 'El ticket se asignó con éxito. Error al enviar correo',
+    TICKET_MAIL_FINISH_ERROR: 'El ticket se finalizó con éxito. Error al enviar correo'
 }
 
 export const ConstantMasterTableMessage = {

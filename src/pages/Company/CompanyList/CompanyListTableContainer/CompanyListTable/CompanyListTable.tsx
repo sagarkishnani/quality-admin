@@ -176,7 +176,7 @@ export const CompanyListTable = ({
       )}
       {rows.length !== 0 && (
         <>
-          <div className="flex-1 w-[80vw] lg:w-auto">
+          <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
                 getRowId={(row) => row.IdCompany}
@@ -184,7 +184,7 @@ export const CompanyListTable = ({
                 columns={columns}
                 initialState={{
                   pagination: {
-                    paginationModel: { page: 0, pageSize: 8 },
+                    paginationModel: { page: 0, pageSize: 6 },
                   },
                   columns: {
                     columnVisibilityModel: {
@@ -192,7 +192,7 @@ export const CompanyListTable = ({
                     },
                   },
                 }}
-                pageSizeOptions={[8, 12, 20]}
+                pageSizeOptions={[6, 12, 20]}
                 localeText={{
                   noRowsLabel: "No se ha encontrado datos.",
                   noResultsOverlayLabel: "No se ha encontrado ningún resultado",

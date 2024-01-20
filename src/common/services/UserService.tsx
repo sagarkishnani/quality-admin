@@ -31,7 +31,9 @@ async function getUserById(IdUser: string) {
   try {
     const { data, error } = await supabase
       .from("User")
-      .select("*, Company (IdCompany, Name, Address, Ruc, Local), Role (Name)")
+      .select(
+        "*, Company (IdCompany, Name, Address, Ruc, Local, Mails, RequiresOrder), Role (Name)"
+      )
       .eq("IdUser", IdUser)
 
     if (error) {

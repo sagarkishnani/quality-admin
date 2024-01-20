@@ -34,6 +34,8 @@ export const TicketListFilter = () => {
     pending: string | null,
     enProgreso: string | null,
     atendido: string | null,
+    enEspera: string | null,
+    abierto: string | null,
     finalizado: string | null,
     cancelado: string | null,
     facturable: string | null,
@@ -54,6 +56,8 @@ export const TicketListFilter = () => {
       Pending: pending,
       InProgress: enProgreso,
       Attended: atendido,
+      Waiting: enEspera,
+      Open: abierto,
       Finished: finalizado,
       Cancelled: cancelado,
       Facturable: facturable,
@@ -78,6 +82,8 @@ export const TicketListFilter = () => {
     let pendiente = null,
       enProgreso = null,
       atendido = null,
+      enEspera = null,
+      abierto = null,
       finalizado = null,
       cancelado = null,
       facturable = null,
@@ -106,6 +112,22 @@ export const TicketListFilter = () => {
 
     if (values.Attended === false) {
       atendido = null
+    }
+
+    if (values.Waiting === true) {
+      enEspera = ConstantTicketStatus.EN_ESPERA
+    }
+
+    if (values.Waiting === false) {
+      enEspera = null
+    }
+
+    if (values.Open === true) {
+      abierto = ConstantTicketStatus.ABIERTO
+    }
+
+    if (values.Open === false) {
+      abierto = null
     }
 
     if (values.Finished === true) {
@@ -151,6 +173,8 @@ export const TicketListFilter = () => {
       pendiente,
       enProgreso,
       atendido,
+      enEspera,
+      abierto,
       finalizado,
       cancelado,
       facturable,
@@ -164,6 +188,8 @@ export const TicketListFilter = () => {
       Pending: false,
       InProgress: false,
       Attended: false,
+      Waiting: false,
+      Open: false,
       Finished: false,
       Cancelled: false,
       Facturable: false,
@@ -213,6 +239,22 @@ export const TicketListFilter = () => {
                 value={formik.values.Attended}
                 onChange={formik.handleChange}
                 name="Attended"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="En espera"
+                id="Waiting"
+                value={formik.values.Waiting}
+                onChange={formik.handleChange}
+                name="Waiting"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Abierto"
+                id="Open"
+                value={formik.values.Open}
+                onChange={formik.handleChange}
+                name="Open"
               />
               <FormControlLabel
                 control={<Checkbox />}

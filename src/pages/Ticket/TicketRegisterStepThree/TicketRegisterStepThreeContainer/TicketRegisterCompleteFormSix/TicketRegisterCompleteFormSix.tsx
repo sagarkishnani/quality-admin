@@ -6,11 +6,11 @@ import {
   ConstantFilePurpose,
   ConstantHttpErrors,
   ConstantLocalStorage,
-  ConstantMailConfig,
   ConstantMailConfigFacturableNoPDF,
   ConstantMailConfigNonFacturable,
   ConstantMessage,
   ConstantTicketMessage,
+  ConstantTicketStatus,
 } from "../../../../../common/constants"
 import { useFormik } from "formik"
 import {
@@ -27,6 +27,7 @@ import {
   Radio,
   RadioGroup,
   Snackbar,
+  Switch,
   TextField,
 } from "@mui/material"
 import moment from "moment"
@@ -37,7 +38,11 @@ import { Modal } from "../../../../../common/components/Modal/Modal"
 import { ModalTicket } from "./ModalTicket/ModalTicket"
 import { TicketAnswerService } from "../../../../../common/services/TicketAnswerService"
 import { TicketRegisterStepThreePicture } from "../../../../../common/interfaces/Ticket.interface"
-import { dataURLtoFile } from "../../../../../common/utils"
+import {
+  dataURLtoFile,
+  generateMailFacturable,
+  generateMailNotFacturable,
+} from "../../../../../common/utils"
 import TechnicalServiceReport from "../../../../../common/mailTemplates/technicalServiceReport"
 import ReactDOMServer from "react-dom/server"
 import html2pdf from "html2pdf.js"
@@ -46,6 +51,9 @@ import {
   MailService,
   SendEmailRequest,
 } from "../../../../../common/services/MailService"
+import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
+import { NotificationService } from "../../../../../common/services/NotificationService"
+import { useAuth } from "../../../../../common/contexts/AuthContext"
 
 const validationSchema = yup.object({
   Comment: yup
@@ -75,7 +83,11 @@ const validationSchema = yup.object({
 export const TicketRegisterCompleteFormSix = () => {
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const { user } = useAuth()
+  const [isLoadingActionNonFacturable, setIsLoadingActionNonFacturable] =
+    useState<boolean>(false)
+  const [isLoadingActionFacturable, setIsLoadingActionFacturable] =
+    useState<boolean>(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [ticketFormOne, setTicketFormOne] = useState<any>()
   const [ticketFormTwo, setTicketFormTwo] = useState<any>()
@@ -222,11 +234,28 @@ export const TicketRegisterCompleteFormSix = () => {
     setOpen(false)
   }
 
+  async function registerNotification(request: RegisterNotificationRequest) {
+    const { status } = await NotificationService.registerNotification(request)
+
+    if (
+      status !== ConstantHttpErrors.CREATED &&
+      status !== ConstantHttpErrors.OK
+    ) {
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage("Error al registrar notificación")
+      return false
+    } else {
+      return true
+    }
+  }
+
   async function registerTicketStepThree(isFacturable: boolean) {
     let dataSignatureOne = {}
     let dataSignatureTwo = {}
 
-    setIsLoadingAction(true)
+    if (isFacturable) setIsLoadingActionFacturable(true)
+    if (!isFacturable) setIsLoadingActionNonFacturable(true)
 
     const request: TicketRegisterStepThreeRequest = {
       StepOne: ticketFormOne,
@@ -275,7 +304,8 @@ export const TicketRegisterCompleteFormSix = () => {
             picStatus !== ConstantHttpErrors.CREATED &&
             picStatus !== ConstantHttpErrors.OK
           ) {
-            setIsLoadingAction(false)
+            if (isFacturable) setIsLoadingActionFacturable(false)
+            if (!isFacturable) setIsLoadingActionNonFacturable(false)
             setIsModalOpen(true)
             setModalType("error")
             setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
@@ -297,7 +327,8 @@ export const TicketRegisterCompleteFormSix = () => {
             signOneStatus !== ConstantHttpErrors.CREATED &&
             signOneStatus !== ConstantHttpErrors.OK
           ) {
-            setIsLoadingAction(false)
+            if (isFacturable) setIsLoadingActionFacturable(false)
+            if (!isFacturable) setIsLoadingActionNonFacturable(false)
             setIsModalOpen(true)
             setModalType("error")
             setModalMessage(ConstantTicketMessage.TICKET_SIGNATURE_ERROR)
@@ -319,33 +350,25 @@ export const TicketRegisterCompleteFormSix = () => {
             signTwoStatus !== ConstantHttpErrors.CREATED &&
             signTwoStatus !== ConstantHttpErrors.OK
           ) {
-            setIsLoadingAction(false)
+            if (isFacturable) setIsLoadingActionFacturable(false)
+            if (!isFacturable) setIsLoadingActionNonFacturable(false)
             setIsModalOpen(true)
             setModalType("error")
             setModalMessage(ConstantTicketMessage.TICKET_SIGNATURE_ERROR)
             return
           }
         }
-        setIsModalTicketOpen(false)
-        setIsModalOpen(true)
-        setModalType("success")
-        setModalMessage(
-          isFacturable
-            ? ConstantTicketMessage.TICKET_ATTENDED_SUCCESS
-            : ConstantTicketMessage.TICKET_FINISHED_SUCCESS
-        )
-        setIsLoadingAction(false)
 
-        if (!isFacturable && dataSignatureOne && dataSignatureTwo) {
+        if (dataSignatureOne && dataSignatureTwo) {
           const pdfData = {
             RecordCreationDate: moment(ticket?.RecordCreationDate).format(
               "DD/MM/YYYY"
             ),
             AppointmentInitTime: moment(
-              request.StepOne.ScheduledAppointmentInitTime
+              request.StepOne.AppointmentInitTime
             ).format("HH:MM"),
             AppointmentEndTime: moment(
-              request.StepOne.ScheduledAppointmentEndTime
+              request.StepOne.AppointmentEndTime
             ).format("HH:MM"),
             Company: ticket?.Company.Name,
             Address: ticket?.Company.Address,
@@ -458,8 +481,6 @@ export const TicketRegisterCompleteFormSix = () => {
             },
           }
 
-          const html = `<p>Se dio por finalizado el ticket. Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
-
           const printElement = ReactDOMServer.renderToString(
             TechnicalServiceReport({ data: pdfData })
           )
@@ -490,33 +511,68 @@ export const TicketRegisterCompleteFormSix = () => {
                 content: base64,
               }
 
-              const request: SendEmailRequest = {
+              const companyMails = ticket?.Company.Mails.split(",")
+              isFacturable
+                ? companyMails?.push("asistente.adm@qualitysumprint.com")
+                : companyMails?.push("soporte.tecnico@qualitysumprint.com")
+
+              const requestMail: SendEmailRequest = {
                 from: ConstantMailConfigNonFacturable.FROM,
-                to: [ticket?.User.email, "sagarkishnani67@gmail.com"],
-                subject: ConstantMailConfigNonFacturable.SUBJECT,
-                html: html,
+                to: companyMails,
+                subject: isFacturable
+                  ? "Atención del servicio - Facturable"
+                  : "Finalización servicio - No facturable",
+                html: generateMailNotFacturable(
+                  ticket?.User.Name,
+                  ticket?.Company.Name,
+                  isFacturable,
+                  ticket?.Company.RequiresOrder
+                ),
                 attachments: [attachments],
               }
-              await MailService.sendEmail(request)
+              const res = await MailService.sendEmail(requestMail)
+
+              if (res.ok) {
+                const requestNotification: RegisterNotificationRequest = {
+                  IdTicket: ticket.IdTicket,
+                  CodeTicket: ticket.CodeTicket,
+                  IdCompany: ticket.IdTicketCompany,
+                  IdTechnician: ticket.IdTechnician,
+                  IdTicketStatus: isFacturable
+                    ? ConstantTicketStatus.ATENDIDO
+                    : ConstantTicketStatus.FINALIZADO,
+                  IdUser: ticket.IdUser,
+                }
+
+                await registerNotification(requestNotification)
+
+                setIsModalTicketOpen(false)
+                setIsModalOpen(true)
+                setModalType("success")
+                setModalMessage(
+                  isFacturable
+                    ? ConstantTicketMessage.TICKET_ATTENDED_SUCCESS
+                    : ConstantTicketMessage.TICKET_FINISHED_SUCCESS
+                )
+                if (isFacturable) setIsLoadingActionFacturable(false)
+                if (!isFacturable) setIsLoadingActionNonFacturable(false)
+                setTimeout(() => {
+                  navigate("/tickets")
+                }, 2000)
+              } else {
+                if (isFacturable) setIsLoadingActionFacturable(false)
+                if (!isFacturable) setIsLoadingActionNonFacturable(false)
+                setIsModalOpen(true)
+                setModalType("error")
+                setModalMessage(
+                  ConstantTicketMessage.TICKET_MAIL_REGISTER_ERROR
+                )
+                setTimeout(() => {
+                  navigate("/tickets")
+                }, 2000)
+              }
             })
         }
-
-        if (isFacturable) {
-          const html = `<p>Se atendió el ticket del usuario <strong>${ticket?.User.Name}</strong> en la empresa <strong>${ticket?.Company.Name}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
-
-          const request: SendEmailRequest = {
-            from: ConstantMailConfigFacturableNoPDF.FROM,
-            to: ["sagarkishnani67@gmail.com"],
-            subject: ConstantMailConfigFacturableNoPDF.SUBJECT,
-            html: html,
-            attachments: [],
-          }
-          await MailService.sendEmail(request)
-        }
-
-        setTimeout(() => {
-          navigate("/tickets")
-        }, 2000)
 
         return (
           <>
@@ -525,7 +581,8 @@ export const TicketRegisterCompleteFormSix = () => {
         )
       } else {
         setIsModalTicketOpen(false)
-        setIsLoadingAction(false)
+        if (isFacturable) setIsLoadingActionFacturable(false)
+        if (!isFacturable) setIsLoadingActionNonFacturable(false)
         setIsModalOpen(true)
         setModalType("error")
         setModalMessage(ConstantMessage.SERVICE_ERROR)
@@ -582,6 +639,7 @@ export const TicketRegisterCompleteFormSix = () => {
 
   const formik = useFormik({
     initialValues: {
+      RequiresOrder: false,
       Comment: "",
       Recommendation: "",
       Firma: "",
@@ -613,6 +671,16 @@ export const TicketRegisterCompleteFormSix = () => {
           <h2 className="font-semibold text-qGray pb-2">
             {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
           </h2>
+        </div>
+        <div className="col-span-12">
+          <FormControlLabel
+            name="RequiresOrder"
+            id="RequiresOrder"
+            control={
+              <Switch disabled checked={ticket?.Company.RequiresOrder} />
+            }
+            label="Requiere orden de compra"
+          />
         </div>
         <div className="col-span-12">
           <label>Comentario</label>
@@ -874,7 +942,8 @@ export const TicketRegisterCompleteFormSix = () => {
         open={isModalTicketOpen}
         handleActionOne={handleNoFacturable}
         handleActionTwo={handleFacturable}
-        // handleAction={handleCancelBtn}
+        isLoadingFacturable={isLoadingActionFacturable}
+        isLoadingNonFacturable={isLoadingActionNonFacturable}
         action={modalAction}
       />
       <Modal

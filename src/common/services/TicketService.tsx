@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import {
+  FilteredTicketsByExcelRequest,
   FilteredTicketsRequest,
   TicketRegisterAndUploadImage,
   TicketRegisterStepOneRequest,
@@ -38,7 +39,7 @@ async function getTicketById(idTicket: string) {
     const { data, error } = await supabase
       .from("Ticket")
       .select(
-        "*, Company (Name, ImgUrl, Address, Local), TicketStatus (Name), TicketType (Name), User (Name, email), TicketAnswer(*), TicketFile (*)"
+        "*, Company (*), TicketStatus (Name), TicketType (Name), User (Name, email), TicketAnswer(*), TicketFile (*)"
       )
       .eq("IdTicket", idTicket)
 
@@ -109,6 +110,8 @@ async function getFilteredTickets(request: FilteredTicketsRequest) {
   const pending = request.Pending
   const inprogress = request.InProgress
   const attended = request.Attended
+  const waiting = request.Waiting
+  const open = request.Open
   const finished = request.Finished
   const cancelled = request.Cancelled
   const facturable = request.Facturable
@@ -120,6 +123,8 @@ async function getFilteredTickets(request: FilteredTicketsRequest) {
       cancelled,
       facturable,
       finished,
+      waiting,
+      open,
       idcompany,
       idtechnician,
       inprogress,
@@ -277,7 +282,31 @@ async function registerTicketStepFour(
     const { data, error, status } = await supabase
       .from("Ticket")
       .update({
-        IdTicketStatus: ConstantTicketStatus.FINALIZADO,
+        IdTicketStatus: ConstantTicketStatus.EN_ESPERA,
+      })
+      .eq("IdTicket", idTicket)
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar ticket", error)
+    return error
+  }
+}
+
+async function registerTicketStepFive(idTicket: string, isFinished: boolean) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Ticket")
+      .update({
+        IdTicketStatus: isFinished
+          ? ConstantTicketStatus.FINALIZADO
+          : ConstantTicketStatus.ABIERTO,
       })
       .eq("IdTicket", idTicket)
       .select()
@@ -363,6 +392,44 @@ async function uploadTicketFiles(imgName: string, file: File) {
   }
 }
 
+async function getFilteredTicketsByExcel(
+  request: FilteredTicketsByExcelRequest
+) {
+  const idcompany = request.IdCompany
+  const pending = request.Pending
+  const inprogress = request.InProgress
+  const attended = request.Attended
+  const waiting = request.Waiting
+  const open = request.Open
+  const finished = request.Finished
+  const cancelled = request.Cancelled
+  const initdate = request.InitDate
+  const enddate = request.EndDate
+  try {
+    const { data, error } = await supabase.rpc("exportar_excel", {
+      attended,
+      cancelled,
+      initdate,
+      finished,
+      idcompany,
+      inprogress,
+      pending,
+      waiting,
+      open,
+      enddate,
+    })
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return data
+    }
+  } catch (error) {
+    console.error("Error al traer la lista de tickets:", error)
+    return []
+  }
+}
+
 export const TicketService = {
   getTickets,
   getFilteredTickets,
@@ -372,6 +439,8 @@ export const TicketService = {
   registerTicketStepTwo,
   registerTicketStepThree,
   registerTicketStepFour,
+  registerTicketStepFive,
   cancelTicket,
   ticketRegisterAndUploadImage,
+  getFilteredTicketsByExcel,
 }

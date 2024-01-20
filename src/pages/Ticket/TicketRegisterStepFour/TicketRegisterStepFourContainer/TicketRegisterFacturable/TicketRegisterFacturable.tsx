@@ -4,11 +4,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Skeleton,
   Snackbar,
+  Tooltip,
 } from "@mui/material"
 import moment from "moment"
 import * as yup from "yup"
-import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
 import secureLocalStorage from "react-secure-storage"
 import {
   ConstantFilePurpose,
@@ -16,12 +17,11 @@ import {
   ConstantLocalStorage,
   ConstantMailConfigFacturable,
   ConstantMessage,
+  ConstantRoles,
   ConstantTicketMessage,
-  ConstantsMasterTable,
 } from "../../../../../common/constants"
 import { useEffect, useState } from "react"
 import { useFormik } from "formik"
-import { MasterTableService } from "../../../../../common/services/MasterTableService"
 import { ServicesService } from "../../../../../common/services/ServicesService"
 import { TicketService } from "../../../../../common/services/TicketService"
 import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
@@ -38,32 +38,32 @@ import {
   MailService,
   SendEmailRequest,
 } from "../../../../../common/services/MailService"
-import { generateTableHTML } from "../../../../../common/utils"
+import {
+  generateMailFacturableWithServices,
+  generateTableHTML,
+} from "../../../../../common/utils"
+import { Button } from "../../../../../common/components/Button/Button"
+import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
+import { NotificationService } from "../../../../../common/services/NotificationService"
+import { useAuth } from "../../../../../common/contexts/AuthContext"
+import { ConstantTicketStatus } from "../../../../../common/constants"
 
 const validationSchema = yup.object({})
 
-interface Row {
-  IdTicket: number
-  CodeTicket: number
-  Company: string
-  Status: string
-  Type: string
-  Technician: string
-  RecordCreationDate: Date
-  AppointmentDate: Date
-}
-
 export const TicketRegisterFacturable = () => {
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
+  const [isLoadingActionAgree, setIsLoadingActionAgree] =
+    useState<boolean>(false)
+  const [isLoadingActionDeny, setIsLoadingActionDeny] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [services, setServices] = useState<any[]>([])
   const [selectedServices, setSelectedServices] = useState<any[]>([])
   const [total, setTotal] = useState<number>()
   const [ticketServices, setTicketServices] = useState([])
-  const [serviceStatus, setServiceStatus] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -101,8 +101,81 @@ export const TicketRegisterFacturable = () => {
     setIsModalOpen(false)
   }
 
+  const handleConfirm = async () => {
+    setIsLoadingActionAgree(true)
+    const { data, status }: any = await TicketService.registerTicketStepFive(
+      ticket.IdTicket,
+      true
+    )
+
+    if (status == ConstantHttpErrors.OK) {
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantTicketMessage.TICKET_FINISHED_SUCCESS)
+      setIsLoadingActionAgree(false)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
+    } else {
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
+    }
+  }
+
+  const handleTicketOpen = async () => {
+    setIsLoadingActionDeny(true)
+    const { data, status }: any = await TicketService.registerTicketStepFive(
+      ticket.IdTicket,
+      false
+    )
+
+    if (status == ConstantHttpErrors.OK) {
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantTicketMessage.TICKET_OPEN_SUCCESS)
+      setIsLoadingActionAgree(false)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
+    } else {
+      setIsLoadingAction(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantTicketMessage.TICKET_REGISTER_ERROR)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
+    }
+  }
+
   const handleRegister = () => {
+    if (selectedServices.length === 0) return
     registerTicketStepFour()
+  }
+
+  async function registerNotification(request: RegisterNotificationRequest) {
+    const { status } = await NotificationService.registerNotification(request)
+
+    if (
+      status !== ConstantHttpErrors.CREATED &&
+      status !== ConstantHttpErrors.OK
+    ) {
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage("Error al registrar notificación")
+      return false
+    } else {
+      return true
+    }
   }
 
   async function registerTicketStepFour() {
@@ -260,8 +333,6 @@ export const TicketRegisterFacturable = () => {
 
       const servicesTableHTML = generateTableHTML(selectedServices)
 
-      const html = `<p>Se dio por finalizado el ticket. Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTableHTML} </br></br></br> <strong>El costo total del servicio es: $${total}</strong></br></br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
-
       const printElement = ReactDOMServer.renderToString(
         TechnicalServiceReport({ data: pdfData })
       )
@@ -294,17 +365,53 @@ export const TicketRegisterFacturable = () => {
 
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
-            to: [ticket?.User.email, "sagarkishnani67@gmail.com"],
+            to: [ticket?.Company.Mails, "soporte.tecnico@qualitysumprint.com"],
             subject: ConstantMailConfigFacturable.SUBJECT,
-            html: html,
+            html: generateMailFacturableWithServices(
+              ticket?.User.Name,
+              ticket?.Company.Name,
+              servicesTableHTML,
+              total!
+            ),
             attachments: [attachments],
           }
-          await MailService.sendEmail(request)
+          const res = await MailService.sendEmail(request)
+
+          if (res.ok) {
+            const requestNotification: RegisterNotificationRequest = {
+              IdTicket: ticket.IdTicket,
+              CodeTicket: ticket.CodeTicket,
+              IdCompany: ticket.IdTicketCompany,
+              IdTechnician: ticket.IdTechnician,
+              IdTicketStatus: ConstantTicketStatus.EN_ESPERA,
+              IdUser: ticket.IdUser,
+            }
+
+            await registerNotification(requestNotification)
+
+            setIsModalOpen(true)
+            setModalType("success")
+            setModalMessage(ConstantTicketMessage.TICKET_WAITING_SUCCESS)
+            setIsLoadingAction(false)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+            return
+          } else {
+            setIsLoadingAction(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+            return
+          }
         })
 
       setIsModalOpen(true)
       setModalType("success")
-      setModalMessage(ConstantTicketMessage.TICKET_FINISHED_SUCCESS)
+      setModalMessage(ConstantTicketMessage.TICKET_WAITING_SUCCESS)
       setIsLoadingAction(false)
       setTimeout(() => {
         navigate("/tickets")
@@ -474,131 +581,153 @@ export const TicketRegisterFacturable = () => {
             Reporte de servicio técnico
           </h2>
         </div>
-        <div className="col-span-12 md:col-span-4 justify-end flex">
-          <h2 className="font-semibold text-qGray pb-2">
-            {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
-          </h2>
-        </div>
-        {ticketServices?.length == 0 && (
+        {!isLoading ? (
           <>
-            <div className="col-span-12 md:col-span-8">
-              <FormControl fullWidth>
-                <InputLabel id="ServiceLabel">Servicios</InputLabel>
-                <Select
-                  labelId="ServiceLabel"
-                  id="Service"
-                  name="Service"
-                  value={formik.values.Service}
-                  onChange={formik.handleChange}
-                >
-                  {services?.map((service: any) => (
-                    <MenuItem key={service.IdService} value={service.IdService}>
-                      {service.Name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            <div className="col-span-12 md:col-span-4 justify-end flex">
+              <h2 className="font-semibold text-qGray pb-2">
+                {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
+              </h2>
             </div>
-            <div className="col-span-12 justify-center md:justify-normal md:col-span-4 flex items-center">
-              <button
-                className={`px-8 py-2 font-medium rounded-md text-white ${
-                  formik.isValid ? "bg-qGreen hover:bg-qDarkGreen" : "bg-qGray"
-                }`}
-                onClick={handleAddService}
-              >
-                Añadir
-              </button>
-            </div>
-            <div className="col-span-12">
+            {ticketServices?.length == 0 && (
               <>
-                {selectedServices?.length == 0 && (
-                  <div className="flex-1 p-4">
-                    No se ha agregado ningún servicio
-                  </div>
-                )}
-                {selectedServices?.length !== 0 && (
-                  <>
-                    <div className="flex-1 w-full md:w-[80vw] lg:w-auto">
-                      <div style={{ height: "100%", width: "100%" }}>
-                        <DataGrid
-                          rows={selectedServices}
-                          getRowId={(row) => row.IdService}
-                          columns={columns}
-                          initialState={{
-                            pagination: {
-                              paginationModel: { page: 0, pageSize: 8 },
-                            },
-                            columns: {
-                              columnVisibilityModel: {
-                                IdService: false,
-                              },
-                            },
-                          }}
-                          pageSizeOptions={[8, 12, 20]}
-                          localeText={{
-                            noRowsLabel: "No se ha encontrado datos.",
-                            noResultsOverlayLabel:
-                              "No se ha encontrado ningún resultado",
-                            toolbarColumns: "Columnas",
-                            toolbarColumnsLabel: "Seleccionar columnas",
-                            toolbarFilters: "Filtros",
-                            toolbarFiltersLabel: "Ver filtros",
-                            toolbarFiltersTooltipHide: "Quitar filtros",
-                            toolbarFiltersTooltipShow: "Ver filtros",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            </div>
-          </>
-        )}
-        {ticketServices.length > 0 && (
-          <div className="col-span-12">
-            <>
-              {ticketServices?.length == 0 && (
-                <div className="flex-1 p-4">
-                  No se ha agregado ningún servicio
+                <div className="col-span-12 md:col-span-8">
+                  <FormControl fullWidth>
+                    <InputLabel id="ServiceLabel">Servicios</InputLabel>
+                    <Select
+                      labelId="ServiceLabel"
+                      id="Service"
+                      name="Service"
+                      value={formik.values.Service}
+                      onChange={formik.handleChange}
+                    >
+                      {services?.map((service: any) => (
+                        <MenuItem
+                          key={service.IdService}
+                          value={service.IdService}
+                        >
+                          {service.Name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
-              )}
-              {ticketServices?.length !== 0 && (
+                <div className="col-span-12 justify-center md:justify-normal md:col-span-4 flex items-center">
+                  <button
+                    className={`px-8 py-2 font-medium rounded-md text-white ${
+                      formik.isValid
+                        ? "bg-qGreen hover:bg-qDarkGreen"
+                        : "bg-qGray"
+                    }`}
+                    onClick={handleAddService}
+                    type="button"
+                  >
+                    Añadir
+                  </button>
+                </div>
+                <div className="col-span-12">
+                  <>
+                    {selectedServices?.length == 0 && (
+                      <div className="flex-1 p-4">
+                        No se ha agregado ningún servicio
+                      </div>
+                    )}
+                    {selectedServices?.length !== 0 && (
+                      <>
+                        <div className="flex-1 w-full md:w-[80vw] lg:w-auto">
+                          <div style={{ height: "100%", width: "100%" }}>
+                            <DataGrid
+                              rows={selectedServices}
+                              getRowId={(row) => row.IdService}
+                              columns={columns}
+                              initialState={{
+                                pagination: {
+                                  paginationModel: { page: 0, pageSize: 8 },
+                                },
+                                columns: {
+                                  columnVisibilityModel: {
+                                    IdService: false,
+                                  },
+                                },
+                              }}
+                              pageSizeOptions={[8, 12, 20]}
+                              localeText={{
+                                noRowsLabel: "No se ha encontrado datos.",
+                                noResultsOverlayLabel:
+                                  "No se ha encontrado ningún resultado",
+                                toolbarColumns: "Columnas",
+                                toolbarColumnsLabel: "Seleccionar columnas",
+                                toolbarFilters: "Filtros",
+                                toolbarFiltersLabel: "Ver filtros",
+                                toolbarFiltersTooltipHide: "Quitar filtros",
+                                toolbarFiltersTooltipShow: "Ver filtros",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </>
+                </div>
+              </>
+            )}
+            {ticketServices.length > 0 && (
+              <div className="col-span-12">
                 <>
-                  <div className="flex-1 w-[80vw] lg:w-auto">
-                    <div style={{ height: "100%", width: "100%" }}>
-                      <DataGrid
-                        rows={ticketServices}
-                        getRowId={(row) => row.IdService}
-                        columns={columnsView}
-                        initialState={{
-                          pagination: {
-                            paginationModel: { page: 0, pageSize: 8 },
-                          },
-                          columns: {
-                            columnVisibilityModel: {
-                              IdService: false,
-                            },
-                          },
-                        }}
-                        pageSizeOptions={[8, 12, 20]}
-                        localeText={{
-                          noRowsLabel: "No se ha encontrado datos.",
-                          noResultsOverlayLabel:
-                            "No se ha encontrado ningún resultado",
-                          toolbarColumns: "Columnas",
-                          toolbarColumnsLabel: "Seleccionar columnas",
-                          toolbarFilters: "Filtros",
-                          toolbarFiltersLabel: "Ver filtros",
-                          toolbarFiltersTooltipHide: "Quitar filtros",
-                          toolbarFiltersTooltipShow: "Ver filtros",
-                        }}
-                      />
+                  {ticketServices?.length == 0 && (
+                    <div className="flex-1 p-4">
+                      No se ha agregado ningún servicio
                     </div>
-                  </div>
+                  )}
+                  {ticketServices?.length !== 0 && (
+                    <>
+                      <div className="flex-1 w-[80vw] lg:w-auto">
+                        <div style={{ height: "100%", width: "100%" }}>
+                          <DataGrid
+                            rows={ticketServices}
+                            getRowId={(row) => row.IdService}
+                            columns={columnsView}
+                            initialState={{
+                              pagination: {
+                                paginationModel: { page: 0, pageSize: 8 },
+                              },
+                              columns: {
+                                columnVisibilityModel: {
+                                  IdService: false,
+                                },
+                              },
+                            }}
+                            pageSizeOptions={[8, 12, 20]}
+                            localeText={{
+                              noRowsLabel: "No se ha encontrado datos.",
+                              noResultsOverlayLabel:
+                                "No se ha encontrado ningún resultado",
+                              toolbarColumns: "Columnas",
+                              toolbarColumnsLabel: "Seleccionar columnas",
+                              toolbarFilters: "Filtros",
+                              toolbarFiltersLabel: "Ver filtros",
+                              toolbarFiltersTooltipHide: "Quitar filtros",
+                              toolbarFiltersTooltipShow: "Ver filtros",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </>
-              )}
-            </>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="col-span-12">
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
+            <Skeleton height={40} animation="wave" />
           </div>
         )}
       </div>
@@ -611,21 +740,48 @@ export const TicketRegisterFacturable = () => {
           </h2>
         </div>
       )}
-      {ticketServices.length === 0 && (
+      {!isLoading && ticketServices.length === 0 && (
         <div className="w-full mt-12 flex justify-end">
-          <button
-            className={`px-10 py-2 font-medium rounded-full text-white ${
-              formik.isValid && selectedServices.length > 0
-                ? "bg-qGreen hover:bg-qDarkGreen"
-                : "bg-qGray"
-            }`}
-            onClick={handleRegister}
-          >
-            Finalizar
-          </button>
+          <Tooltip title="Enviar a espera de confirmación">
+            <Button
+              className="px-8"
+              label="Enviar para confirmación"
+              color="#74C947"
+              disabled={
+                !formik.isValid ||
+                selectedServices.length === 0 ||
+                isLoadingAction
+              }
+              isLoading={isLoadingAction}
+              onClick={handleRegister}
+              type="button"
+            />
+          </Tooltip>
         </div>
       )}
-
+      {user?.IdRole === ConstantRoles.USUARIO &&
+        ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA && (
+          <div className="w-full mt-12 flex justify-end">
+            <Button
+              className="px-8 mr-4"
+              label="Rechazar"
+              color="#C94F47"
+              disabled={isLoadingActionDeny}
+              isLoading={isLoadingActionDeny}
+              onClick={handleTicketOpen}
+              type="button"
+            />
+            <Button
+              className="px-8"
+              label="Confirmar"
+              color="#74C947"
+              disabled={isLoadingActionAgree}
+              isLoading={isLoadingActionAgree}
+              onClick={handleConfirm}
+              type="button"
+            />
+          </div>
+        )}
       <Modal
         modalType={modalType}
         title={modalMessage}

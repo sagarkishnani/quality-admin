@@ -1,21 +1,23 @@
 interface BadgeInterface {
-  label: string;
-  status: string;
+  label: string
+  status: string
 }
 
 export const Badge = ({ label, status }: BadgeInterface) => {
   const getColor = (status: string) => {
     if (status === "Pendiente")
-      return { text: "#FFFFFF", background: "#BBBCBD" };
+      return { text: "#FFFFFF", background: "#BBBCBD" }
     if (status === "En progreso")
-      return { text: "#24272A", background: "#B0E2F5" };
-    if (status === "Atendido")
-      return { text: "#24272A", background: "#F7DD81" };
+      return { text: "#24272A", background: "#B0E2F5" }
+    if (status === "Atendido") return { text: "#24272A", background: "#F7DD81" }
     if (status === "Finalizado")
-      return { text: "#FFFFFF", background: "#3DAE2B" };
+      return { text: "#FFFFFF", background: "#3DAE2B" }
+    if (status === "En espera")
+      return { text: "#FFFFFF", background: "#FF8A33" }
+    if (status === "Abierto") return { text: "#FFFFFF", background: "#9C2BAE" }
     if (status === "Cancelado")
-      return { text: "#24272A", background: "#F78181" };
-  };
+      return { text: "#24272A", background: "#F78181" }
+  }
 
   return (
     <div
@@ -27,5 +29,5 @@ export const Badge = ({ label, status }: BadgeInterface) => {
     >
       {label}
     </div>
-  );
-};
+  )
+}

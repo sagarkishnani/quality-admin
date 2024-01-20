@@ -6,6 +6,7 @@
 
 import pattern from "../../../assets/patterns/pattern.svg"
 import logo from "../../../assets/logo/logo-white.svg"
+import logoMob from "../../../assets/logo/logo-white-sm.svg"
 import {
   HiOutlineTicket,
   HiChevronRight,
@@ -82,19 +83,78 @@ export const Sidebar = () => {
     },
   ]
 
+  const routeLinksMobile: RouteLink[] = [
+    {
+      Id: 1,
+      Name: "Tickets",
+      Link: "tickets",
+      Icon: <HiOutlineTicket className="inline" size={"24"} />,
+      Roles: [
+        ConstantRoles.ADMINISTRADOR_TI,
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.TECNICO,
+        ConstantRoles.USUARIO,
+      ],
+    },
+    {
+      Id: 2,
+      Name: "Mis datos",
+      Link: "mis-datos",
+      Icon: <HiOutlineUser className="inline" size={"24"} />,
+      Roles: [
+        ConstantRoles.ADMINISTRADOR_TI,
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.TECNICO,
+        ConstantRoles.USUARIO,
+      ],
+    },
+    {
+      Id: 3,
+      Name: "Empresas",
+      Link: "empresas",
+      Icon: <HiOutlineOfficeBuilding className="inline" size={"24"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL],
+    },
+    {
+      Id: 4,
+      Name: "Usuarios",
+      Link: "usuarios",
+      Icon: <HiOutlineUserGroup className="inline" size={"24"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL, ConstantRoles.ADMINISTRADOR_TI],
+    },
+    {
+      Id: 5,
+      Name: "Configuración",
+      Link: "configuracion",
+      Icon: <HiOutlineCog className="inline" size={"24"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL],
+    },
+    {
+      Id: 6,
+      Name: "WhatsApp",
+      Link: "https://api.whatsapp.com/send?phone=51940294820&text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n",
+      Icon: <BsWhatsapp className="inline" size={"20"} />,
+      Roles: [
+        ConstantRoles.ADMINISTRADOR_TI,
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.TECNICO,
+        ConstantRoles.USUARIO,
+      ],
+    },
+  ]
   return (
     <>
       {/* Mobile Sidebar */}
-      <div className={`h-full w-10 lg:hidden bg-qBlack fixed text-white`}>
-        <div className="flex flex-col text-white">
+      <div className={`h-full w-[2.7rem] lg:hidden bg-qBlack fixed text-white`}>
+        <div className="h-full flex flex-col items-center text-white">
           <Link to={"/"}>
-            <div className="p-2">
-              <img src={logo} alt="logo" />
+            <div className="py-4 px-2">
+              <img src={logoMob} alt="logo" />
             </div>
           </Link>
-          <div>
-            <div className="p-2">
-              {routeLinks.map((route, index) => (
+          <div className="h-full">
+            <div className="flex justify-evenly flex-col h-full p-2">
+              {routeLinksMobile.map((route, index) => (
                 <Link key={index} to={route.Link}>
                   {hasRole(route.Roles) && (
                     <div
@@ -111,7 +171,7 @@ export const Sidebar = () => {
                 </Link>
               ))}
             </div>
-            <div className="p-2">
+            {/* <div className="p-2">
               <h3 className="font-semibold">
                 <span>
                   <a
@@ -123,7 +183,7 @@ export const Sidebar = () => {
                   </a>
                 </span>
               </h3>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

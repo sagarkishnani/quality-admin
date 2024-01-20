@@ -9,6 +9,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Switch,
   TextField,
 } from "@mui/material"
 import { useState, useEffect } from "react"
@@ -44,6 +45,7 @@ const validationSchema = yup.object({
     .required("Dirección es obligatoria"),
   // ImageUrl: yup.string().required("Debe seleccionar una imagen"),
   Local: yup.string().required("Local es obligatorio"),
+  Mails: yup.string().required("Correos son obligatorios"),
   MainContactName: yup
     .string()
     .required("Nombre de contacto principal es obligatorio"),
@@ -224,6 +226,8 @@ export const CompanyRegisterContainer = () => {
       Address: "",
       ImgUrl: "",
       Local: "",
+      Mails: "",
+      RequiresOrder: false,
       MainContactName: "",
       MainContactPosition: "",
       MainContactEmail: "",
@@ -410,6 +414,31 @@ export const CompanyRegisterContainer = () => {
                 onBlur={formik.handleBlur}
                 error={formik.touched.Local && Boolean(formik.errors.Local)}
                 helperText={formik.touched.Local && formik.errors.Local}
+              />
+            </div>
+            <div className="col-span-12 md:col-span-8">
+              <TextField
+                color="primary"
+                className="w-full"
+                required
+                id="Mails"
+                name="Mails"
+                value={formik.values.Mails}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.Mails && Boolean(formik.errors.Mails)}
+                helperText={formik.touched.Mails && formik.errors.Mails}
+                label="Correos (separados por comas)"
+              />
+            </div>
+            <div className="col-span-12 md:col-span-4">
+              <FormControlLabel
+                name="RequiresOrder"
+                id="RequiresOrder"
+                value={formik.values.RequiresOrder}
+                onChange={formik.handleChange}
+                control={<Switch />}
+                label="Requiere orden de compra"
               />
             </div>
             <div className="col-span-12">
@@ -1253,7 +1282,7 @@ export const CompanyRegisterContainer = () => {
                 CONTACTOS
               </h4>
             </div>
-            <div>
+            <div className="col-span-2">
               <FormControlLabel
                 control={<Checkbox checked={true} disabled />}
                 label="PRINCIPAL"

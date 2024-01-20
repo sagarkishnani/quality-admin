@@ -78,11 +78,26 @@ export interface FilteredTicketsRequest {
     Pending: string | null;
     InProgress: string | null;
     Attended: string | null;
+    Waiting: string | null;
+    Open: string | null;
     Finished: string | null;
     Cancelled: string | null;
     Facturable: string | null;
     NotFacturable: string | null;
     RecordCreationDate: any | null;
+}
+
+export interface FilteredTicketsByExcelRequest {
+    IdCompany: string[];
+    Pending: string | null;
+    InProgress: string | null;
+    Attended: string | null;
+    Waiting: string | null;
+    Open: string | null;
+    Finished: string | null;
+    Cancelled: string | null;
+    InitDate: any | null;
+    EndDate: any | null;
 }
 
 export interface GetTicketById {
@@ -132,6 +147,8 @@ export interface GetTicketByIdCompany {
     ImgUrl: string;
     Address: string;
     Local: string;
+    RequiresOrder: boolean;
+    Mails: string;
 }
 
 export interface GetTicketByIdAdditional {

@@ -1,5 +1,4 @@
 import {
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,6 +11,7 @@ import {
   HiQuestionMarkCircle,
   HiXCircle,
 } from "react-icons/hi"
+import { Button } from "../../../../../../common/components/Button/Button"
 
 interface ModalTicketInterface {
   title: string
@@ -19,6 +19,8 @@ interface ModalTicketInterface {
   open: boolean
   action?: string | null
   modalType: "success" | "error" | "question" | "warning" | "none"
+  isLoadingFacturable: boolean
+  isLoadingNonFacturable: boolean
   handleClose: () => void
   handleActionOne?: () => void
   handleActionTwo?: () => void
@@ -32,6 +34,8 @@ export const ModalTicket = ({
   handleClose,
   handleActionOne,
   handleActionTwo,
+  isLoadingFacturable,
+  isLoadingNonFacturable,
 }: ModalTicketInterface) => {
   return (
     <Dialog className="" open={open} onClose={handleClose}>
@@ -65,15 +69,21 @@ export const ModalTicket = ({
         {action && (
           <DialogActions>
             <Button
-              className="btn-dialog-non-facturable"
               onClick={handleActionOne}
-              autoFocus
-            >
-              NO FACTURABLE
-            </Button>
-            <Button className="btn-dialog-facturable" onClick={handleActionTwo}>
-              FACTURABLE
-            </Button>
+              color="#00A0DF"
+              label="No Facturable"
+              isLoading={isLoadingNonFacturable}
+              type="button"
+              disabled={isLoadingNonFacturable}
+            />
+            <Button
+              onClick={handleActionTwo}
+              color="#74C947"
+              label="Facturable"
+              isLoading={isLoadingFacturable}
+              type="button"
+              disabled={isLoadingFacturable}
+            />
           </DialogActions>
         )}
       </div>

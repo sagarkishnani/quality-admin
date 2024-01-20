@@ -29,6 +29,8 @@ export const CompanyModal = ({
       user!.Company.Address = data?.Address
       user!.Company.Local = data?.Local
       user!.Company.Ruc = data?.Ruc
+      user!.Company.Mails = data?.Mails
+      user!.Company.RequiresOrder = data?.RequiresOrder
       setUser(user)
       handleClose()
     }

@@ -5,6 +5,8 @@ export interface CompanyRegisterRequest {
     Address: string;
     ImgUrl: string;
     Local: string;
+    Mails: string;
+    RequiresOrder: boolean;
     MainContactName: string;
     MainContactPosition: string;
     MainContactEmail: string;
@@ -49,6 +51,8 @@ export interface CompanyEditRequest {
     Ubigeo: number;
     Address: string;
     Local: string;
+    Mails: string;
+    RequiresOrder: boolean;
     MainContactName: string;
     MainContactPosition: string;
     MainContactEmail: string;

@@ -1,7 +1,7 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { Badge } from "../../../../../common/components/Badge/Badge"
 import moment from "moment"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import {
   HiBan,
   HiOutlineClipboardCheck,
@@ -89,6 +89,11 @@ export const TicketListTable = ({
     navigate("registrar-facturable")
   }
 
+  const handleConfirmForm = () => {
+    // secureLocalStorage.setItem(ConstantLocalStorage.TICKET_FACTURABLE, true)
+    navigate("confirmar-facturable")
+  }
+
   const handleCancelTicket = () => {
     setIsModalOpen(true)
     setModalType("question")
@@ -153,7 +158,7 @@ export const TicketListTable = ({
     {
       field: "Company",
       headerName: "Empresa",
-      width: 150,
+      minWidth: 150,
       disableColumnMenu: true,
       renderCell: (params) => {
         return (
@@ -260,7 +265,7 @@ export const TicketListTable = ({
       )}
       {rows.length !== 0 && (
         <>
-          <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
+          <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto pb-6 pb:mb-0">
             <div style={{ height: "100%", width: "100%" }}>
               <DataGrid
                 rows={rows}
@@ -325,10 +330,18 @@ export const TicketListTable = ({
               )}
             {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
               user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
-              selectedTicket?.Status !== "Finalizado" && (
+              selectedTicket?.Status !== "Finalizado" &&
+              selectedTicket?.Status !== "Cancelado" && (
                 <MenuItem onClick={handleCancelTicket}>
                   <HiBan size={"20"} className="mr-2" />
                   Cancelar ticket
+                </MenuItem>
+              )}
+            {user?.IdRole === ConstantRoles.USUARIO &&
+              selectedTicket?.Status === "En espera" && (
+                <MenuItem onClick={handleConfirmForm}>
+                  <HiOutlineClipboardCheck size={"20"} className="mr-2" />
+                  Confirmar ticket
                 </MenuItem>
               )}
           </Menu>

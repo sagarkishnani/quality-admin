@@ -50,6 +50,8 @@ export interface UserCompany {
     Address: string;
     Ruc: string;
     Local: string;
+    Mails: string;
+    RequiresOrder: boolean;
 }
 
 export interface UserCompanyRegister {

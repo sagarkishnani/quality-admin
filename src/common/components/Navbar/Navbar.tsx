@@ -1,5 +1,10 @@
 import { Badge, Menu, MenuItem, Tooltip } from "@mui/material"
-import { HiChevronDown, HiLocationMarker, HiOutlineBell } from "react-icons/hi"
+import {
+  HiChevronDown,
+  HiLocationMarker,
+  HiOutlineBell,
+  HiX,
+} from "react-icons/hi"
 import { useEffect, useState } from "react"
 import { UserService } from "../../services/UserService"
 import { useNavigate } from "react-router-dom"
@@ -15,6 +20,10 @@ import { CompanyModal } from "../CompanyModal/CompanyModal"
 import { GetUserCompany } from "../../interfaces/User.interface"
 import { UserCompanyService } from "../../services/UserCompanyService"
 import secureLocalStorage from "react-secure-storage"
+import CustomDrawer from "../Drawer/Drawer"
+import { NotificationService } from "../../services/NotificationService"
+import { Notification } from "../../interfaces/Notification.interface"
+import moment from "moment"
 
 export const Navbar = () => {
   const supabaseImgUrl =
@@ -24,10 +33,12 @@ export const Navbar = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const { user, setUser } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage] = useState("Seleccione el local activo")
   const [userCompanies, setUserCompanies] = useState<GetUserCompany[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const navigate = useNavigate()
 
   async function logout() {
@@ -64,6 +75,10 @@ export const Navbar = () => {
     setAnchorEl(null)
   }
 
+  const handleDrawerClose = () => {
+    setDrawerOpen(false)
+  }
+
   const handleOpenLocation = () => {
     navigate("/")
     setIsModalOpen(true)
@@ -77,9 +92,45 @@ export const Navbar = () => {
     }
   }
 
+  async function getNotifications() {
+    if (
+      user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
+      user?.IdRole === ConstantRoles.ADMINISTRADOR_TI
+    ) {
+      const data = await NotificationService.getNotifications()
+      if (data) {
+        setNotifications(data)
+        return
+      }
+    }
+
+    if (user?.IdRole === ConstantRoles.USUARIO) {
+      const data = await NotificationService.getNotificationsByFilter(
+        "IdCompany",
+        user.IdCompany
+      )
+      if (data) {
+        setNotifications(data)
+        return
+      }
+    }
+
+    if (user?.IdRole === ConstantRoles.TECNICO) {
+      const data = await NotificationService.getNotificationsByFilter(
+        "IdTechnician",
+        user.IdUser
+      )
+      if (data) {
+        setNotifications(data)
+        return
+      }
+    }
+  }
+
   async function getAll(idUser: string) {
     setIsLoading(true)
     await getUserCompanies(idUser)
+    await getNotifications()
     setIsLoading(false)
   }
 
@@ -126,11 +177,14 @@ export const Navbar = () => {
                 </Tooltip>
               </div>
             )}
-          {/* <div className="cursor-pointer">
-            <Badge badgeContent={4} color="primary">
+          <div onClick={() => setDrawerOpen(true)} className="cursor-pointer">
+            <Badge
+              badgeContent={notifications.length > 0 ? notifications.length : 0}
+              color="primary"
+            >
               <HiOutlineBell color="#00A0DF" size={"24"} />
             </Badge>
-          </div> */}
+          </div>
         </div>
       </nav>
       <Menu
@@ -157,6 +211,55 @@ export const Navbar = () => {
         handleClose={handleCloseModal}
         companies={userCompanies}
       />
+      <CustomDrawer open={drawerOpen} onClose={handleDrawerClose}>
+        <div className="mt-12 p-6">
+          <HiX
+            onClick={handleDrawerClose}
+            size={"20"}
+            className="mr-2 float-right cursor-pointer"
+          />
+          <div className="flex flex-row justify-between mb-4">
+            <h2 className="font-semibold text-xl">Notificaciones</h2>
+            {/* <div>
+              <button className="text-qBlue underline">Limpiar</button>
+            </div> */}
+          </div>
+          {notifications.length > 0 ? (
+            <>
+              {notifications.map((notification: Notification) => (
+                <div
+                  key={notification.IdNotification}
+                  className="px-6 py-3 bg-gray-100 rounded-lg max-w-sm mb-4 font-medium"
+                >
+                  El ticket{" "}
+                  <span className="font-semibold">
+                    {notification.CodeTicket}
+                  </span>{" "}
+                  ha pasado al estado{" "}
+                  <span className="font-semibold">
+                    {notification.TicketStatus.Name.toLowerCase()}.
+                  </span>{" "}
+                  <div className="text-qBlack text-sm font-semibold mt-2">
+                    {notification.RecordEditDate === null
+                      ? moment(notification.RecordCreationDate).format(
+                          "DD/MM/YYYY"
+                        )
+                      : moment(notification.RecordEditDate).format(
+                          "DD/MM/YYYY"
+                        )}
+                  </div>
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <div className="px-6 py-3 font-medium">
+                No tiene notificaciones pendientes.
+              </div>
+            </>
+          )}
+        </div>
+      </CustomDrawer>
     </>
   )
 }

@@ -63,8 +63,8 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
         CompanyArea: ticket.CompanyArea || "",
         IdUser: ticket?.User.Name || "",
         IdTechnician: "",
-        ScheduledAppointmentInitTime: ticket?.ScheduledAppointmentInitTime,
-        ScheduledAppointmentEndTime: ticket?.ScheduledAppointmentEndTime,
+        ScheduledAppointmentInitTime: moment(ticket?.AppointmentInitTime),
+        ScheduledAppointmentEndTime: moment(ticket?.AppointmentEndTime),
         ScheduledAppointmentDate: ticket?.ScheduledAppointmentDate,
         ScheduledAppointmentTime: ticket?.ScheduledAppointmentTime,
         ReportedFailure: ticket.ReportedFailure || "",
@@ -102,7 +102,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
                 <TimePicker
                   disabled
                   className="w-full"
-                  value={moment(formik.values.ScheduledAppointmentInitTime)}
+                  value={formik.values.ScheduledAppointmentInitTime}
                 />
               </div>
               <div className="col-span-12 md:col-span-6">
@@ -112,7 +112,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
                 <TimePicker
                   disabled
                   className="w-full"
-                  value={moment(formik.values.ScheduledAppointmentEndTime)}
+                  value={formik.values.ScheduledAppointmentEndTime}
                 />
               </div>
             </>

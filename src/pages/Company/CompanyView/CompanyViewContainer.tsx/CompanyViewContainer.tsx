@@ -11,6 +11,7 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  Switch,
   TextField,
 } from "@mui/material"
 import { Link } from "react-router-dom"
@@ -133,6 +134,8 @@ export const CompanyViewContainer = () => {
       Address: "",
       ImgUrl: "",
       Local: "",
+      Mails: "",
+      RequiresOrder: false,
       MainContactName: "",
       MainContactPosition: "",
       MainContactEmail: "",
@@ -196,6 +199,8 @@ export const CompanyViewContainer = () => {
         Address: company?.Address || "",
         ImgUrl: company?.ImgUrl || "",
         Local: company?.Local || "",
+        Mails: company?.Mails || "",
+        RequiresOrder: company?.RequiresOrder || false,
         MainContactName: company?.MainContactName || "",
         MainContactPosition: company?.MainContactPosition || "",
         MainContactEmail: company?.MainContactEmail || "",
@@ -318,6 +323,28 @@ export const CompanyViewContainer = () => {
                 name="Local"
                 label="Nombre de local"
                 value={formik.values.Local}
+              />
+            </div>
+            <div className="col-span-12 md:col-span-8">
+              <TextField
+                color="primary"
+                disabled
+                className="w-full"
+                id="Mails"
+                name="Mails"
+                value={formik.values.Mails}
+                label="Correos"
+              />
+            </div>
+            <div className="col-span-12 md:col-span-4">
+              <FormControlLabel
+                name="RequiresOrder"
+                id="RequiresOrder"
+                value={formik.values.RequiresOrder}
+                control={
+                  <Switch disabled checked={formik.values.RequiresOrder} />
+                }
+                label="Requiere orden de compra"
               />
             </div>
             <div className="col-span-12">

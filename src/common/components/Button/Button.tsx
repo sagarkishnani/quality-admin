@@ -1,11 +1,12 @@
 interface ButtonInterface {
-  label: string;
-  butonType?: "filled" | "outlined";
-  color: string;
-  className?: string;
-  isLoading?: boolean;
-  type: "button" | "reset" | "submit";
-  disabled?: true | false;
+  label: string
+  butonType?: "filled" | "outlined"
+  color: string
+  className?: string
+  isLoading?: boolean
+  type: "button" | "reset" | "submit"
+  disabled?: true | false
+  onClick?: () => void
 }
 export const Button = ({
   label,
@@ -14,14 +15,22 @@ export const Button = ({
   color,
   className,
   type,
+  onClick,
   disabled = false,
 }: ButtonInterface) => {
+  const handleClick = () => {
+    if (!disabled && !isLoading && onClick) {
+      onClick()
+    }
+  }
+
   return (
     <button
       style={{ backgroundColor: !disabled ? color : "#BBBCBD" }}
       className={`px-6 py-2 font-medium rounded-full text-white ${className}`}
       type={type}
-      disabled={disabled}
+      disabled={disabled || isLoading}
+      onClick={handleClick}
     >
       <div className="flex flex-row justify-center items-center">
         <div>{!isLoading ? label : "Cargando..."}</div>
@@ -47,5 +56,5 @@ export const Button = ({
         )}
       </div>
     </button>
-  );
-};
+  )
+}
