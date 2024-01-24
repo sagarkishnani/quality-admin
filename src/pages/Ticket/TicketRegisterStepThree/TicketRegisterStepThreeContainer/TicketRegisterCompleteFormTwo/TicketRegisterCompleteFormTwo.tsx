@@ -116,6 +116,7 @@ export const TicketRegisterCompleteFormTwo = ({
   }
 
   async function registerTicketStep(isNext: boolean) {
+    if (!isNext) return setTicketStep(1)
     if (formik.isValid && pictures.length > 0) {
       const requestFormTwo: TicketRegisterStepThreeRequestFormTwo = {
         DeviceOne: formik.values.DeviceOne,

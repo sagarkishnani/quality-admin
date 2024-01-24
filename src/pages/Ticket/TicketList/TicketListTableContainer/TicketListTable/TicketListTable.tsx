@@ -118,6 +118,16 @@ export const TicketListTable = ({
     } else false
   }
 
+  const getConfirmarTicket = (selectedTicket: any) => {
+    if (
+      user?.IdRole === ConstantRoles.USUARIO &&
+      selectedTicket?.Status === "En espera" &&
+      user.Position === "00507"
+    )
+      return true
+    return false
+  }
+
   const handleCancelBtn = async () => {
     const { status }: any = await TicketService.cancelTicket(selectedTicket.id)
 
@@ -337,13 +347,12 @@ export const TicketListTable = ({
                   Cancelar ticket
                 </MenuItem>
               )}
-            {user?.IdRole === ConstantRoles.USUARIO &&
-              selectedTicket?.Status === "En espera" && (
-                <MenuItem onClick={handleConfirmForm}>
-                  <HiOutlineClipboardCheck size={"20"} className="mr-2" />
-                  Confirmar ticket
-                </MenuItem>
-              )}
+            {getConfirmarTicket(selectedTicket) && (
+              <MenuItem onClick={handleConfirmForm}>
+                <HiOutlineClipboardCheck size={"20"} className="mr-2" />
+                Confirmar ticket
+              </MenuItem>
+            )}
           </Menu>
           <Modal
             handleClose={handleCloseModal}

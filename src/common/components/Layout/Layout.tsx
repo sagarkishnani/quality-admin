@@ -29,13 +29,24 @@ import { WelcomeScreen } from "../../../pages/Welcome/WelcomeScreen/WelcomeScree
 import { Welcome } from "../../../pages/Welcome/Welcome"
 import { CompanyEdit } from "../../../pages/Company/CompanyEdit/CompanyEdit"
 import { TicketRegisterStepFive } from "../../../pages/Ticket/TicketRegisterStepFive/TicketRegisterStepFive"
+import { useState } from "react"
 
 export const Layout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen)
+  }
+
   return (
     <>
-      <Sidebar />
-      <div className="pl-10 lg:pl-[18rem] flex flex-col">
-        <Navbar />
+      <Sidebar open={sidebarOpen} onToggleSidebar={toggleSidebar} />
+      <div
+        className={`flex flex-col w-full ${
+          sidebarOpen ? "hidden" : "lg:pl-[18rem]"
+        }`}
+      >
+        <Navbar onToggleSidebar={toggleSidebar} />
         <div className="overflow-auto">
           <Routes>
             <Route path="/" element={<Welcome />}>

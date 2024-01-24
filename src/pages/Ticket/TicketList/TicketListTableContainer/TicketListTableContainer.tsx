@@ -137,7 +137,11 @@ export const TicketListTableContainer = () => {
               <div className="ml-4 cursor-pointer" onClick={handleOpenExcel}>
                 <Tooltip title="Exportar a Excel">
                   <button>
-                    <PiMicrosoftExcelLogoFill size={28} color="#00A0DF" />
+                    <PiMicrosoftExcelLogoFill
+                      className="align-middle"
+                      size={28}
+                      color="#00A0DF"
+                    />
                   </button>
                 </Tooltip>
               </div>

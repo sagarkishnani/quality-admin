@@ -53,6 +53,8 @@ export const TicketRegisterCompleteFormThree = () => {
   }
 
   function registerTicketStep(isNext: boolean) {
+    if (!isNext) return setTicketStep(2)
+
     const isFormValid = Object.values(formik.values).some(
       (value) => value.trim() !== ""
     )

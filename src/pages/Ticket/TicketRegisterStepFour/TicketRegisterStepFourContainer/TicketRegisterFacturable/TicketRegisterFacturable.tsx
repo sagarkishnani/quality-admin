@@ -41,12 +41,14 @@ import {
 import {
   generateMailFacturableWithServices,
   generateTableHTML,
+  procesarCadena,
 } from "../../../../../common/utils"
 import { Button } from "../../../../../common/components/Button/Button"
 import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
 import { NotificationService } from "../../../../../common/services/NotificationService"
 import { useAuth } from "../../../../../common/contexts/AuthContext"
 import { ConstantTicketStatus } from "../../../../../common/constants"
+import { generateMailFacturableWithServicesUserResponse } from "../../../../../common/utils"
 
 const validationSchema = yup.object({})
 
@@ -97,6 +99,155 @@ export const TicketRegisterFacturable = () => {
     setOpen(false)
   }
 
+  const mailOptions = () => {
+    const userSignature = ticket?.TicketFile.filter(
+      (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_USUARIO
+    )[0]
+
+    const technicianSignature = ticket?.TicketFile.filter(
+      (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_TECNICO
+    )[0]
+
+    const pdfData = {
+      RecordCreationDate: moment(ticket?.RecordCreationDate).format(
+        "DD/MM/YYYY"
+      ),
+      AppointmentInitTime: moment(ticket?.AppointmentInitTime).format("HH:mm"),
+      AppointmentEndTime: moment(ticket?.AppointmentEndTime).format("HH:mm"),
+      Company: ticket?.Company.Name,
+      Address: ticket?.Company.Address,
+      Local: ticket?.Company.Local,
+      CompanyFloor: ticket?.CompanyFloor,
+      CompanyArea: ticket?.CompanyArea,
+      User: ticket?.User.Name,
+      DeviceOne: ticket?.DeviceOne,
+      SeriesNumberOne: ticket?.SeriesNumberOne,
+      CounterOne: ticket?.CounterOne,
+      GuideOne: ticket?.GuideOne,
+      DeviceTwo: ticket?.DeviceTwo,
+      SeriesNumberTwo: ticket?.SeriesNumberTwo,
+      CounterTwo: ticket?.CounterTwo,
+      GuideTwo: ticket?.GuideTwo,
+      ReportedFailure: ticket?.ReportedFailure,
+      FoundFailure: ticket?.FoundFailure,
+      Revision: {
+        BandejaUno: ticket?.TicketAnswer?.BandejaUno,
+        BandejaDos: ticket?.TicketAnswer?.BandejaDos,
+        BandejaSalida: ticket?.TicketAnswer?.BandejaSalida,
+        BisagraEscaner: ticket?.TicketAnswer?.BisagraEscaner,
+        BandejaADF: ticket?.TicketAnswer?.BandejaADF,
+        CristalCamaPlana: ticket?.TicketAnswer?.CristalCamaPlana,
+        ConectorUSB: ticket?.TicketAnswer?.ConectorUSB,
+        ConectorRJ: ticket?.TicketAnswer?.ConectorRJ,
+        PanelControl: ticket?.TicketAnswer?.PanelControl,
+        Engranaje: ticket?.TicketAnswer?.Engranaje,
+        LaminaTeplon: ticket?.TicketAnswer?.LaminaTeplon,
+        RodilloPresion: ticket?.TicketAnswer?.RodilloPresion,
+      },
+      Procedure: {
+        Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
+        Cambio: ticket?.TicketAnswer?.Cambio ? "X" : "",
+        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
+        Reparacion: ticket?.TicketAnswer?.Reparacion ? "X" : "",
+        Retiro: ticket?.TicketAnswer?.Retiro ? "X" : "",
+        Revision: ticket?.TicketAnswer?.Revision ? "X" : "",
+        MantImpresora: ticket?.TicketAnswer?.MantImpresora ? "X" : "",
+        MantOptico: ticket?.TicketAnswer?.MantOptico ? "X" : "",
+        MantOpticoEscaner: ticket?.TicketAnswer?.MantOpticoEscaner ? "X" : "",
+        MantSistema: ticket?.TicketAnswer?.MantSistema ? "X" : "",
+        ActualFirmware: ticket?.TicketAnswer?.ActualFirmware ? "X" : "",
+        EtiquetaFusor: ticket?.TicketAnswer?.EtiquetaFusor ? "X" : "",
+        EtiquetaFusorTeflon: ticket?.TicketAnswer?.EtiquetaFusorTeflon
+          ? "X"
+          : "",
+        RevCartucho: ticket?.TicketAnswer?.RevCartucho ? "X" : "",
+        RevFusor: ticket?.TicketAnswer?.RevFusor ? "X" : "",
+        RevImagen: ticket?.TicketAnswer?.RevImagen ? "X" : "",
+        RevADF: ticket?.TicketAnswer?.RevADF ? "X" : "",
+        RevRodilloBUno: ticket?.TicketAnswer?.RevRodilloBUno ? "X" : "",
+        RevRodilloBDos: ticket?.TicketAnswer?.RevRodilloBDos ? "X" : "",
+        RevSeparador: ticket?.TicketAnswer?.RevSeparador ? "X" : "",
+        RevDuplex: ticket?.TicketAnswer?.RevDuplex ? "X" : "",
+        CambioCartucho: ticket?.TicketAnswer?.CambioCartucho ? "X" : "",
+        CambioFusor: ticket?.TicketAnswer?.CambioFusor ? "X" : "",
+        CambioImagen: ticket?.TicketAnswer?.CambioImagen ? "X" : "",
+        CambioRodillo: ticket?.TicketAnswer?.CambioRodillo ? "X" : "",
+        CambioTeflon: ticket?.TicketAnswer?.CambioTeflon ? "X" : "",
+        CambioRodilloBUno: ticket?.TicketAnswer?.CambioRodilloBUno ? "X" : "",
+        CambioRodilloBDos: ticket?.TicketAnswer?.CambioRodilloBDos ? "X" : "",
+        CambioSeparador: ticket?.TicketAnswer?.CambioSeparador ? "X" : "",
+        CambioDrive: ticket?.TicketAnswer?.CambioDrive ? "X" : "",
+        CambioSwing: ticket?.TicketAnswer?.CambioSwing ? "X" : "",
+        CambioAOF: ticket?.TicketAnswer?.CambioAOF ? "X" : "",
+        CambioDC: ticket?.TicketAnswer?.CambioDC ? "X" : "",
+      },
+      Comments: {
+        UsoPapelHumedo: ticket?.TicketAnswer?.UsoPapelHumedo ? "X" : "",
+        UsoPapelReciclado: ticket?.TicketAnswer?.UsoPapelReciclado ? "X" : "",
+        UsoPapelGrapas: ticket?.TicketAnswer?.UsoPapelGrapas ? "X" : "",
+        UsoEtiquetas: ticket?.TicketAnswer?.UsoEtiquetas ? "X" : "",
+        ConectadoPared: ticket?.TicketAnswer?.ConectadoPared ? "X" : "",
+        ConectadoSupresor: ticket?.TicketAnswer?.ConectadoSupresor ? "X" : "",
+        ConectadoEstabilizador: ticket?.TicketAnswer?.ConectadoEstabilizador
+          ? "X"
+          : "",
+        ConectadoUPS: ticket?.TicketAnswer?.ConectadoUPS ? "X" : "",
+        Operativo: ticket?.TicketAnswer?.Operativo ? "X" : "",
+        PegadoEtiquetaGarantia: ticket?.TicketAnswer?.PegadoEtiquetaGarantia
+          ? "X"
+          : "",
+        EnObservacion: ticket?.TicketAnswer?.EnObservacion ? "X" : "",
+        EquipoRequiereCambio: ticket?.TicketAnswer?.EquipoRequiereCambio
+          ? "X"
+          : "",
+        EquipoRequiereMantenimiento: ticket?.TicketAnswer
+          ?.EquipoRequiereMantenimiento
+          ? "X"
+          : "",
+        CartuchoOtroProveedor: ticket?.TicketAnswer?.CartuchoOtroProveedor
+          ? "X"
+          : "",
+        CartuchoDanado: ticket?.TicketAnswer?.CartuchoDanado ? "X" : "",
+      },
+      Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
+      ServicioGarantia: ticket?.TicketAnswer?.ServicioGarantia ? "X" : "",
+      Negligencia: ticket?.TicketAnswer?.Negligencia ? "X" : "",
+      Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
+      FacturableVisit: "X",
+      Comment: ticket?.Comment,
+      Recommendation: ticket?.Recommendation,
+      Signature: {
+        ResponsibleName: ticket?.ResponsibleName,
+        ResponsibleDni: ticket?.ResponsibleDni,
+        ResponsibleSignature: `${supabaseUrl}/storage/v1/object/public/media/${userSignature.FileUrl}`,
+        TechnicianName: ticket?.TechnicianName,
+        TechnicianSignature: `${supabaseUrl}/storage/v1/object/public/media/${technicianSignature.FileUrl}`,
+      },
+    }
+
+    const servicesTableHTML = generateTableHTML(
+      selectedServices.length === 0 ? ticketServices : selectedServices
+    )
+
+    const printElement = ReactDOMServer.renderToString(
+      TechnicalServiceReport({ data: pdfData })
+    )
+    const opt = {
+      format: "a4",
+      filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+      margin: 1,
+      html2canvas: {
+        dpi: 192,
+        scale: 4,
+        letterRendering: true,
+        useCORS: true,
+      },
+      devicePixelRatio: 1.5,
+    }
+
+    return { pdfData, servicesTableHTML, printElement, opt }
+  }
+
   const handleCloseModal = () => {
     setIsModalOpen(false)
   }
@@ -108,20 +259,77 @@ export const TicketRegisterFacturable = () => {
       true
     )
 
-    if (status == ConstantHttpErrors.OK) {
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(ConstantTicketMessage.TICKET_FINISHED_SUCCESS)
-      setIsLoadingActionAgree(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
-      return
+    if (status === ConstantHttpErrors.OK) {
+      html2pdf().from(mailOptions().printElement).set(mailOptions().opt).save()
+
+      html2pdf()
+        .from(mailOptions().printElement)
+        .set(mailOptions().opt)
+        .outputPdf()
+        .then(async (pdf) => {
+          const base64 = btoa(pdf)
+
+          const attachments: Attachement = {
+            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            content: base64,
+          }
+
+          const companyMails = ticket?.Company.Mails.split(",")
+          companyMails?.push("soporte.tecnico@qualitysumprint.com")
+
+          const request: SendEmailRequest = {
+            from: ConstantMailConfigFacturable.FROM,
+            to: companyMails,
+            subject: "Finalización de servicio - Facturable",
+            html: generateMailFacturableWithServicesUserResponse(
+              ticket?.User.Name,
+              ticket?.Company.Name,
+              mailOptions().servicesTableHTML,
+              total!,
+              true,
+              ticket.Company.RequiresOrder
+            ),
+            attachments: [attachments],
+          }
+
+          const res = await MailService.sendEmail(request)
+
+          if (res.ok) {
+            const requestNotification: RegisterNotificationRequest = {
+              IdTicket: ticket.IdTicket,
+              CodeTicket: ticket.CodeTicket,
+              IdCompany: ticket.IdTicketCompany,
+              IdTechnician: ticket.IdTechnician,
+              IdTicketStatus: ConstantTicketStatus.FINALIZADO,
+              IdUser: ticket.IdUser,
+            }
+
+            await registerNotification(requestNotification)
+
+            setIsModalOpen(true)
+            setModalType("success")
+            setModalMessage(ConstantTicketMessage.TICKET_FINISHED_SUCCESS)
+            setIsLoadingActionAgree(false)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+            return
+          } else {
+            setIsLoadingActionAgree(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+            return
+          }
+        })
     } else {
-      setIsLoadingAction(false)
+      setIsLoadingActionAgree(false)
       setIsModalOpen(true)
       setModalType("error")
-      setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
+      setModalMessage(ConstantTicketMessage.TICKET_REGISTER_ERROR)
       setTimeout(() => {
         navigate("/tickets")
       }, 2000)
@@ -136,17 +344,74 @@ export const TicketRegisterFacturable = () => {
       false
     )
 
-    if (status == ConstantHttpErrors.OK) {
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(ConstantTicketMessage.TICKET_OPEN_SUCCESS)
-      setIsLoadingActionAgree(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
-      return
+    if (status === ConstantHttpErrors.OK) {
+      html2pdf().from(mailOptions().printElement).set(mailOptions().opt).save()
+
+      html2pdf()
+        .from(mailOptions().printElement)
+        .set(mailOptions().opt)
+        .outputPdf()
+        .then(async (pdf) => {
+          const base64 = btoa(pdf)
+
+          const attachments: Attachement = {
+            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            content: base64,
+          }
+
+          const companyMails = ticket?.Company.Mails.split(",")
+          companyMails?.push("soporte.tecnico@qualitysumprint.com")
+
+          const request: SendEmailRequest = {
+            from: ConstantMailConfigFacturable.FROM,
+            to: companyMails,
+            subject: "Costo de servicio rechazado - Ticket abierto",
+            html: generateMailFacturableWithServicesUserResponse(
+              ticket?.User.Name,
+              ticket?.Company.Name,
+              mailOptions().servicesTableHTML,
+              total!,
+              false,
+              ticket.Company.RequiresOrder
+            ),
+            attachments: [attachments],
+          }
+
+          const res = await MailService.sendEmail(request)
+
+          if (res.ok) {
+            const requestNotification: RegisterNotificationRequest = {
+              IdTicket: ticket.IdTicket,
+              CodeTicket: ticket.CodeTicket,
+              IdCompany: ticket.IdTicketCompany,
+              IdTechnician: ticket.IdTechnician,
+              IdTicketStatus: ConstantTicketStatus.ABIERTO,
+              IdUser: ticket.IdUser,
+            }
+
+            await registerNotification(requestNotification)
+
+            setIsModalOpen(true)
+            setModalType("success")
+            setModalMessage(ConstantTicketMessage.TICKET_OPEN_SUCCESS)
+            setIsLoadingActionDeny(false)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+            return
+          } else {
+            setIsLoadingActionDeny(false)
+            setIsModalOpen(true)
+            setModalType("error")
+            setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
+            setTimeout(() => {
+              navigate("/tickets")
+            }, 2000)
+            return
+          }
+        })
     } else {
-      setIsLoadingAction(false)
+      setIsLoadingActionDeny(false)
       setIsModalOpen(true)
       setModalType("error")
       setModalMessage(ConstantTicketMessage.TICKET_REGISTER_ERROR)
@@ -204,156 +469,11 @@ export const TicketRegisterFacturable = () => {
         }
       }
 
-      const userSignature = ticket?.TicketFile.filter(
-        (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_USUARIO
-      )[0]
-
-      const technicianSignature = ticket?.TicketFile.filter(
-        (file) => file.FilePurpose === ConstantFilePurpose.FIRMA_TECNICO
-      )[0]
-
-      const pdfData = {
-        RecordCreationDate: moment(ticket?.RecordCreationDate).format(
-          "DD/MM/YYYY"
-        ),
-        AppointmentInitTime: moment(ticket?.AppointmentInitTime).format(
-          "HH:MM"
-        ),
-        AppointmentEndTime: moment(ticket?.AppointmentEndTime).format("HH:MM"),
-        Company: ticket?.Company.Name,
-        Address: ticket?.Company.Address,
-        Local: ticket?.Company.Local,
-        CompanyFloor: ticket?.CompanyFloor,
-        CompanyArea: ticket?.CompanyArea,
-        User: ticket?.User.Name,
-        DeviceOne: ticket?.DeviceOne,
-        SeriesNumberOne: ticket?.SeriesNumberOne,
-        CounterOne: ticket?.CounterOne,
-        GuideOne: ticket?.GuideOne,
-        DeviceTwo: ticket?.DeviceTwo,
-        SeriesNumberTwo: ticket?.SeriesNumberTwo,
-        CounterTwo: ticket?.CounterTwo,
-        GuideTwo: ticket?.GuideTwo,
-        ReportedFailure: ticket?.ReportedFailure,
-        FoundFailure: ticket?.FoundFailure,
-        Revision: {
-          BandejaUno: ticket?.TicketAnswer?.BandejaUno,
-          BandejaDos: ticket?.TicketAnswer?.BandejaDos,
-          BandejaSalida: ticket?.TicketAnswer?.BandejaSalida,
-          BisagraEscaner: ticket?.TicketAnswer?.BisagraEscaner,
-          BandejaADF: ticket?.TicketAnswer?.BandejaADF,
-          CristalCamaPlana: ticket?.TicketAnswer?.CristalCamaPlana,
-          ConectorUSB: ticket?.TicketAnswer?.ConectorUSB,
-          ConectorRJ: ticket?.TicketAnswer?.ConectorRJ,
-          PanelControl: ticket?.TicketAnswer?.PanelControl,
-          Engranaje: ticket?.TicketAnswer?.Engranaje,
-          LaminaTeplon: ticket?.TicketAnswer?.LaminaTeplon,
-          RodilloPresion: ticket?.TicketAnswer?.RodilloPresion,
-        },
-        Procedure: {
-          Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
-          Cambio: ticket?.TicketAnswer?.Cambio ? "X" : "",
-          Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
-          Reparacion: ticket?.TicketAnswer?.Reparacion ? "X" : "",
-          Retiro: ticket?.TicketAnswer?.Retiro ? "X" : "",
-          Revision: ticket?.TicketAnswer?.Revision ? "X" : "",
-          MantImpresora: ticket?.TicketAnswer?.MantImpresora ? "X" : "",
-          MantOptico: ticket?.TicketAnswer?.MantOptico ? "X" : "",
-          MantOpticoEscaner: ticket?.TicketAnswer?.MantOpticoEscaner ? "X" : "",
-          MantSistema: ticket?.TicketAnswer?.MantSistema ? "X" : "",
-          ActualFirmware: ticket?.TicketAnswer?.ActualFirmware ? "X" : "",
-          EtiquetaFusor: ticket?.TicketAnswer?.EtiquetaFusor ? "X" : "",
-          EtiquetaFusorTeflon: ticket?.TicketAnswer?.EtiquetaFusorTeflon
-            ? "X"
-            : "",
-          RevCartucho: ticket?.TicketAnswer?.RevCartucho ? "X" : "",
-          RevFusor: ticket?.TicketAnswer?.RevFusor ? "X" : "",
-          RevImagen: ticket?.TicketAnswer?.RevImagen ? "X" : "",
-          RevADF: ticket?.TicketAnswer?.RevADF ? "X" : "",
-          RevRodilloBUno: ticket?.TicketAnswer?.RevRodilloBUno ? "X" : "",
-          RevRodilloBDos: ticket?.TicketAnswer?.RevRodilloBDos ? "X" : "",
-          RevSeparador: ticket?.TicketAnswer?.RevSeparador ? "X" : "",
-          RevDuplex: ticket?.TicketAnswer?.RevDuplex ? "X" : "",
-          CambioCartucho: ticket?.TicketAnswer?.CambioCartucho ? "X" : "",
-          CambioFusor: ticket?.TicketAnswer?.CambioFusor ? "X" : "",
-          CambioImagen: ticket?.TicketAnswer?.CambioImagen ? "X" : "",
-          CambioRodillo: ticket?.TicketAnswer?.CambioRodillo ? "X" : "",
-          CambioTeflon: ticket?.TicketAnswer?.CambioTeflon ? "X" : "",
-          CambioRodilloBUno: ticket?.TicketAnswer?.CambioRodilloBUno ? "X" : "",
-          CambioRodilloBDos: ticket?.TicketAnswer?.CambioRodilloBDos ? "X" : "",
-          CambioSeparador: ticket?.TicketAnswer?.CambioSeparador ? "X" : "",
-          CambioDrive: ticket?.TicketAnswer?.CambioDrive ? "X" : "",
-          CambioSwing: ticket?.TicketAnswer?.CambioSwing ? "X" : "",
-          CambioAOF: ticket?.TicketAnswer?.CambioAOF ? "X" : "",
-          CambioDC: ticket?.TicketAnswer?.CambioDC ? "X" : "",
-        },
-        Comments: {
-          UsoPapelHumedo: ticket?.TicketAnswer?.UsoPapelHumedo ? "X" : "",
-          UsoPapelReciclado: ticket?.TicketAnswer?.UsoPapelReciclado ? "X" : "",
-          UsoPapelGrapas: ticket?.TicketAnswer?.UsoPapelGrapas ? "X" : "",
-          UsoEtiquetas: ticket?.TicketAnswer?.UsoEtiquetas ? "X" : "",
-          ConectadoPared: ticket?.TicketAnswer?.ConectadoPared ? "X" : "",
-          ConectadoSupresor: ticket?.TicketAnswer?.ConectadoSupresor ? "X" : "",
-          ConectadoEstabilizador: ticket?.TicketAnswer?.ConectadoEstabilizador
-            ? "X"
-            : "",
-          ConectadoUPS: ticket?.TicketAnswer?.ConectadoUPS ? "X" : "",
-          Operativo: ticket?.TicketAnswer?.Operativo ? "X" : "",
-          PegadoEtiquetaGarantia: ticket?.TicketAnswer?.PegadoEtiquetaGarantia
-            ? "X"
-            : "",
-          EnObservacion: ticket?.TicketAnswer?.EnObservacion ? "X" : "",
-          EquipoRequiereCambio: ticket?.TicketAnswer?.EquipoRequiereCambio
-            ? "X"
-            : "",
-          EquipoRequiereMantenimiento: ticket?.TicketAnswer
-            ?.EquipoRequiereMantenimiento
-            ? "X"
-            : "",
-          CartuchoOtroProveedor: ticket?.TicketAnswer?.CartuchoOtroProveedor
-            ? "X"
-            : "",
-          CartuchoDanado: ticket?.TicketAnswer?.CartuchoDanado ? "X" : "",
-        },
-        Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
-        ServicioGarantia: ticket?.TicketAnswer?.ServicioGarantia ? "X" : "",
-        Negligencia: ticket?.TicketAnswer?.Negligencia ? "X" : "",
-        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
-        FacturableVisit: "X",
-        Comment: ticket?.Comment,
-        Recommendation: ticket?.Recommendation,
-        Signature: {
-          ResponsibleName: ticket?.ResponsibleName,
-          ResponsibleDni: ticket?.ResponsibleDni,
-          ResponsibleSignature: `${supabaseUrl}/storage/v1/object/public/media/${userSignature.FileUrl}`,
-          TechnicianName: ticket?.TechnicianName,
-          TechnicianSignature: `${supabaseUrl}/storage/v1/object/public/media/${technicianSignature.FileUrl}`,
-        },
-      }
-
-      const servicesTableHTML = generateTableHTML(selectedServices)
-
-      const printElement = ReactDOMServer.renderToString(
-        TechnicalServiceReport({ data: pdfData })
-      )
-      const opt = {
-        format: "a4",
-        filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
-        margin: 1,
-        html2canvas: {
-          dpi: 192,
-          scale: 4,
-          letterRendering: true,
-          useCORS: true,
-        },
-        devicePixelRatio: 1.5,
-      }
-
-      html2pdf().from(printElement).set(opt).save()
+      html2pdf().from(mailOptions().printElement).set(mailOptions().opt).save()
 
       html2pdf()
-        .from(printElement)
-        .set(opt)
+        .from(mailOptions().printElement)
+        .set(mailOptions().opt)
         .outputPdf()
         .then(async (pdf) => {
           const base64 = btoa(pdf)
@@ -363,18 +483,23 @@ export const TicketRegisterFacturable = () => {
             content: base64,
           }
 
+          const companyMails = ticket?.Company.Mails.split(",")
+          companyMails?.push("soporte.tecnico@qualitysumprint.com")
+
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
-            to: [ticket?.Company.Mails, "soporte.tecnico@qualitysumprint.com"],
-            subject: ConstantMailConfigFacturable.SUBJECT,
+            to: companyMails,
+            subject:
+              "Costo de servicios - Facturable (En espera de confirmación)",
             html: generateMailFacturableWithServices(
               ticket?.User.Name,
               ticket?.Company.Name,
-              servicesTableHTML,
+              mailOptions().servicesTableHTML,
               total!
             ),
             attachments: [attachments],
           }
+
           const res = await MailService.sendEmail(request)
 
           if (res.ok) {
@@ -408,19 +533,15 @@ export const TicketRegisterFacturable = () => {
             return
           }
         })
-
-      setIsModalOpen(true)
-      setModalType("success")
-      setModalMessage(ConstantTicketMessage.TICKET_WAITING_SUCCESS)
-      setIsLoadingAction(false)
-      setTimeout(() => {
-        navigate("/tickets")
-      }, 2000)
     } else {
       setIsLoadingAction(false)
       setIsModalOpen(true)
       setModalType("error")
-      setModalMessage(ConstantMessage.SERVICE_ERROR)
+      setModalMessage(ConstantTicketMessage.TICKET_REGISTER_ERROR)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
     }
   }
 
@@ -468,6 +589,7 @@ export const TicketRegisterFacturable = () => {
     const data = await TicketService.getTicketById(idTicket)
     if (data) {
       setTicket(data)
+      // console.log(procesarCadena(data.DeviceOne))
     }
   }
 
@@ -490,6 +612,10 @@ export const TicketRegisterFacturable = () => {
   useEffect(() => {
     setTotal(selectedServices.reduce((acc, service) => acc + service.Cost, 0))
   }, [selectedServices])
+
+  useEffect(() => {
+    setTotal(ticketServices.reduce((acc, service) => acc + service.Cost, 0))
+  }, [ticketServices])
 
   useEffect(() => {
     const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
@@ -740,25 +866,27 @@ export const TicketRegisterFacturable = () => {
           </h2>
         </div>
       )}
-      {!isLoading && ticketServices.length === 0 && (
-        <div className="w-full mt-12 flex justify-end">
-          <Tooltip title="Enviar a espera de confirmación">
-            <Button
-              className="px-8"
-              label="Enviar para confirmación"
-              color="#74C947"
-              disabled={
-                !formik.isValid ||
-                selectedServices.length === 0 ||
-                isLoadingAction
-              }
-              isLoading={isLoadingAction}
-              onClick={handleRegister}
-              type="button"
-            />
-          </Tooltip>
-        </div>
-      )}
+      {!isLoading &&
+        ticketServices.length === 0 &&
+        user?.IdRole === ConstantRoles.LIDER_FUNCIONAL && (
+          <div className="w-full mt-12 flex justify-center lg:justify-end">
+            <Tooltip title="Enviar a espera de confirmación">
+              <Button
+                className="px-8"
+                label="Enviar para confirmación"
+                color="#74C947"
+                disabled={
+                  !formik.isValid ||
+                  selectedServices.length === 0 ||
+                  isLoadingAction
+                }
+                isLoading={isLoadingAction}
+                onClick={handleRegister}
+                type="button"
+              />
+            </Tooltip>
+          </div>
+        )}
       {user?.IdRole === ConstantRoles.USUARIO &&
         ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA && (
           <div className="w-full mt-12 flex justify-end">

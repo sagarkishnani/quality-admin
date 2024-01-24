@@ -366,10 +366,10 @@ export const TicketRegisterCompleteFormSix = () => {
             ),
             AppointmentInitTime: moment(
               request.StepOne.AppointmentInitTime
-            ).format("HH:MM"),
+            ).format("HH:mm"),
             AppointmentEndTime: moment(
               request.StepOne.AppointmentEndTime
-            ).format("HH:MM"),
+            ).format("HH:mm"),
             Company: ticket?.Company.Name,
             Address: ticket?.Company.Address,
             Local: ticket?.Company.Local,

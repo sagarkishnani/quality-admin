@@ -2,6 +2,7 @@ import { Badge, Menu, MenuItem, Tooltip } from "@mui/material"
 import {
   HiChevronDown,
   HiLocationMarker,
+  HiMenu,
   HiOutlineBell,
   HiX,
 } from "react-icons/hi"
@@ -25,7 +26,7 @@ import { NotificationService } from "../../services/NotificationService"
 import { Notification } from "../../interfaces/Notification.interface"
 import moment from "moment"
 
-export const Navbar = () => {
+export const Navbar = ({ onToggleSidebar }) => {
   const supabaseImgUrl =
     import.meta.env.VITE_REACT_APP_SUPABASE_STORAGE_URL +
     ConstantStorageBuckets.USER
@@ -145,6 +146,9 @@ export const Navbar = () => {
     <>
       <nav className="py-8 px-4 lg:px-12 bg-white shadow-gray-300 shadow-sm w-full">
         <div className="flex flex-row items-center justify-center lg:justify-end space-x-8">
+          <div onClick={onToggleSidebar} className="cursor-pointer lg:hidden">
+            <HiMenu color="#00A0DF" size={"24"} />
+          </div>
           <div
             onClick={handleClick}
             className="flex flex-row items-center flex-wrap space-x-2 cursor-pointer"

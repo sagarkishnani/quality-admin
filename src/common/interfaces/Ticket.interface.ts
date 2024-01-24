@@ -107,6 +107,7 @@ export interface GetTicketById {
     IdTicketCompany: string;
     IdTicketType: string;
     IdTechnician: string | null;
+    IdUser: string;
     User: GetTicketByIdUser;
     RecordCreationDate: Date;
     AppointmentDate: Date | null;

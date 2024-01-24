@@ -412,12 +412,9 @@ export const UserRegisterContainer = () => {
               </h4>
             </div>
             <div className="col-span-2 text-sm text-qBlack">
-              1. El usuario podrá cambiar su contraseña en el login en "Olvidé
-              contraseña"
+              1. El usuario solo podrá cambiar su foto de perfil en "Mis Datos".{" "}
               <br /> <br />
-              2. El usuario solo podrá cambiar su foto de perfil en "Mis Datos".{" "}
-              <br /> <br />
-              3. Siempre mantener datos del usuario actualizados para envío de
+              2. Siempre mantener datos del usuario actualizados para envío de
               correos. <br />
             </div>
           </div>
