@@ -245,12 +245,16 @@ async function registerTicketStepThree(
         AppointmentEndTime: request.StepOne.AppointmentEndTime,
         FoundFailure: request.StepTwo.FoundFailure,
         DeviceOne: request.StepTwo.DeviceOne,
+        DeviceOneValue: request.StepTwo.DeviceOneValue,
         SeriesNumberOne: request.StepTwo.SeriesNumberOne,
-        CounterOne: request.StepTwo.CounterOne,
+        CounterOne:
+          request.StepTwo.CounterOne === "" ? null : request.StepTwo.CounterOne,
         GuideOne: request.StepTwo.GuideOne,
         DeviceTwo: request.StepTwo.DeviceTwo,
+        DeviceTwoValue: request.StepTwo.DeviceTwoValue,
         SeriesNumberTwo: request.StepTwo.SeriesNumberTwo,
-        CounterTwo: request.StepTwo.CounterTwo,
+        CounterTwo:
+          request.StepTwo.CounterTwo === "" ? null : request.StepTwo.CounterTwo,
         GuideTwo: request.StepTwo.GuideTwo,
         Comment: request.StepSix.Comment,
         Recommendation: request.StepSix.Recommendation,

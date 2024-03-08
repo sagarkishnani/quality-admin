@@ -10,11 +10,13 @@ import {
   ConstantRoles,
 } from "../../../../../common/constants"
 import secureLocalStorage from "react-secure-storage"
+import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
 
 export const TicketRegisterViewFormSix = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [firstSignature, setFirstSignature] = useState<string>("")
   const [secondSignature, setSecondSignature] = useState<string>("")
+  const [ticketServices, setTicketServices] = useState([])
   const { user } = useAuth()
   const { setTicketStep } = useTicket()
 
@@ -36,6 +38,14 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
     },
     onSubmit: (values) => {},
   })
+
+  async function getTicketServices(idTicket: string) {
+    const { data } = await TicketServicesService.getTicketServices(idTicket)
+    if (data) {
+      const onlyServices = data.map((item) => item.Services)
+      setTicketServices(onlyServices)
+    }
+  }
 
   function isFacturableView() {
     return secureLocalStorage.getItem(ConstantLocalStorage.TICKET_FACTURABLE)
@@ -64,6 +74,7 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
     )
     setSecondSignature(secondSign[0].FileUrl)
 
+    getTicketServices(ticket?.IdTicket)
     setIsLoading(false)
   }, [ticket])
 
@@ -186,7 +197,8 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
           isFacturableView()) ||
           ((ticket?.TicketStatus?.Name == "Finalizado" ||
             ticket?.TicketStatus?.Name == "En espera" ||
-            ticket?.TicketStatus?.Name == "Cancelado") &&
+            (ticket?.TicketStatus?.Name == "Cancelado" &&
+              ticketServices.length > 0)) &&
             user?.IdRole !== ConstantRoles.TECNICO &&
             ticket?.TicketType?.Name == "Facturable")) && (
           <button

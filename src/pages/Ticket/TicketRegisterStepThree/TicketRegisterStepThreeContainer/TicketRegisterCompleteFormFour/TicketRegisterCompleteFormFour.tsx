@@ -190,6 +190,7 @@ export const TicketRegisterCompleteFormFour = () => {
       checkboxCambioValues.some((value) => value !== true) &&
       !checkboxCambioValues.every((value) => value === false)
 
+    formik.setFieldValue("Cambio", isChecked)
     setCheckboxCambioState({
       checked: isChecked,
       indeterminate: isIndeterminate,
@@ -286,6 +287,8 @@ export const TicketRegisterCompleteFormFour = () => {
       checkboxMantValues.some((value) => value !== true) &&
       !checkboxMantValues.every((value) => value === false)
 
+    formik.setFieldValue("Mantenimiento", isChecked)
+
     setCheckboxMantState({
       checked: isChecked,
       indeterminate: isIndeterminate,
@@ -338,6 +341,7 @@ export const TicketRegisterCompleteFormFour = () => {
       checkboxRevValues.some((value) => value !== true) &&
       !checkboxRevValues.every((value) => value === false)
 
+    formik.setFieldValue("Revision", isChecked)
     setCheckboxRevState({
       checked: isChecked,
       indeterminate: isIndeterminate,
@@ -438,6 +442,10 @@ export const TicketRegisterCompleteFormFour = () => {
         RevSeparador: ticketFormFour?.RevSeparador || false,
         RevDuplex: ticketFormFour?.RevDuplex || false,
       })
+
+      updateCambioCheckboxState()
+      updateMantCheckboxState()
+      updateRevCheckboxState()
     }
   }, [ticket])
 

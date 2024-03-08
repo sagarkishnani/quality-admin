@@ -27,7 +27,11 @@ import { TicketService } from "../../../../../common/services/TicketService"
 import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
 import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
-import { HiOutlineTrash } from "react-icons/hi"
+import {
+  HiDocumentAdd,
+  HiOutlineDocumentAdd,
+  HiOutlineTrash,
+} from "react-icons/hi"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { useNavigate } from "react-router-dom"
 import TechnicalServiceReport from "../../../../../common/mailTemplates/technicalServiceReport"
@@ -49,6 +53,7 @@ import { NotificationService } from "../../../../../common/services/Notification
 import { useAuth } from "../../../../../common/contexts/AuthContext"
 import { ConstantTicketStatus } from "../../../../../common/constants"
 import { generateMailFacturableWithServicesUserResponse } from "../../../../../common/utils"
+import { ServiceModal } from "../../../../../common/components/ServiceModal/ServiceModal"
 
 const validationSchema = yup.object({})
 
@@ -67,10 +72,13 @@ export const TicketRegisterFacturable = () => {
   const [total, setTotal] = useState<number>()
   const [ticketServices, setTicketServices] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
   >("none")
   const [modalMessage, setModalMessage] = useState("")
+  const [serviceModalMessage, setServiceModalMessage] =
+    useState("Añadir servicio")
   const navigate = useNavigate()
 
   const handleDeleteClick = (
@@ -120,11 +128,11 @@ export const TicketRegisterFacturable = () => {
       CompanyFloor: ticket?.CompanyFloor,
       CompanyArea: ticket?.CompanyArea,
       User: ticket?.User.Name,
-      DeviceOne: ticket?.DeviceOne,
+      DeviceOne: ticket?.DeviceOneValue,
       SeriesNumberOne: ticket?.SeriesNumberOne,
       CounterOne: ticket?.CounterOne,
       GuideOne: ticket?.GuideOne,
-      DeviceTwo: ticket?.DeviceTwo,
+      DeviceTwo: ticket?.DeviceTwoValue,
       SeriesNumberTwo: ticket?.SeriesNumberTwo,
       CounterTwo: ticket?.CounterTwo,
       GuideTwo: ticket?.GuideTwo,
@@ -147,7 +155,7 @@ export const TicketRegisterFacturable = () => {
       Procedure: {
         Instalacion: ticket?.TicketAnswer?.Instalacion ? "X" : "",
         Cambio: ticket?.TicketAnswer?.Cambio ? "X" : "",
-        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento ? "X" : "",
+        Mantenimiento: ticket?.TicketAnswer?.MantenimientoCheck ? "X" : "",
         Reparacion: ticket?.TicketAnswer?.Reparacion ? "X" : "",
         Retiro: ticket?.TicketAnswer?.Retiro ? "X" : "",
         Revision: ticket?.TicketAnswer?.Revision ? "X" : "",
@@ -250,6 +258,14 @@ export const TicketRegisterFacturable = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+  }
+
+  const handleOpenServiceModal = () => {
+    setIsServiceModalOpen(true)
+  }
+
+  const handleCloseServiceModal = () => {
+    setIsServiceModalOpen(false)
   }
 
   const handleConfirm = async () => {
@@ -589,7 +605,6 @@ export const TicketRegisterFacturable = () => {
     const data = await TicketService.getTicketById(idTicket)
     if (data) {
       setTicket(data)
-      // console.log(procesarCadena(data.DeviceOne))
     }
   }
 
@@ -749,6 +764,15 @@ export const TicketRegisterFacturable = () => {
                   >
                     Añadir
                   </button>
+                  <Tooltip title="Añadir nuevo servicio">
+                    <button onClick={handleOpenServiceModal}>
+                      <HiDocumentAdd
+                        className="ml-4 align-middle"
+                        size={32}
+                        color="#00A0DF"
+                      />
+                    </button>
+                  </Tooltip>
                 </div>
                 <div className="col-span-12">
                   <>
@@ -915,6 +939,11 @@ export const TicketRegisterFacturable = () => {
         title={modalMessage}
         open={isModalOpen}
         handleClose={handleCloseModal}
+      />
+      <ServiceModal
+        title={serviceModalMessage}
+        open={isServiceModalOpen}
+        handleClose={handleCloseServiceModal}
       />
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}

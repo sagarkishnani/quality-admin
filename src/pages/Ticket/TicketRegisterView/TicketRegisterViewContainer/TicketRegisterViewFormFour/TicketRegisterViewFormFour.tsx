@@ -11,6 +11,18 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
   const [isCollapsedCambio, setIsCollapsedCambio] = useState(true)
   const [isCollapsedMantenimiento, setIsCollapsedMantenimiento] = useState(true)
   const [isCollapsedRevision, setIsCollapsedRevision] = useState(true)
+  const [checkboxCambioState, setCheckboxCambioState] = useState({
+    checked: false,
+    indeterminate: false,
+  })
+  const [checkboxMantState, setCheckboxMantState] = useState({
+    checked: false,
+    indeterminate: false,
+  })
+  const [checkboxRevState, setCheckboxRevState] = useState({
+    checked: false,
+    indeterminate: false,
+  })
 
   function registerTicketStep(isNext: boolean) {
     isNext ? setTicketStep(5) : setTicketStep(3)
@@ -55,6 +67,82 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
     onSubmit: (values) => {},
   })
 
+  //Handle Mantenimiento
+  const updateMantCheckboxState = () => {
+    const checkboxMantValues = [
+      formik.values.MantImpresora,
+      formik.values.MantOptico,
+      formik.values.MantOpticoEscaner,
+      formik.values.MantSistema,
+    ]
+
+    const isChecked = checkboxMantValues.every((value) => value === true)
+    const isIndeterminate =
+      checkboxMantValues.some((value) => value !== true) &&
+      !checkboxMantValues.every((value) => value === false)
+
+    formik.setFieldValue("Mantenimiento", isChecked)
+
+    setCheckboxMantState({
+      checked: isChecked,
+      indeterminate: isIndeterminate,
+    })
+  }
+
+  //Handle Revisión
+  const updateRevCheckboxState = () => {
+    const checkboxRevValues = [
+      formik.values.RevCartucho,
+      formik.values.RevFusor,
+      formik.values.RevImagen,
+      formik.values.RevADF,
+      formik.values.RevRodilloBUno,
+      formik.values.RevRodilloBDos,
+      formik.values.RevSeparador,
+      formik.values.RevDuplex,
+    ]
+
+    const isChecked = checkboxRevValues.every((value) => value === true)
+    const isIndeterminate =
+      checkboxRevValues.some((value) => value !== true) &&
+      !checkboxRevValues.every((value) => value === false)
+
+    formik.setFieldValue("Revision", isChecked)
+    setCheckboxRevState({
+      checked: isChecked,
+      indeterminate: isIndeterminate,
+    })
+  }
+
+  //Handle cambio
+  const updateCambioCheckboxState = () => {
+    const checkboxCambioValues = [
+      formik.values.CambioCartucho,
+      formik.values.CambioFusor,
+      formik.values.CambioImagen,
+      formik.values.CambioRodillo,
+      formik.values.CambioTeflon,
+      formik.values.CambioRodilloBUno,
+      formik.values.CambioRodilloBDos,
+      formik.values.CambioSeparador,
+      formik.values.CambioDrive,
+      formik.values.CambioSwing,
+      formik.values.CambioAOF,
+      formik.values.CambioDC,
+    ]
+
+    const isChecked = checkboxCambioValues.every((value) => value === true)
+    const isIndeterminate =
+      checkboxCambioValues.some((value) => value !== true) &&
+      !checkboxCambioValues.every((value) => value === false)
+
+    formik.setFieldValue("Cambio", isChecked)
+    setCheckboxCambioState({
+      checked: isChecked,
+      indeterminate: isIndeterminate,
+    })
+  }
+
   useEffect(() => {
     setIsLoading(true)
     if (ticket) {
@@ -78,7 +166,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
         CambioSwing: ticket?.TicketAnswer?.CambioSwing || false,
         CambioAOF: ticket?.TicketAnswer?.CambioAOF || false,
         CambioDC: ticket?.TicketAnswer?.CambioDC || false,
-        Mantenimiento: ticket?.TicketAnswer?.Mantenimiento || false,
+        Mantenimiento: ticket?.TicketAnswer?.MantenimientoCheck || false,
         MantImpresora: ticket?.TicketAnswer?.MantImpresora || false,
         MantOptico: ticket?.TicketAnswer?.MantOptico || false,
         MantOpticoEscaner: ticket?.TicketAnswer?.MantOpticoEscaner || false,
@@ -93,9 +181,13 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
         RevSeparador: ticket?.TicketAnswer?.RevSeparador || false,
         RevDuplex: ticket?.TicketAnswer?.RevDuplex || false,
       })
+
+      updateMantCheckboxState()
+      updateRevCheckboxState()
+      updateCambioCheckboxState()
     }
     setIsLoading(false)
-  }, [ticket])
+  }, [ticket, formik.values.CambioCartucho])
 
   return (
     <>
@@ -195,15 +287,8 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
                   <Checkbox
                     id="Cambio"
                     name="Cambio"
-                    checked={
-                      formik.values.CambioCartucho && formik.values.CambioFusor
-                    }
-                    indeterminate={
-                      formik.values.CambioCartucho !==
-                        formik.values.CambioFusor &&
-                      (formik.values.CambioCartucho ||
-                        formik.values.CambioFusor)
-                    }
+                    checked={checkboxCambioState.checked}
+                    indeterminate={checkboxCambioState.indeterminate}
                   />
                 }
               />
@@ -364,15 +449,8 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
                   <Checkbox
                     id="Mantenimiento"
                     name="Mantenimiento"
-                    checked={
-                      formik.values.CambioCartucho && formik.values.CambioFusor
-                    }
-                    indeterminate={
-                      formik.values.CambioCartucho !==
-                        formik.values.CambioFusor &&
-                      (formik.values.CambioCartucho ||
-                        formik.values.CambioFusor)
-                    }
+                    checked={checkboxMantState.checked}
+                    indeterminate={checkboxMantState.indeterminate}
                     disabled
                   />
                 }
@@ -444,13 +522,8 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
                   <Checkbox
                     id="Revision"
                     name="Revision"
-                    checked={true}
-                    indeterminate={
-                      formik.values.CambioCartucho !==
-                        formik.values.CambioFusor &&
-                      (formik.values.CambioCartucho ||
-                        formik.values.CambioFusor)
-                    }
+                    checked={checkboxRevState.checked}
+                    indeterminate={checkboxRevState.indeterminate}
                     disabled
                   />
                 }

@@ -196,7 +196,7 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
               <div className="basis-4/5">
                 <h3 className="font-semibold">
                   <a
-                    href="https://api.whatsapp.com/send?phone=51940294820&text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
+                    href="https://api.whatsapp.com/send?phone=51951392306&text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

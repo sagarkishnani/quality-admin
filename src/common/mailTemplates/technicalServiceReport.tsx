@@ -633,7 +633,7 @@ export default function TechnicalServiceReport({ data }: { data: PDFData }) {
               alignItems: "center",
             }}
           >
-            {data.Revision.ConectorRJ}
+            {data.Revision.PanelControl}
           </div>
           <div
             style={{
@@ -648,7 +648,7 @@ export default function TechnicalServiceReport({ data }: { data: PDFData }) {
               alignItems: "center",
             }}
           >
-            {data.Revision.PanelControl}
+            {data.Revision.ConectorRJ}
           </div>
         </div>
         <div>
@@ -1508,7 +1508,7 @@ export default function TechnicalServiceReport({ data }: { data: PDFData }) {
             alignItems: "center",
           }}
         >
-          {data.Maintenance}
+          {data.Mantenimiento}
         </div>
       </div>
 

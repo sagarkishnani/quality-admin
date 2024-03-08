@@ -232,23 +232,29 @@ export const exportData = (tickets) => {
 }
 
 export function procesarCadena(cadena) {
-  // Dividir la cadena en partes utilizando el espacio como separador
-  var partes = cadena.split(' ');
+  const partes = cadena.split(' ');
 
-  // Verificar si hay al menos dos partes
   if (partes.length >= 2) {
-    // Obtener los dos primeros dígitos antes del espacio
     const dosPrimerosDigitos = partes[0].slice(0, 2);
 
-    // Obtener todo el código después del espacio
     const restoCodigo = partes.slice(1).join(' ');
 
-    // Formar el resultado final
     const resultado = dosPrimerosDigitos + restoCodigo;
 
     return resultado;
   } else {
-    // En caso de que no se encuentren suficientes partes, devolver la cadena original
     return cadena;
   }
+}
+
+export function combinarValores(valores: (string | undefined)[]): string {
+  const combinados: string[] = [];
+
+  for (let i = 0; i < valores.length; i += 2) {
+    if (valores[i] !== undefined && valores[i + 1] !== undefined) {
+      combinados.push(`${valores[i]}: ${valores[i + 1]}`);
+    }
+  }
+
+  return combinados.join(', ');
 }

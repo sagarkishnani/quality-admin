@@ -84,9 +84,12 @@ export const ConstantUserMessage = {
 }
 
 export const ConstantsMasterTable = {
-    DEVICES: '00100',
+    DEVICES: '14000',
+    FAILURES: '00100',
+    PARTS: '15000',
+    PROCEDURES: '16000',
     TICKET_TYPES: '00200',
-    AREAS: '00300',
+    AREAS: '13000',
     FLOORS: '00400',
     POSITIONS: '00500',
     CURRENCIES: '00600',

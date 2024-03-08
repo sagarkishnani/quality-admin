@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js"
-import { RegisterTicketAnswerRequest } from "../interfaces/TicketAnswer.interface"
 import { TicketRegisterStepThreeRequest } from "../interfaces/Ticket.interface"
 
 const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
@@ -47,7 +46,7 @@ async function registerTicketAnswer(
           CambioSwing: request.StepFour.CambioSwing,
           CambioAOF: request.StepFour.CambioAOF,
           CambioDC: request.StepFour.CambioDC,
-          // Mantenimiento: request.StepFour.Mantenimiento,
+          MantenimientoCheck: request.StepFour.Mantenimiento,
           MantImpresora: request.StepFour.MantImpresora,
           MantOptico: request.StepFour.MantOptico,
           MantOpticoEscaner: request.StepFour.MantOpticoEscaner,

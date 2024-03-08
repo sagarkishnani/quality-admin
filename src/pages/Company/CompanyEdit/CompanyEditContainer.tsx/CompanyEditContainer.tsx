@@ -299,7 +299,6 @@ export const CompanyEditContainer = () => {
 
   useEffect(() => {
     if (company && ubigeo) {
-      console.log(company)
       formik.setValues({
         Name: company?.Name || "",
         Ruc: company?.Ruc || "",

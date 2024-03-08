@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import {
   Alert,
+  Autocomplete,
   FormControl,
   InputLabel,
   MenuItem,
@@ -63,6 +64,7 @@ export const TicketRegisterContainer = () => {
   >("none")
   const [modalMessage, setModalMessage] = useState("")
   const [areas, setAreas] = useState<MasterTable[]>([])
+  const [selectedArea, setSelectedArea] = useState<MasterTable>()
   const [floors, setFloors] = useState<MasterTable[]>([])
   const [pictures, setPictures] = useState<string[]>([])
   const [selectedImg, setSelectedImg] = useState("")
@@ -356,24 +358,26 @@ export const TicketRegisterContainer = () => {
                 </FormControl>
               </div>
               <div className="col-span-12 md:col-span-6">
-                <FormControl fullWidth>
-                  <InputLabel required id="AreaLabel">
-                    Área
-                  </InputLabel>
-                  <Select
-                    labelId="AreaLabel"
-                    id="CompanyArea"
-                    name="CompanyArea"
-                    value={formik.values.CompanyArea}
-                    onChange={formik.handleChange}
-                  >
-                    {areas?.map((area: MasterTable) => (
-                      <MenuItem key={area.IdMasterTable} value={area.Name}>
-                        {area.Name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  className="w-full"
+                  disablePortal
+                  options={areas}
+                  onChange={(event, newValue) => {
+                    formik.setFieldValue("CompanyArea", newValue?.Name)
+                  }}
+                  value={selectedArea}
+                  getOptionLabel={(option) => option?.Name || ""}
+                  renderInput={(params) => (
+                    <TextField
+                      name="CompanyArea"
+                      required
+                      {...params}
+                      label="Área"
+                    />
+                  )}
+                  openText="Mostrar opciones"
+                  noOptionsText="No hay opciones"
+                />
               </div>
               <div className="col-span-12">
                 <TextField

@@ -114,10 +114,12 @@ export interface GetTicketById {
     AppointmentInitTime: Date | null;
     AppointmentEndTime: Date | null;
     DeviceOne: string | null;
+    DeviceOneValue: string | null;
     SeriesNumberOne: string | null;
     CounterOne: number | null;
     GuideOne: string | null;
     DeviceTwo: string | null;
+    DeviceTwoValue: string | null;
     SeriesNumberTwo: string | null;
     CounterTwo: number | null;
     GuideTwo: string | null;
@@ -175,15 +177,29 @@ export interface TicketRegisterStepThreeRequestFormOne {
 
 export interface TicketRegisterStepThreeRequestFormTwo {
     DeviceOne: string;
+    DeviceOneValue: string;
     SeriesNumberOne: string;
     CounterOne: string;
     GuideOne: string;
     SeriesNumberTwo: string;
     DeviceTwo: string;
+    DeviceTwoValue: string;
     CounterTwo: string;
     GuideTwo: string;
     FoundFailure: string;
     Pictures: TicketRegisterStepThreePicture[];
+    PartOne?: string;
+    ProcedureOne?: string;
+    PartOneLabel?: string;
+    ProcedureOneLabel?: string;
+    PartTwo?: string;
+    ProcedureTwo?: string;
+    PartTwoLabel?: string;
+    ProcedureTwoLabel?: string;
+    PartThree?: string;
+    ProcedureThree?: string;
+    PartThreeLabel?: string;
+    ProcedureThreeLabel?: string;
 }
 
 export interface TicketRegisterStepThreePicture {

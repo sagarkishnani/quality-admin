@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react"
 import * as yup from "yup"
 import secureLocalStorage from "react-secure-storage"
@@ -13,6 +14,7 @@ import {
 } from "../../../../../common/interfaces/Ticket.interface"
 import {
   Alert,
+  Autocomplete,
   FormControl,
   InputLabel,
   MenuItem,
@@ -25,7 +27,7 @@ import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { MasterTable } from "../../../../../common/interfaces/MasterTable.interface"
 import { MasterTableService } from "../../../../../common/services/MasterTableService"
 import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
-import { loopPictures } from "../../../../../common/utils"
+import { combinarValores, loopPictures } from "../../../../../common/utils"
 
 interface TicketRegisterCompleteFormTwoInterface {
   ticket: GetTicketById
@@ -35,16 +37,13 @@ interface TicketRegisterCompleteFormTwoInterface {
 const validationSchema = yup.object({
   DeviceOne: yup.string().required("Equipo es obligatorio"),
   SeriesNumberOne: yup.string().required("Número de serie es obligatorio"),
-  CounterOne: yup.number().required("Contador es obligatorio"),
-  GuideOne: yup.string().required("# Guía es obligatoria"),
-  DeviceTwo: yup.string().required("Equipo (R) es obligatorio"),
-  SeriesNumberTwo: yup.string().required("Número de serie es obligatorio"),
-  CounterTwo: yup.number().required("Contador es obligatorio"),
-  GuideTwo: yup.string().required("# Guía es obligatoria"),
-  FoundFailure: yup
-    .string()
-    .required("Falla encontrada es obligatoria")
-    .min(10, "Falla encontrada debe tener como mínimo 10 caracteres"),
+  // CounterOne: yup.number().required("Contador es obligatorio"),
+  // GuideOne: yup.string().required("# Guía es obligatoria"),
+  // DeviceTwo: yup.string().required("Equipo (R) es obligatorio"),
+  // SeriesNumberTwo: yup.string().required("Número de serie es obligatorio"),
+  // CounterTwo: yup.number().required("Contador es obligatorio"),
+  // GuideTwo: yup.string().required("# Guía es obligatoria"),
+  // PartOne: yup.string().required("Falla encontrada es obligatoria"),
 })
 
 export const TicketRegisterCompleteFormTwo = ({
@@ -54,10 +53,158 @@ export const TicketRegisterCompleteFormTwo = ({
   const [devices, setDevices] = useState<MasterTable[]>([])
   const [ticketFormTwo, setTicketFormTwo] = useState<any>()
   const [selectedImg, setSelectedImg] = useState("")
+  const [selectedDeviceOne, setSelectedDeviceOne] = useState<MasterTable>()
+  const [selectedDeviceTwo, setSelectedDeviceTwo] = useState<MasterTable>()
+
+  const [selectedPart, setSelectedPart] = useState<MasterTable>()
+  const [selectedProcedure, setSelectedProcedure] = useState<MasterTable>()
+  const [selectedPartTwo, setSelectedPartTwo] = useState<MasterTable>()
+  const [selectedProcedureTwo, setSelectedProcedureTwo] =
+    useState<MasterTable>()
+  const [selectedPartThree, setSelectedPartThree] = useState<MasterTable>()
+  const [selectedProcedureThree, setSelectedProcedureThree] =
+    useState<MasterTable>()
+  const [parts, setParts] = useState<MasterTable[]>([])
+  const [procedures, setProcedures] = useState<MasterTable[]>([])
+  const [filteredProcedures, setFilteredProcedures] = useState<MasterTable[]>(
+    []
+  )
+  const [filteredProceduresTwo, setFilteredProceduresTwo] = useState<
+    MasterTable[]
+  >([])
+  const [filteredProceduresThree, setFilteredProceduresThree] = useState<
+    MasterTable[]
+  >([])
+
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const [pictures, setPictures] = useState<string[]>([])
   const [open, setOpen] = useState(false)
   const { setTicketStep } = useTicket()
+
+  const handlePartChange = (event) => {
+    const selectedValue = event.target.value
+    const chosenPart = parts.filter(
+      (part) => part.IdMasterTable === selectedValue
+    )[0]
+    setSelectedPart(chosenPart)
+
+    const filteredChildren = procedures.filter(
+      (option) => option.Value === selectedValue
+    )
+    setFilteredProcedures(filteredChildren)
+    formik.setFieldValue("PartOne", selectedValue)
+  }
+
+  const handleProcedure = (event) => {
+    const selectedValue = event.target.value
+    const chosenProcedure = procedures.filter(
+      (proc) => proc.IdMasterTable === selectedValue
+    )[0]
+    setSelectedProcedure(chosenProcedure)
+    formik.setFieldValue("ProcedureOne", selectedValue)
+  }
+
+  const handlePartTwoChange = (event) => {
+    const selectedValue = event.target.value
+    const chosenPart = parts.filter(
+      (part) => part.IdMasterTable === selectedValue
+    )[0]
+    setSelectedPartTwo(chosenPart)
+
+    const filteredChildren = procedures.filter(
+      (option) => option.Value === selectedValue
+    )
+    setFilteredProceduresTwo(filteredChildren)
+    formik.setFieldValue("PartTwo", selectedValue)
+  }
+
+  const handleProcedureTwo = (event) => {
+    const selectedValue = event.target.value
+    const chosenProcedure = procedures.filter(
+      (proc) => proc.IdMasterTable === selectedValue
+    )[0]
+    setSelectedProcedureTwo(chosenProcedure)
+    formik.setFieldValue("ProcedureTwo", selectedValue)
+  }
+
+  const handlePartThreeChange = (event) => {
+    const selectedValue = event.target.value
+    const chosenPart = parts.filter(
+      (part) => part.IdMasterTable === selectedValue
+    )[0]
+    setSelectedPartThree(chosenPart)
+
+    const filteredChildren = procedures.filter(
+      (option) => option.Value === selectedValue
+    )
+    setFilteredProceduresThree(filteredChildren)
+    formik.setFieldValue("PartThree", selectedValue)
+  }
+
+  const handleProcedureThree = (event) => {
+    const selectedValue = event.target.value
+    const chosenProcedure = procedures.filter(
+      (proc) => proc.IdMasterTable === selectedValue
+    )[0]
+    setSelectedProcedureThree(chosenProcedure)
+    formik.setFieldValue("ProcedureThree", selectedValue)
+  }
+
+  const handlePart = (
+    idMasterTable: string,
+    setSelectedPartFunction: React.Dispatch<
+      React.SetStateAction<MasterTable | undefined>
+    >,
+    setFilteredProceduresFunction: React.Dispatch<
+      React.SetStateAction<MasterTable[]>
+    >,
+    setSelectedProcedureFunction: React.Dispatch<
+      React.SetStateAction<MasterTable | undefined>
+    >,
+    idMasterTableProcedure: string
+  ) => {
+    const chosenPart = parts.find(
+      (part) => part.IdMasterTable === idMasterTable
+    )
+    if (chosenPart) {
+      setSelectedPartFunction(chosenPart)
+
+      const filteredChildren = procedures.filter(
+        (option) => option.Value === idMasterTable
+      )
+      setFilteredProceduresFunction(filteredChildren)
+      if (filteredChildren) {
+        const chosenProcedure = procedures.filter(
+          (proc) => proc.IdMasterTable === idMasterTableProcedure
+        )[0]
+
+        if (chosenProcedure) {
+          setSelectedProcedureFunction(chosenProcedure)
+        }
+      }
+    }
+  }
+
+  const setDevice = (
+    deviceName: string,
+    setSelectedDeviceFunction: React.Dispatch<
+      React.SetStateAction<MasterTable | undefined>
+    >,
+    controlName: string,
+    formikSetValueFunction: (
+      field: string,
+      value: any,
+      shouldValidate?: boolean | undefined
+    ) => void
+  ) => {
+    const chosenDevice = devices?.filter(
+      (device) => device.Name === deviceName
+    )[0]
+    if (chosenDevice) {
+      setSelectedDeviceFunction(chosenDevice)
+      formikSetValueFunction(controlName, chosenDevice?.Name)
+    }
+  }
 
   const onChangePicture = (e: any) => {
     const newPictures: string[] = []
@@ -110,8 +257,27 @@ export const TicketRegisterCompleteFormTwo = ({
     }
   }
 
+  async function getParts() {
+    const data = await MasterTableService.getMasterTableByIdParent(
+      ConstantsMasterTable.PARTS
+    )
+    if (data) {
+      setParts(data)
+    }
+  }
+  async function getProcedures() {
+    const data = await MasterTableService.getMasterTableByIdParent(
+      ConstantsMasterTable.PROCEDURES
+    )
+    if (data) {
+      setProcedures(data)
+    }
+  }
+
   async function getAll() {
     await getDevices()
+    await getParts()
+    await getProcedures()
     onLoadingChange(false)
   }
 
@@ -120,15 +286,36 @@ export const TicketRegisterCompleteFormTwo = ({
     if (formik.isValid && pictures.length > 0) {
       const requestFormTwo: TicketRegisterStepThreeRequestFormTwo = {
         DeviceOne: formik.values.DeviceOne,
+        DeviceOneValue: selectedDeviceOne?.Value,
         SeriesNumberOne: formik.values.SeriesNumberOne,
         CounterOne: formik.values.CounterOne,
         GuideOne: formik.values.GuideOne,
         DeviceTwo: formik.values.DeviceTwo,
+        DeviceTwoValue: selectedDeviceTwo?.Value,
         SeriesNumberTwo: formik.values.SeriesNumberTwo,
         CounterTwo: formik.values.CounterTwo,
         GuideTwo: formik.values.GuideTwo,
-        FoundFailure: formik.values.FoundFailure,
+        FoundFailure: combinarValores([
+          selectedPart?.Name,
+          selectedProcedure?.Name,
+          selectedPartTwo?.Name,
+          selectedProcedureTwo?.Name,
+          selectedPartThree?.Name,
+          selectedProcedureThree?.Name,
+        ]),
         Pictures: loopPictures(pictures, ConstantFilePurpose.IMAGEN_TECNICO),
+        PartOne: selectedPart?.IdMasterTable,
+        ProcedureOne: formik.values.ProcedureOne,
+        PartOneLabel: selectedPart?.Name,
+        ProcedureOneLabel: selectedProcedure?.Name,
+        PartTwo: selectedPartTwo?.IdMasterTable,
+        ProcedureTwo: formik.values.ProcedureTwo,
+        PartTwoLabel: selectedPartTwo?.Name,
+        ProcedureTwoLabel: selectedProcedureTwo?.Name,
+        PartThree: selectedPartThree?.IdMasterTable,
+        ProcedureThree: formik.values.ProcedureThree,
+        PartThreeLabel: selectedPartThree?.Name,
+        ProcedureThreeLabel: selectedProcedureThree?.Name,
       }
 
       secureLocalStorage.setItem(
@@ -146,15 +333,29 @@ export const TicketRegisterCompleteFormTwo = ({
   const formik = useFormik({
     initialValues: {
       DeviceOne: "",
+      DeviceOneValue: "",
       SeriesNumberOne: "",
       CounterOne: "",
       GuideOne: "",
       DeviceTwo: "",
+      DeviceTwoValue: "",
       SeriesNumberTwo: "",
       CounterTwo: "",
       GuideTwo: "",
       ReportedFailure: "",
       FoundFailure: "",
+      PartOne: "",
+      ProcedureOne: "",
+      PartOneLabel: "",
+      ProcedureOneLabel: "",
+      PartTwo: "",
+      ProcedureTwo: "",
+      PartTwoLabel: "",
+      ProcedureTwoLabel: "",
+      PartThree: "",
+      ProcedureThree: "",
+      PartThreeLabel: "",
+      ProcedureThreeLabel: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {},
@@ -174,19 +375,85 @@ export const TicketRegisterCompleteFormTwo = ({
     if (ticket) {
       formik.setValues({
         DeviceOne: ticketFormTwo?.DeviceOne || "",
+        DeviceOneValue: ticketFormTwo?.DeviceOneValue || "",
         SeriesNumberOne: ticketFormTwo?.SeriesNumberOne || "",
         CounterOne: ticketFormTwo?.CounterOne || "",
         GuideOne: ticketFormTwo?.GuideOne || "",
         DeviceTwo: ticketFormTwo?.DeviceTwo || "",
+        DeviceTwoValue: ticketFormTwo?.DeviceTwoValue || "",
         SeriesNumberTwo: ticketFormTwo?.SeriesNumberTwo || "",
         CounterTwo: ticketFormTwo?.CounterTwo || "",
         GuideTwo: ticketFormTwo?.GuideTwo || "",
         ReportedFailure: ticket.ReportedFailure || "",
         FoundFailure: ticketFormTwo?.FoundFailure || "",
+        PartOne: ticketFormTwo?.PartOne || "",
+        ProcedureOne: ticketFormTwo?.ProcedureOne || "",
+        PartOneLabel: ticketFormTwo?.PartOneLabel || "",
+        ProcedureOneLabel: ticketFormTwo?.ProcedureOneLabel || "",
+        PartTwo: ticketFormTwo?.PartTwo || "",
+        ProcedureTwo: ticketFormTwo?.ProcedureTwo || "",
+        PartTwoLabel: ticketFormTwo?.PartTwoLabel || "",
+        ProcedureTwoLabel: ticketFormTwo?.ProcedureTwoLabel || "",
+        PartThree: ticketFormTwo?.PartThree || "",
+        ProcedureThree: ticketFormTwo?.ProcedureThree || "",
+        PartThreeLabel: ticketFormTwo?.PartThreeLabel || "",
+        ProcedureThreeLabel: ticketFormTwo?.ProcedureThreeLabel || "",
       })
+
+      if (ticketFormTwo?.DeviceOne !== undefined) {
+        setDevice(
+          ticketFormTwo?.DeviceOne,
+          setSelectedDeviceOne,
+          "DeviceOne",
+          formik.setFieldValue
+        )
+      }
+
+      if (ticketFormTwo?.DeviceTwo !== undefined) {
+        setDevice(
+          ticketFormTwo?.DeviceTwo,
+          setSelectedDeviceTwo,
+          "DeviceTwo",
+          formik.setFieldValue
+        )
+      }
+
+      handlePart(
+        ticketFormTwo?.PartOne,
+        setSelectedPart,
+        setFilteredProcedures,
+        setSelectedProcedure,
+        ticketFormTwo?.ProcedureOne
+      )
+      if (ticketFormTwo?.PartTwo !== undefined) {
+        handlePart(
+          ticketFormTwo?.PartTwo,
+          setSelectedPartTwo,
+          setFilteredProceduresTwo,
+          setSelectedProcedureTwo,
+          ticketFormTwo?.ProcedureTwo
+        )
+      }
+
+      if (ticketFormTwo?.PartThree !== undefined) {
+        handlePart(
+          ticketFormTwo?.PartThree,
+          setSelectedPartThree,
+          setFilteredProceduresThree,
+          setSelectedProcedureThree,
+          ticketFormTwo?.ProcedureThree
+        )
+      }
+
+      if (ticketFormTwo?.Pictures.length > 0) {
+        const contentOfPics = ticketFormTwo?.Pictures.map((pic) => pic.Content)
+
+        setPictures(contentOfPics)
+      }
     }
+
     onLoadingChange(false)
-  }, [ticketFormTwo])
+  }, [ticketFormTwo, parts, procedures, devices])
 
   return (
     <>
@@ -202,22 +469,22 @@ export const TicketRegisterCompleteFormTwo = ({
           </h2>
         </div>
         <div className="col-span-12 md:col-span-4">
-          <FormControl fullWidth>
-            <InputLabel id="DeviceOneLabel">Equipo</InputLabel>
-            <Select
-              labelId="DeviceOneLabel"
-              id="DeviceOne"
-              name="DeviceOne"
-              value={formik.values.DeviceOne}
-              onChange={formik.handleChange}
-            >
-              {devices?.map((device: MasterTable) => (
-                <MenuItem key={device.IdMasterTable} value={device.Name}>
-                  {device.Name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            className="w-full"
+            disablePortal
+            options={devices}
+            onChange={(event, newValue) => {
+              setSelectedDeviceOne(newValue)
+              formik.setFieldValue("DeviceOne", newValue?.Name || "")
+            }}
+            value={selectedDeviceOne ? selectedDeviceOne : {}}
+            getOptionLabel={(option) => option?.Name || ""}
+            renderInput={(params) => (
+              <TextField name="DeviceOne" required {...params} label="Equipo" />
+            )}
+            openText="Mostrar opciones"
+            noOptionsText="No hay opciones"
+          />
         </div>
         <div className="col-span-12 md:col-span-3">
           <TextField
@@ -269,22 +536,22 @@ export const TicketRegisterCompleteFormTwo = ({
           />
         </div>
         <div className="col-span-12 md:col-span-4">
-          <FormControl fullWidth>
-            <InputLabel id="DeviceTwoLabel">Equipo (R)</InputLabel>
-            <Select
-              labelId="DeviceTwoLabel"
-              id="DeviceTwo"
-              name="DeviceTwo"
-              value={formik.values.DeviceTwo}
-              onChange={formik.handleChange}
-            >
-              {devices?.map((device: MasterTable) => (
-                <MenuItem key={device.IdMasterTable} value={device.Name}>
-                  {device.Name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            className="w-full"
+            disablePortal
+            options={devices}
+            onChange={(event, newValue) => {
+              setSelectedDeviceTwo(newValue)
+              formik.setFieldValue("DeviceTwo", newValue?.Name)
+            }}
+            value={selectedDeviceTwo ? selectedDeviceTwo : {}}
+            getOptionLabel={(option) => option?.Name || ""}
+            renderInput={(params) => (
+              <TextField name="DeviceTwo" {...params} label="Equipo (R)" />
+            )}
+            openText="Mostrar opciones"
+            noOptionsText="No hay opciones"
+          />
         </div>
         <div className="col-span-12 md:col-span-3">
           <TextField
@@ -348,32 +615,126 @@ export const TicketRegisterCompleteFormTwo = ({
         </div>
         <div className="col-span-12">
           <label>Falla encontrada</label>
-          <textarea
-            className={`w-full border-2 border-gray-300 rounded-md ${
-              formik.touched.FoundFailure && formik.errors.FoundFailure
-                ? "outline-qRed"
-                : "focus:outline-qGreen"
-            }  p-2`}
-            required
-            placeholder="Escribir falla encontrada..."
-            name="FoundFailure"
-            id="FoundFailure"
-            rows={3}
-            value={formik.values.FoundFailure}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            maxLength={100}
-          ></textarea>
-          <div className="flex justify-between">
-            {formik.touched.FoundFailure && formik.errors.FoundFailure ? (
-              <p className="text-qRed text-sm">{formik.errors.FoundFailure}</p>
-            ) : (
-              <div></div>
-            )}
-            <small className="text-right block">
-              {formik.values.FoundFailure.length}/100
-            </small>
-          </div>
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <FormControl fullWidth>
+            <InputLabel id="PartOne">Parte Uno</InputLabel>
+            <Select
+              labelId="PartOneLabel"
+              id="PartOne"
+              name="PartOne"
+              value={formik.values.PartOne}
+              onChange={handlePartChange}
+            >
+              {parts.map((part) => (
+                <MenuItem key={part.IdMasterTable} value={part.IdMasterTable}>
+                  {part.Name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <FormControl fullWidth>
+            <InputLabel id="ProcedureOne">Procedimiento Uno</InputLabel>
+            <Select
+              labelId="ProcedureOneLabel"
+              id="ProcedureOne"
+              name="ProcedureOne"
+              value={formik.values.ProcedureOne}
+              onChange={handleProcedure}
+              disabled={!selectedPart}
+            >
+              {filteredProcedures.map((procedure) => (
+                <MenuItem
+                  key={procedure.IdMasterTable}
+                  value={procedure.IdMasterTable}
+                >
+                  {procedure.Name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <FormControl fullWidth>
+            <InputLabel id="PartTwo">Parte Dos</InputLabel>
+            <Select
+              labelId="PartTwoLabel"
+              id="PartTwo"
+              name="PartTwo"
+              value={formik.values.PartTwo}
+              onChange={handlePartTwoChange}
+            >
+              {parts.map((part) => (
+                <MenuItem key={part.IdMasterTable} value={part.IdMasterTable}>
+                  {part.Name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <FormControl fullWidth>
+            <InputLabel id="ProcedureTwo">Procedimiento Dos</InputLabel>
+            <Select
+              labelId="ProcedureTwoLabel"
+              id="ProcedureTwo"
+              name="ProcedureTwo"
+              value={formik.values.ProcedureTwo}
+              onChange={handleProcedureTwo}
+              disabled={!selectedPartTwo}
+            >
+              {filteredProceduresTwo.map((procedure) => (
+                <MenuItem
+                  key={procedure.IdMasterTable}
+                  value={procedure.IdMasterTable}
+                >
+                  {procedure.Name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <FormControl fullWidth>
+            <InputLabel id="PartThree">Parte Tres</InputLabel>
+            <Select
+              labelId="PartThreeLabel"
+              id="PartThree"
+              name="PartThree"
+              value={formik.values.PartThree}
+              onChange={handlePartThreeChange}
+            >
+              {parts.map((part) => (
+                <MenuItem key={part.IdMasterTable} value={part.IdMasterTable}>
+                  {part.Name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <FormControl fullWidth>
+            <InputLabel id="ProcedureThree">Procedimiento Tres</InputLabel>
+            <Select
+              labelId="ProcedureThreeLabel"
+              id="ProcedureThree"
+              name="ProcedureThree"
+              value={formik.values.ProcedureThree}
+              onChange={handleProcedureThree}
+              disabled={!selectedPartThree}
+            >
+              {filteredProceduresThree.map((procedure) => (
+                <MenuItem
+                  key={procedure.IdMasterTable}
+                  value={procedure.IdMasterTable}
+                >
+                  {procedure.Name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
         <div className="col-span-12">
           <div className="flex flex-col md:flex-row md:space-x-2">

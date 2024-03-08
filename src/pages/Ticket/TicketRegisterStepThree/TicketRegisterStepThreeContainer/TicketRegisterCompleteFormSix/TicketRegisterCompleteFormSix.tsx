@@ -54,6 +54,7 @@ import {
 import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
 import { NotificationService } from "../../../../../common/services/NotificationService"
 import { useAuth } from "../../../../../common/contexts/AuthContext"
+import { UserService } from "../../../../../common/services/UserService"
 
 const validationSchema = yup.object({
   Comment: yup
@@ -89,6 +90,7 @@ export const TicketRegisterCompleteFormSix = () => {
   const [isLoadingActionFacturable, setIsLoadingActionFacturable] =
     useState<boolean>(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
+  const [technician, setTechnician] = useState(null)
   const [ticketFormOne, setTicketFormOne] = useState<any>()
   const [ticketFormTwo, setTicketFormTwo] = useState<any>()
   const [ticketFormThree, setTicketFormThree] = useState<any>()
@@ -135,10 +137,18 @@ export const TicketRegisterCompleteFormSix = () => {
     }
   }
 
+  async function getTechnician(idUser: string) {
+    const data = await UserService.getUserById(idUser)
+    if (data) {
+      setTechnician(data)
+    }
+  }
+
   async function getTicketById(idTicket: string) {
-    const data = await TicketService.getTicketById(idTicket)
+    const data: GetTicketById = await TicketService.getTicketById(idTicket)
     if (data) {
       setTicket(data)
+      if (data?.IdTechnician !== null) await getTechnician(data?.IdTechnician)
     }
   }
 
@@ -266,10 +276,10 @@ export const TicketRegisterCompleteFormSix = () => {
       StepSix: {
         Comment: formik.values.Comment,
         Recommendation: formik.values.Recommendation,
-        ResponsibleSignature: validateSignature(true),
+        ResponsibleSignature: validateSignatureOne(),
         ResponsibleDni: formik.values.ResponsibleDni,
         ResponsibleName: formik.values.ResponsibleName,
-        TechnicianSignature: validateSignature(false),
+        TechnicianSignature: validateSignatureTwo(),
         TechnicianDni: formik.values.TechnicianDni,
         TechnicianName: formik.values.TechnicianName,
       },
@@ -376,11 +386,11 @@ export const TicketRegisterCompleteFormSix = () => {
             CompanyFloor: ticket?.CompanyFloor,
             CompanyArea: ticket?.CompanyArea,
             User: ticket?.User.Name,
-            DeviceOne: request.StepTwo.DeviceOne,
+            DeviceOne: request.StepTwo.DeviceOneValue,
             SeriesNumberOne: request.StepTwo.SeriesNumberOne,
             CounterOne: request.StepTwo.CounterOne,
             GuideOne: request.StepTwo.GuideOne,
-            DeviceTwo: request.StepTwo.DeviceTwo,
+            DeviceTwo: request.StepTwo.DeviceTwoValue,
             SeriesNumberTwo: request.StepTwo.SeriesNumberTwo,
             CounterTwo: request.StepTwo.CounterTwo,
             GuideTwo: request.StepTwo.GuideTwo,
@@ -590,22 +600,30 @@ export const TicketRegisterCompleteFormSix = () => {
     }
   }
 
-  const validateSignature = (
-    isResponsible: boolean
-  ): TicketRegisterStepThreePicture => {
+  const validateSignatureOne = (): TicketRegisterStepThreePicture => {
     if (formik.values.Firma == "U") {
       return {
-        Content: isResponsible ? firstSignatureImg : secondSignatureImg,
-        FilePurpose: isResponsible
-          ? ConstantFilePurpose.FIRMA_USUARIO
-          : ConstantFilePurpose.FIRMA_TECNICO,
+        Content: firstSignatureImg,
+        FilePurpose: ConstantFilePurpose.FIRMA_USUARIO,
       }
     } else {
       return {
-        Content: isResponsible ? handleSaveCanvasOne() : handleSaveCanvasTwo(),
-        FilePurpose: isResponsible
-          ? ConstantFilePurpose.FIRMA_USUARIO
-          : ConstantFilePurpose.FIRMA_TECNICO,
+        Content: handleSaveCanvasOne(),
+        FilePurpose: ConstantFilePurpose.FIRMA_USUARIO,
+      }
+    }
+  }
+
+  const validateSignatureTwo = (): TicketRegisterStepThreePicture => {
+    if (formik.values.FirmaDos == "U") {
+      return {
+        Content: secondSignatureImg,
+        FilePurpose: ConstantFilePurpose.FIRMA_TECNICO,
+      }
+    } else {
+      return {
+        Content: handleSaveCanvasTwo(),
+        FilePurpose: ConstantFilePurpose.FIRMA_TECNICO,
       }
     }
   }
@@ -620,15 +638,14 @@ export const TicketRegisterCompleteFormSix = () => {
 
   const handleForm = () => {
     if (formik.values.Firma == "") return handleOpen()
-    if (
-      formik.values.Firma == "W" &&
-      (firstSignature.current == null || secondSignature.current == null)
-    )
+    if (formik.values.FirmaDos == "") return handleOpen()
+    if (formik.values.Firma == "W" && firstSignature.current == null)
       return handleOpen()
-    if (
-      formik.values.Firma == "U" &&
-      (firstSignatureImg == "" || secondSignatureImg == "")
-    )
+    if (formik.values.FirmaDos == "W" && secondSignature.current == null)
+      return handleOpen()
+    if (formik.values.Firma == "U" && firstSignatureImg == "")
+      return handleOpen()
+    if (formik.values.FirmaDos == "U" && secondSignatureImg == "")
       return handleOpen()
 
     setIsModalTicketOpen(true)
@@ -643,6 +660,7 @@ export const TicketRegisterCompleteFormSix = () => {
       Comment: "",
       Recommendation: "",
       Firma: "",
+      FirmaDos: "",
       ResponsibleName: "",
       ResponsibleDni: "",
       TechnicianName: "",
@@ -658,6 +676,22 @@ export const TicketRegisterCompleteFormSix = () => {
       getAll(idTicket)
     }
   }, [])
+
+  useEffect(() => {
+    if (ticket) {
+      formik.setValues({
+        TechnicianDni: technician?.Dni == null ? "" : technician?.Dni,
+        TechnicianName: technician?.Name == null ? "" : technician?.Name,
+        RequiresOrder: false,
+        Comment: "",
+        Recommendation: "",
+        Firma: "",
+        FirmaDos: "",
+        ResponsibleName: "",
+        ResponsibleDni: "",
+      })
+    }
+  }, [ticket, technician])
 
   return (
     <>
@@ -732,7 +766,8 @@ export const TicketRegisterCompleteFormSix = () => {
             </small>
           </div>
         </div>
-        <div className="col-span-12">
+        <div className="col-span-12 md:col-span-5">
+          <label className="md:hidden">Firma del responsable</label>
           <FormControl>
             <RadioGroup
               row
@@ -753,87 +788,116 @@ export const TicketRegisterCompleteFormSix = () => {
               />
             </RadioGroup>
           </FormControl>
+          {formik.values.Firma === "U" && (
+            <>
+              <div className="pt-4 order-1 md:order-none col-span-12 md:col-span-5">
+                <div className="flex flex-col md:flex-row md:space-x-2">
+                  <div className="register_profile_image overflow-x-hidden">
+                    <input
+                      type="file"
+                      accept=".png, .jpg, .gif, .svg, .webp"
+                      onChange={onChangeFirstSignature}
+                      className="border-none bg-none text-qBlue underline font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="pt-4 order-2 md:order-none col-span-12 md:col-span-5">
+                <p>Firma del responsable (*)</p>
+              </div>
+            </>
+          )}
+          {formik.values.Firma === "W" && (
+            <>
+              <div className="order-1 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md relative h-32">
+                <CanvasDraw
+                  ref={firstSignature}
+                  canvasHeight={120}
+                  canvasWidth={320}
+                  hideInterface={true}
+                  brushRadius={2}
+                  brushColor="black"
+                  // className="absolute"
+                />
+              </div>
+              <div className="order-2 md:order-none col-span-12 md:col-span-5 mt-1">
+                <div className="flex justify-end pr-1">
+                  <button onClick={() => clearSignature(1)} type="button">
+                    <AiOutlineClear size={20} color={"#00A0DF"} />
+                  </button>
+                </div>
+                <p>Firma del responsable (*)</p>
+              </div>
+            </>
+          )}
         </div>
-        {formik.values.Firma === "W" && (
-          <>
-            <div className="order-1 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md relative h-32">
-              <CanvasDraw
-                ref={firstSignature}
-                canvasHeight={120}
-                canvasWidth={320}
-                hideInterface={true}
-                brushRadius={2}
-                brushColor="black"
-                // className="absolute"
+        <div className="hidden md:block col-span-12 md:col-span-2"></div>
+        <div className="col-span-12 md:col-span-5">
+          <label className="md:hidden">Firma del técnico</label>
+          <FormControl>
+            <RadioGroup
+              row
+              id="FirmaDos"
+              name="FirmaDos"
+              value={formik.values.FirmaDos}
+              onChange={formik.handleChange}
+            >
+              <FormControlLabel
+                value="U"
+                control={<Radio />}
+                label="Subir imágenes"
               />
-            </div>
-            <div className="hidden md:block col-span-12 md:col-span-2"></div>
-            <div className="order-5 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md relative h-32">
-              <CanvasDraw
-                ref={secondSignature}
-                canvasHeight={120}
-                canvasWidth={320}
-                hideInterface={true}
-                brushRadius={2}
-                brushColor="black"
-                // className="absolute"
+              <FormControlLabel
+                value="W"
+                control={<Radio />}
+                label="Escribir firmas"
               />
-            </div>
-            <div className="order-2 md:order-none col-span-12 md:col-span-5 -mt-3">
-              <div className="flex justify-end pr-1">
-                <button onClick={() => clearSignature(1)} type="button">
-                  <AiOutlineClear size={20} color={"#00A0DF"} />
-                </button>
-              </div>
-              <p>Firma del responsable (*)</p>
-            </div>
-            <div className="hidden md:block col-span-12 md:col-span-2"></div>
-            <div className="order-6 md:order-none col-span-12 md:col-span-5 -mt-3">
-              <div className="flex justify-end pr-1">
-                <button onClick={() => clearSignature(2)} type="button">
-                  <AiOutlineClear size={20} color={"#00A0DF"} />
-                </button>
-              </div>
-              <p>Firma del técnico responsable</p>
-            </div>
-          </>
-        )}
-        {formik.values.Firma === "U" && (
-          <>
-            <div className="order-1 md:order-none col-span-12 md:col-span-5">
-              <div className="flex flex-col md:flex-row md:space-x-2">
-                <div className="register_profile_image overflow-x-hidden">
-                  <input
-                    type="file"
-                    accept=".png, .jpg, .gif, .svg, .webp"
-                    onChange={onChangeFirstSignature}
-                    className="border-none bg-none text-qBlue underline font-medium"
-                  />
+            </RadioGroup>
+          </FormControl>
+          {formik.values.FirmaDos === "U" && (
+            <>
+              <div className="pt-4 order-5 md:order-none col-span-12 md:col-span-5">
+                <div className="flex flex-col md:flex-row md:space-x-2">
+                  <div className="register_profile_image overflow-x-hidden">
+                    <input
+                      type="file"
+                      accept=".png, .jpg, .gif, .svg, .webp"
+                      onChange={onChangeSecondSignature}
+                      className="border-none bg-none text-qBlue underline font-medium"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="col-span-12 hidden md:block md:col-span-2"></div>
-            <div className="order-5 md:order-none col-span-12 md:col-span-5">
-              <div className="flex flex-col md:flex-row md:space-x-2">
-                <div className="register_profile_image overflow-x-hidden">
-                  <input
-                    type="file"
-                    accept=".png, .jpg, .gif, .svg, .webp"
-                    onChange={onChangeSecondSignature}
-                    className="border-none bg-none text-qBlue underline font-medium"
-                  />
-                </div>
+              <div className="pt-4 order-6 md:order-none col-span-12 md:col-span-5">
+                <p>Firma del técnico responsable (*)</p>
               </div>
-            </div>
-            <div className="order-2 md:order-none col-span-12 md:col-span-5">
-              <p>Firma del responsable (*)</p>
-            </div>
-            <div className="col-span-12 md:col-span-2"></div>
-            <div className="order-6 md:order-none col-span-12 md:col-span-5">
-              <p>Firma del técnico responsable (*)</p>
-            </div>
-          </>
-        )}
+            </>
+          )}
+          {formik.values.FirmaDos === "W" && (
+            <>
+              <div className="order-5 md:order-none col-span-12 md:col-span-5 border-gray-400 border-2 rounded-md relative h-32">
+                <CanvasDraw
+                  ref={secondSignature}
+                  canvasHeight={120}
+                  canvasWidth={320}
+                  hideInterface={true}
+                  brushRadius={2}
+                  brushColor="black"
+                  // className="absolute"
+                />
+              </div>
+              <div className="order-6 md:order-none col-span-12 md:col-span-5 mt-1">
+                <div className="flex justify-end pr-1">
+                  <button onClick={() => clearSignature(2)} type="button">
+                    <AiOutlineClear size={20} color={"#00A0DF"} />
+                  </button>
+                </div>
+                <p>Firma del técnico responsable (*)</p>
+              </div>
+            </>
+          )}
+        </div>
+
         <div className="order-3 md:order-none col-span-12 md:col-span-5">
           <TextField
             required

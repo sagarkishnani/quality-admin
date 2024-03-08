@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js"
+import { RegisterServiceInterface } from "../interfaces/Service.interface"
 
 const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY
@@ -20,6 +21,31 @@ async function getServices() {
   }
 }
 
+async function registerService(request: RegisterServiceInterface) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Services")
+      .insert([
+        {
+          Name: request.Name,
+          Cost: request.Cost,
+        },
+      ])
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar el servicio", error)
+    return error
+  }
+}
+
 export const ServicesService = {
   getServices,
+  registerService,
 }

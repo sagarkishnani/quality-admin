@@ -31,6 +31,7 @@ export interface RegisterTicketAnswerRequest {
     CambioSwing: boolean | null;
     CambioAOF: boolean | null;
     CambioDC: boolean | null;
+    MantenimientoCheck: boolean | null;
     MantImpresora: boolean | null;
     MantOptico: boolean | null;
     MantOpticoEscaner: boolean | null;

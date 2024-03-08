@@ -93,7 +93,8 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
           </h2>
         </div>
         {ticket?.TicketStatus?.Name !== "Pendiente" &&
-          ticket?.TicketStatus?.Name !== "En progreso" && (
+          ticket?.TicketStatus?.Name !== "En progreso" &&
+          ticket?.AppointmentInitTime !== null && (
             <>
               <div className="col-span-12 md:col-span-6">
                 <InputLabel id="ScheduledAppointmentInitTime">
@@ -255,7 +256,8 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
         </div>
       )}
       {ticket?.TicketStatus?.Name !== "Pendiente" &&
-        ticket?.TicketStatus?.Name !== "En progreso" && (
+        ticket?.TicketStatus?.Name !== "En progreso" &&
+        ticket?.AppointmentInitTime !== null && (
           <div className="w-full mt-4 flex justify-end">
             <button
               className={`px-10 py-2 font-medium rounded-full text-white ${
