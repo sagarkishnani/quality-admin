@@ -54,6 +54,7 @@ async function getUsersByRole(IdRole: string) {
       .from("User")
       .select("*, Company (Name), Role (Name)")
       .eq("IdRole", IdRole)
+      .eq("RecordStatus", true)
 
     if (error) {
       console.warn(error)
@@ -378,6 +379,32 @@ async function updatePicture(idUser: string, imgName: string) {
   }
 }
 
+async function resetEmailAndPassword(
+  currentEmail: string,
+  newEmail: string,
+  password: string
+) {
+  try {
+    const { data, error } = await supabase.rpc(
+      "update_user_email_and_password",
+      {
+        user_email: currentEmail,
+        new_email: newEmail,
+        new_password: password,
+      }
+    )
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return data
+    }
+  } catch (error) {
+    console.error("Error actualizar contraseña:", error)
+    return []
+  }
+}
+
 export const UserService = {
   getUsers,
   getUserById,
@@ -391,4 +418,5 @@ export const UserService = {
   uploadUserPicture,
   updatePicture,
   deleteUserCompany,
+  resetEmailAndPassword,
 }

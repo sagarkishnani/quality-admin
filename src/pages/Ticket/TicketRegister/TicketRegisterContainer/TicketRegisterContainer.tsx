@@ -119,6 +119,12 @@ export const TicketRegisterContainer = () => {
     setOpen(false)
   }
 
+  const handleDeleteImg = (index: number) => {
+    const newPictures = [...pictures]
+    newPictures.splice(index, 1)
+    setPictures(newPictures)
+  }
+
   async function getAreas() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.AREAS
@@ -436,15 +442,18 @@ export const TicketRegisterContainer = () => {
                     <div
                       key={index}
                       className="w-16 h-16 relative cursor-pointer"
-                      onClick={() => handleOpenImageModal(imgData)}
                     >
+                      <button
+                        onClick={() => handleDeleteImg(index)}
+                        className="w-6 h-6 absolute right-0 -top-4 rounded-full bg-qBlue font-semibold text-white z-40"
+                      >
+                        X
+                      </button>
                       <img
                         className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
                         src={imgData}
+                        onClick={() => handleOpenImageModal(imgData)}
                       />
-                      <button className="w-8 h-8 absolute right-0 -top-4 bg-qBlue rounded-md hidden">
-                        X
-                      </button>
                     </div>
                   ))}
                 </div>

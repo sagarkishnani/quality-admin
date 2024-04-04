@@ -329,7 +329,7 @@ export const TicketRegisterCompleteFormThree = () => {
           </FormControl>
         </div>
         <div className="col-span-12 md:col-span-2 flex items-center">
-          <p className="text-sm font-semibold">Lámina de teplon</p>
+          <p className="text-sm font-semibold">Lámina de teflón</p>
         </div>
         <div className="col-span-12 md:col-span-4">
           <FormControl>

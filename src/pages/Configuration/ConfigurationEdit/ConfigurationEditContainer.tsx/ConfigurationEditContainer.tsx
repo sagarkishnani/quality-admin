@@ -155,7 +155,7 @@ export const ConfigurationEditContainer = () => {
                     id="IdMasterTable"
                     name="IdMasterTable"
                     value={mt?.IdMasterTable || ""}
-                    label="IdMasterTable"
+                    label="Id"
                   />
                 </div>
                 <div className="col-span-12 md:col-span-6">
@@ -175,7 +175,7 @@ export const ConfigurationEditContainer = () => {
                       formik.touched.IdMasterTableParent &&
                       formik.errors.IdMasterTableParent
                     }
-                    label="IdMasterTableParent"
+                    label="Id Padre"
                   />
                 </div>
                 <div className="col-span-12 md:col-span-6">

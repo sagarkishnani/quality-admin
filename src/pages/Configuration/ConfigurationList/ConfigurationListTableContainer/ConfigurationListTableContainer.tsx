@@ -1,40 +1,40 @@
-import { useEffect, useState } from "react";
-import { MasterTableService } from "../../../../common/services/MasterTableService";
-import { Link } from "react-router-dom";
-import { Button } from "../../../../common/components/Button/Button";
-import { Skeleton } from "@mui/material";
-import { ConfigurationListTable } from "./ConfigurationListTable/ConfigurationListTable";
-import { HiSearch } from "react-icons/hi";
+import { useEffect, useState } from "react"
+import { MasterTableService } from "../../../../common/services/MasterTableService"
+import { Link } from "react-router-dom"
+import { Button } from "../../../../common/components/Button/Button"
+import { Skeleton } from "@mui/material"
+import { ConfigurationListTable } from "./ConfigurationListTable/ConfigurationListTable"
+import { HiSearch } from "react-icons/hi"
 
 export const ConfigurationListTableContainer = () => {
-  const [masterTableValues, setMasterTableValues] = useState([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [masterTableValues, setMasterTableValues] = useState([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [searchValue, setSearchValue] = useState<string>("")
 
   async function getMasterTableItems() {
-    const data = await MasterTableService.getMasterTableItems();
+    const data = await MasterTableService.getMasterTableItems()
     if (data) {
-      setMasterTableValues(data);
+      setMasterTableValues(data)
     }
   }
 
   async function getAll() {
-    setIsLoading(true);
-    await getMasterTableItems();
-    setIsLoading(false);
+    setIsLoading(true)
+    await getMasterTableItems()
+    setIsLoading(false)
   }
 
   const filteredMt = masterTableValues.filter((mt: any) => {
-    const searchText = searchValue.toLowerCase();
+    const searchText = searchValue.toLowerCase()
     return (
       mt?.Name.toLowerCase().includes(searchText) ||
       mt?.IdMasterTable.toLowerCase().includes(searchText)
-    );
-  });
+    )
+  })
 
   useEffect(() => {
-    getAll();
-  }, []);
+    getAll()
+  }, [])
 
   return (
     <div className="p-4 lg:p-8 flex-1">
@@ -78,8 +78,8 @@ export const ConfigurationListTableContainer = () => {
         </div>
       )}
       {!isLoading && (
-        <ConfigurationListTable rows={filteredMt} handleReload={getAll} />
+        <ConfigurationListTable data={filteredMt} handleReload={getAll} />
       )}
     </div>
-  );
-};
+  )
+}

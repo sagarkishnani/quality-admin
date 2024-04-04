@@ -1,11 +1,13 @@
 import {
   Alert,
+  Autocomplete,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Skeleton,
   Snackbar,
+  TextField,
   Tooltip,
 } from "@mui/material"
 import moment from "moment"
@@ -68,6 +70,7 @@ export const TicketRegisterFacturable = () => {
   const [open, setOpen] = useState(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
   const [services, setServices] = useState<any[]>([])
+  const [selectedService, setSelectedService] = useState<any>()
   const [selectedServices, setSelectedServices] = useState<any[]>([])
   const [total, setTotal] = useState<number>()
   const [ticketServices, setTicketServices] = useState([])
@@ -577,11 +580,11 @@ export const TicketRegisterFacturable = () => {
   }
 
   const handleAddService = () => {
-    const selectedService = services.find(
-      ({ IdService }) => formik.values.Service === IdService
+    const chosenService = services.find(
+      ({ IdService }) => selectedService?.IdService === IdService
     )
 
-    if (selectedService) {
+    if (chosenService) {
       const isSelected = selectedServices.find(
         ({ IdService }) => selectedService.IdService === IdService
       )
@@ -591,7 +594,7 @@ export const TicketRegisterFacturable = () => {
       }
 
       if (selectedServices.length == 0) {
-        setSelectedServices([selectedService])
+        setSelectedServices([chosenService])
       } else {
         setSelectedServices((prevSelectedServices) => [
           ...prevSelectedServices,
@@ -732,7 +735,7 @@ export const TicketRegisterFacturable = () => {
             {ticketServices?.length == 0 && (
               <>
                 <div className="col-span-12 md:col-span-8">
-                  <FormControl fullWidth>
+                  {/* <FormControl fullWidth>
                     <InputLabel id="ServiceLabel">Servicios</InputLabel>
                     <Select
                       labelId="ServiceLabel"
@@ -750,7 +753,28 @@ export const TicketRegisterFacturable = () => {
                         </MenuItem>
                       ))}
                     </Select>
-                  </FormControl>
+                  </FormControl> */}
+                  <Autocomplete
+                    className="w-full"
+                    disablePortal
+                    options={services}
+                    onChange={(event, newValue) => {
+                      setSelectedService(newValue)
+                      formik.setFieldValue("Service", newValue?.Name || "")
+                    }}
+                    value={selectedService ? selectedService : {}}
+                    getOptionLabel={(option) => option?.Name || ""}
+                    renderInput={(params) => (
+                      <TextField
+                        name="Service"
+                        required
+                        {...params}
+                        label="Servicios"
+                      />
+                    )}
+                    openText="Mostrar opciones"
+                    noOptionsText="No hay opciones"
+                  />
                 </div>
                 <div className="col-span-12 justify-center md:justify-normal md:col-span-4 flex items-center">
                   <button

@@ -28,6 +28,7 @@ import { MasterTable } from "../../../../../common/interfaces/MasterTable.interf
 import { MasterTableService } from "../../../../../common/services/MasterTableService"
 import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
 import { combinarValores, loopPictures } from "../../../../../common/utils"
+import { HiX } from "react-icons/hi"
 
 interface TicketRegisterCompleteFormTwoInterface {
   ticket: GetTicketById
@@ -185,6 +186,12 @@ export const TicketRegisterCompleteFormTwo = ({
     }
   }
 
+  const handleDeleteImg = (index: number) => {
+    const newPictures = [...pictures]
+    newPictures.splice(index, 1)
+    setPictures(newPictures)
+  }
+
   const setDevice = (
     deviceName: string,
     setSelectedDeviceFunction: React.Dispatch<
@@ -259,7 +266,7 @@ export const TicketRegisterCompleteFormTwo = ({
 
   async function getParts() {
     const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.PARTS
+      ConstantsMasterTable.FAILURE_PARTS
     )
     if (data) {
       setParts(data)
@@ -267,11 +274,41 @@ export const TicketRegisterCompleteFormTwo = ({
   }
   async function getProcedures() {
     const data = await MasterTableService.getMasterTableByIdParent(
-      ConstantsMasterTable.PROCEDURES
+      ConstantsMasterTable.FAILURES
     )
     if (data) {
       setProcedures(data)
     }
+  }
+
+  const handleClearPartOne = () => {
+    formik.setValues({
+      ...formik.values,
+      PartOne: "",
+      ProcedureOne: "",
+      PartOneLabel: "",
+      ProcedureOneLabel: "",
+    })
+  }
+
+  const handleClearPartTwo = () => {
+    formik.setValues({
+      ...formik.values,
+      PartTwo: "",
+      ProcedureTwo: "",
+      PartTwoLabel: "",
+      ProcedureTwoLabel: "",
+    })
+  }
+
+  const handleClearPartThree = () => {
+    formik.setValues({
+      ...formik.values,
+      PartThree: "",
+      ProcedureThree: "",
+      PartThreeLabel: "",
+      ProcedureThreeLabel: "",
+    })
   }
 
   async function getAll() {
@@ -634,9 +671,9 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-11 md:col-span-5">
           <FormControl fullWidth>
-            <InputLabel id="ProcedureOne">Procedimiento Uno</InputLabel>
+            <InputLabel id="ProcedureOne">Falla Uno</InputLabel>
             <Select
               labelId="ProcedureOneLabel"
               id="ProcedureOne"
@@ -656,6 +693,14 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
+        <div className="col-span-1 md:col-span-1 flex justify-center items-center">
+          <button
+            onClick={handleClearPartOne}
+            className="transition duration-300 hover:scale-110"
+          >
+            <HiX color="#00A0DF" size={"25"} />
+          </button>
+        </div>
         <div className="col-span-12 md:col-span-6">
           <FormControl fullWidth>
             <InputLabel id="PartTwo">Parte Dos</InputLabel>
@@ -674,9 +719,9 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-11 md:col-span-5">
           <FormControl fullWidth>
-            <InputLabel id="ProcedureTwo">Procedimiento Dos</InputLabel>
+            <InputLabel id="ProcedureTwo">Falla Dos</InputLabel>
             <Select
               labelId="ProcedureTwoLabel"
               id="ProcedureTwo"
@@ -696,6 +741,14 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
+        <div className="col-span-1 md:col-span-1 flex justify-center items-center">
+          <button
+            className="transition duration-300 hover:scale-110"
+            onClick={handleClearPartTwo}
+          >
+            <HiX color="#00A0DF" size={"25"} />
+          </button>
+        </div>
         <div className="col-span-12 md:col-span-6">
           <FormControl fullWidth>
             <InputLabel id="PartThree">Parte Tres</InputLabel>
@@ -714,9 +767,9 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-11 md:col-span-5">
           <FormControl fullWidth>
-            <InputLabel id="ProcedureThree">Procedimiento Tres</InputLabel>
+            <InputLabel id="ProcedureThree">Falla Tres</InputLabel>
             <Select
               labelId="ProcedureThreeLabel"
               id="ProcedureThree"
@@ -736,6 +789,14 @@ export const TicketRegisterCompleteFormTwo = ({
             </Select>
           </FormControl>
         </div>
+        <div className="col-span-1 md:col-span-1 flex justify-center items-center">
+          <button
+            onClick={handleClearPartThree}
+            className="transition duration-300 hover:scale-110"
+          >
+            <HiX color="#00A0DF" size={"25"} />
+          </button>
+        </div>
         <div className="col-span-12">
           <div className="flex flex-col md:flex-row md:space-x-2">
             <h3>Evidencia(s)</h3>
@@ -752,18 +813,18 @@ export const TicketRegisterCompleteFormTwo = ({
           </div>
           <div className="flex flex-row flex-wrap space-x-2 mt-4">
             {pictures.map((imgData, index) => (
-              <div
-                key={index}
-                className="w-16 h-16 relative cursor-pointer"
-                onClick={() => handleOpenImageModal(imgData)}
-              >
-                <img
-                  className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
-                  src={imgData}
-                />
-                <button className="w-8 h-8 absolute right-0 -top-4 bg-qBlue rounded-md hidden">
+              <div key={index} className="w-16 h-16 relative cursor-pointer">
+                <button
+                  onClick={() => handleDeleteImg(index)}
+                  className="w-6 h-6 absolute right-0 -top-4 rounded-full bg-qBlue font-semibold text-white z-40"
+                >
                   X
                 </button>
+                <img
+                  className="h-full w-full object-fill rounded-md absolute hover:opacity-60"
+                  onClick={() => handleOpenImageModal(imgData)}
+                  src={imgData}
+                />
               </div>
             ))}
           </div>

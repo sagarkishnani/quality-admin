@@ -1,29 +1,31 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js"
 import {
   MasterTableEditRequest,
   MasterTableRegisterRequest,
-} from "../interfaces/MasterTable.interface";
+} from "../interfaces/MasterTable.interface"
 
-const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function getMasterTableItems() {
   try {
     const { data, error } = await supabase
       .from("MasterTable")
-      .select("*")
+      .select(
+        "IdMasterTable, IdMasterTableParent, Name, Value, Order, RecordCreationDate"
+      )
       .is("RecordStatus", true)
-      .order("IdMasterTable", { ascending: true });
+      .order("IdMasterTable", { ascending: true })
     if (error) {
-      console.warn(error);
-      return [];
+      console.warn(error)
+      return []
     } else if (data) {
-      return data;
+      return data
     }
   } catch (error) {
-    console.error("Error fetching items:", error);
-    return [];
+    console.error("Error fetching items:", error)
+    return []
   }
 }
 
@@ -33,16 +35,16 @@ async function getMasterTableById(IdMasterTable: string) {
       .from("MasterTable")
       .select("*")
       .eq("IdMasterTable", IdMasterTable)
-      .is("RecordStatus", true);
+      .is("RecordStatus", true)
     if (error) {
-      console.warn(error);
-      return error;
+      console.warn(error)
+      return error
     } else if (data) {
-      return data[0];
+      return data[0]
     }
   } catch (error) {
-    console.error("Error fetching items:", error);
-    return error;
+    console.error("Error fetching items:", error)
+    return error
   }
 }
 
@@ -50,19 +52,20 @@ async function getMasterTableParents() {
   try {
     const { data, error } = await supabase
       .from("MasterTable")
-      .select("*")
+      .select("IdMasterTable, IdMasterTableParent, Name")
       .is("IdMasterTableParent", null)
       .is("RecordStatus", true)
-      .order("IdMasterTable", { ascending: true });
+      .order("IdMasterTable", { ascending: true })
     if (error) {
-      console.warn(error);
-      return [];
+      console.warn(error)
+      return []
     } else if (data) {
-      return data;
+      console.log(data)
+      return data
     }
   } catch (error) {
-    console.error("Error fetching items:", error);
-    return [];
+    console.error("Error fetching items:", error)
+    return []
   }
 }
 
@@ -72,17 +75,17 @@ async function getMasterTableByIdParent(IdMasterTableParent: string) {
       .from("MasterTable")
       .select("*")
       .eq("IdMasterTableParent", IdMasterTableParent)
-      .is("RecordStatus", true);
+      .is("RecordStatus", true)
 
     if (error) {
-      console.warn(error);
-      return [];
+      console.warn(error)
+      return []
     } else if (data) {
-      return data;
+      return data
     }
   } catch (error) {
-    console.error("Error fetching items:", error);
-    return [];
+    console.error("Error fetching items:", error)
+    return []
   }
 }
 
@@ -102,17 +105,17 @@ async function registerMasterTable(request: MasterTableRegisterRequest) {
           Order: request.Order,
         },
       ])
-      .select();
+      .select()
 
     if (error) {
-      console.warn(error);
-      return { error, status };
+      console.warn(error)
+      return { error, status }
     } else if (data) {
-      return { data, status };
+      return { data, status }
     }
   } catch (error) {
-    console.error("Error registering master tables:", error);
-    return error;
+    console.error("Error registering master tables:", error)
+    return error
   }
 }
 
@@ -135,17 +138,17 @@ async function editMasterTable(
         },
       ])
       .eq("IdMasterTable", idMasterTable)
-      .select();
+      .select()
 
     if (error) {
-      console.warn(error);
-      return { error, status };
+      console.warn(error)
+      return { error, status }
     } else if (data) {
-      return { data, status };
+      return { data, status }
     }
   } catch (error) {
-    console.error("Error updating master tables:", error);
-    return error;
+    console.error("Error updating master tables:", error)
+    return error
   }
 }
 
@@ -154,17 +157,17 @@ async function deleteMasterTable(idMasterTable: string | null) {
     const { data, error, status } = await supabase
       .from("MasterTable")
       .delete()
-      .eq("IdMasterTable", idMasterTable);
+      .eq("IdMasterTable", idMasterTable)
 
     if (error) {
-      console.warn(error);
-      return { error, status };
+      console.warn(error)
+      return { error, status }
     } else if (data || status) {
-      return { data, status };
+      return { data, status }
     }
   } catch (error) {
-    console.error("Error al eliminar item", error);
-    return error;
+    console.error("Error al eliminar item", error)
+    return error
   }
 }
 
@@ -176,4 +179,4 @@ export const MasterTableService = {
   getMasterTableItems,
   getMasterTableByIdParent,
   getMasterTableById,
-};
+}

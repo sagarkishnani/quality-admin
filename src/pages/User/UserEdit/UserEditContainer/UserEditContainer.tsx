@@ -33,6 +33,7 @@ import { UserService } from "../../../../common/services/UserService"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import { GetCompaniesResponse } from "../../../../common/interfaces/Company.interface"
 import { UserCompanyService } from "../../../../common/services/UserCompanyService"
+import { UserModal } from "../../../../common/components/UserModal/UserModal"
 
 const validationSchema = yup.object({
   Dni: yup
@@ -64,10 +65,19 @@ export const UserEditContainer = () => {
     "success" | "error" | "question" | "none"
   >("none")
   const [modalMessage, setModalMessage] = useState("")
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
   const navigate = useNavigate()
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+  }
+
+  const handleCloseUserModal = () => {
+    setIsUserModalOpen(false)
+  }
+
+  const handleOpenUserModal = () => {
+    setIsUserModalOpen(true)
   }
 
   async function getCompanies() {
@@ -358,6 +368,15 @@ export const UserEditContainer = () => {
                   </Select>
                 </FormControl>
               </div>
+              <div className="col-span-12">
+                <button
+                  type="button"
+                  onClick={handleOpenUserModal}
+                  className="text-qBlue"
+                >
+                  Reestablecer correo y/o contraseña
+                </button>
+              </div>
             </div>
           )}
           {isLoading && (
@@ -435,6 +454,12 @@ export const UserEditContainer = () => {
         title={modalMessage}
         open={isModalOpen}
         handleClose={handleCloseModal}
+      />
+      <UserModal
+        title="Reestablecer correo y contraseña"
+        email={userData?.email}
+        handleClose={handleCloseUserModal}
+        open={isUserModalOpen}
       />
     </form>
   )
