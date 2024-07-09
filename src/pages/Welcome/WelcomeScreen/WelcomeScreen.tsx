@@ -3,29 +3,18 @@ import {
   HiOutlineOfficeBuilding,
   HiOutlineTicket,
 } from "react-icons/hi"
-import { useAuth } from "../../../common/contexts/AuthContext"
 import { WelcomeCard } from "../WelcomeCard/WelcomeCard"
-import {
-  ConstantLocalStorage,
-  ConstantMailConfig,
-  ConstantRoles,
-} from "../../../common/constants"
-import { Button } from "@mui/material"
-import ReactDOMServer from "react-dom/server"
-import TechnicalServiceReport from "../../../common/mailTemplates/technicalServiceReport"
-import {
-  Attachement,
-  MailService,
-  SendEmailRequest,
-} from "../../../common/services/MailService"
+import { ConstantLocalStorage, ConstantRoles } from "../../../common/constants"
 import { UserCompanyService } from "../../../common/services/UserCompanyService"
 import { useEffect, useState } from "react"
 import { CompanyModal } from "../../../common/components/CompanyModal/CompanyModal"
 import { GetUserCompany } from "../../../common/interfaces/User.interface"
 import secureLocalStorage from "react-secure-storage"
+import useUserStore from "../../../common/stores/UserStore"
 
 export const WelcomeScreen = () => {
-  const { user } = useAuth()
+  const user = useUserStore((state) => state.user)
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage] = useState("Seleccione el local activo")

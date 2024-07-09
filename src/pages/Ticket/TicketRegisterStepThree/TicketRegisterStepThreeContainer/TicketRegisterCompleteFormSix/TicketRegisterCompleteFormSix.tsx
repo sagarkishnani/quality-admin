@@ -6,7 +6,6 @@ import {
   ConstantFilePurpose,
   ConstantHttpErrors,
   ConstantLocalStorage,
-  ConstantMailConfigFacturableNoPDF,
   ConstantMailConfigNonFacturable,
   ConstantMessage,
   ConstantTicketMessage,
@@ -53,7 +52,6 @@ import {
 } from "../../../../../common/services/MailService"
 import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
 import { NotificationService } from "../../../../../common/services/NotificationService"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
 import { UserService } from "../../../../../common/services/UserService"
 
 const validationSchema = yup.object({
@@ -84,7 +82,6 @@ const validationSchema = yup.object({
 export const TicketRegisterCompleteFormSix = () => {
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const { user } = useAuth()
   const [isLoadingActionNonFacturable, setIsLoadingActionNonFacturable] =
     useState<boolean>(false)
   const [isLoadingActionFacturable, setIsLoadingActionFacturable] =
@@ -496,7 +493,7 @@ export const TicketRegisterCompleteFormSix = () => {
           )
           const opt = {
             format: "a4",
-            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            filename: `${ticket?.CodeTicket}.pdf`,
             margin: 1,
             html2canvas: {
               dpi: 192,
@@ -517,7 +514,7 @@ export const TicketRegisterCompleteFormSix = () => {
               const base64 = btoa(pdf)
 
               const attachments: Attachement = {
-                filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+                filename: `${ticket?.CodeTicket}.pdf`,
                 content: base64,
               }
 

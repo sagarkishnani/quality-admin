@@ -1,6 +1,5 @@
 import { Menu, MenuItem } from "@mui/material"
-import { DataGrid, GridColDef } from "@mui/x-data-grid"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import {
   HiOutlineDotsHorizontal,
   HiPencil,
@@ -16,9 +15,14 @@ import {
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { useNavigate } from "react-router-dom"
 import { UserService } from "../../../../../common/services/UserService"
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table"
 
 interface UserListTableInterface {
-  rows: Row[]
+  data: Row[]
   handleReload: () => void
 }
 
@@ -29,13 +33,15 @@ interface Row {
   email: string
   PhoneNumber: string
   IdRole: string
+  Role: string
   IdCompany: string
+  Company: string
   RecordCreationDate: Date
   RecordEditDate: Date
 }
 
 export const UserListTable = ({
-  rows,
+  data = [],
   handleReload,
 }: UserListTableInterface) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -104,115 +110,90 @@ export const UserListTable = ({
     setIsModalOpen(false)
   }
 
-  const columns: GridColDef[] = [
-    {
-      field: "Dni",
-      headerName: "DNI",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Name",
-      headerName: "Nombre",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    {
-      field: "email",
-      headerName: "Correo",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    {
-      field: "PhoneNumber",
-      headerName: "Celular",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Role",
-      headerName: "Rol",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Company",
-      headerName: "Empresa",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    // {
-    //   field: "RecordCreationDate",
-    //   headerName: "Fecha de creación",
-    //   width: 180,
-    //   disableColumnMenu: true,
-    // },
-    // {
-    //   field: "RecordEditDate",
-    //   headerName: "Fecha de edición",
-    //   width: 180,
-    //   disableColumnMenu: true,
-    // },
-    {
-      field: "Detail",
-      headerName: "",
-      width: 80,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-          handleClick(event, params.row.IdUser)
-        }
-
-        return (
-          <>
-            <div
-              className="flex w-full justify-center text-center cursor-pointer"
-              onClick={handleDetailClick}
-            >
-              <HiOutlineDotsHorizontal color="black" size={"30"} />
-            </div>
-          </>
-        )
+  const columns = useMemo<MRT_ColumnDef<Row>[]>(
+    () => [
+      {
+        accessorFn: (row) => row.Dni,
+        header: "DNI",
       },
+      {
+        accessorFn: (row) => row.Name,
+        header: "Nombre",
+      },
+      {
+        accessorFn: (row) => row.email,
+        header: "Correo",
+        grow: true,
+      },
+      {
+        accessorFn: (row) => row.PhoneNumber,
+        header: "Celular",
+      },
+      {
+        accessorFn: (row) => row.Role,
+        header: "Rol",
+      },
+      {
+        accessorFn: (row) => row.Company,
+        header: "Empresa",
+        grow: true,
+      },
+      {
+        accessorKey: "Detail",
+        header: "",
+        size: 80,
+        enableResizing: false,
+
+        Cell: (params) => {
+          const handleDetailClick = (
+            event: React.MouseEvent<HTMLDivElement>
+          ) => {
+            handleClick(event, params.row.original.IdUser)
+          }
+
+          return (
+            <>
+              <div
+                className="flex w-full justify-center text-center cursor-pointer"
+                onClick={handleDetailClick}
+              >
+                <HiOutlineDotsHorizontal color="black" size={"30"} />
+              </div>
+            </>
+          )
+        },
+      },
+    ],
+    []
+  )
+
+  const table = useMaterialReactTable({
+    columns,
+    data,
+    defaultColumn: {
+      minSize: 80,
+      size: 180,
     },
-  ]
+    initialState: {
+      pagination: { pageSize: 20, pageIndex: 0 },
+      density: "compact",
+    },
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    enableColumnActions: false,
+    enableColumnFilters: false,
+  })
 
   return (
     <>
-      {rows.length == 0 && (
+      {data?.length == 0 && (
         <div className="flex-1">No se encontraron resultados</div>
       )}
-      {rows.length !== 0 && (
+      {data?.length !== 0 && (
         <>
           <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
-              <DataGrid
-                className="overflow-x-auto"
-                getRowId={(row) => row.IdUser}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 6 },
-                  },
-                  columns: {
-                    columnVisibilityModel: {
-                      id: false,
-                    },
-                  },
-                }}
-                pageSizeOptions={[6, 12, 20]}
-                localeText={{
-                  noRowsLabel: "No se ha encontrado datos.",
-                  noResultsOverlayLabel: "No se ha encontrado ningún resultado",
-                  toolbarColumns: "Columnas",
-                  toolbarColumnsLabel: "Seleccionar columnas",
-                  toolbarFilters: "Filtros",
-                  toolbarFiltersLabel: "Ver filtros",
-                  toolbarFiltersTooltipHide: "Quitar filtros",
-                  toolbarFiltersTooltipShow: "Ver filtros",
-                }}
-              />
+              <MaterialReactTable table={table} />
             </div>
           </div>
           <Menu

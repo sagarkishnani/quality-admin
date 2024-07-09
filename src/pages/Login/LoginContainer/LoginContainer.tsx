@@ -8,8 +8,7 @@ import { Button } from "../../../common/components/Button/Button"
 import { UserService } from "../../../common/services/UserService"
 import { Modal } from "../../../common/components/Modal/Modal"
 import { ConstantUserMessage } from "../../../common/constants"
-import { useAuth } from "../../../common/contexts/AuthContext"
-import bgLogin from "../../../assets/images/login/bg_login.png"
+import useUserStore from "../../../common/stores/UserStore"
 
 const validationSchema = yup.object({
   email: yup
@@ -23,7 +22,8 @@ const validationSchema = yup.object({
 })
 
 export const LoginContainer = () => {
-  const { setUser } = useAuth()
+  const setUser = useUserStore((state) => state.setUser)
+
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<

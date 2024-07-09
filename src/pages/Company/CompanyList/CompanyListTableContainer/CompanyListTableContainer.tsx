@@ -78,7 +78,7 @@ export const CompanyListTableContainer = () => {
         </div>
       )}
       {!isLoading && (
-        <CompanyListTable rows={filteredCompanies} handleReload={getAll} />
+        <CompanyListTable data={filteredCompanies} handleReload={getAll} />
       )}
     </div>
   )

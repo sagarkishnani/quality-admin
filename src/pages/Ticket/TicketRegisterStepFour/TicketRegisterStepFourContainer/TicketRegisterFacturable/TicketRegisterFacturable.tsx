@@ -52,16 +52,16 @@ import {
 import { Button } from "../../../../../common/components/Button/Button"
 import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
 import { NotificationService } from "../../../../../common/services/NotificationService"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
 import { ConstantTicketStatus } from "../../../../../common/constants"
 import { generateMailFacturableWithServicesUserResponse } from "../../../../../common/utils"
 import { ServiceModal } from "../../../../../common/components/ServiceModal/ServiceModal"
+import useUserStore from "../../../../../common/stores/UserStore"
 
 const validationSchema = yup.object({})
 
 export const TicketRegisterFacturable = () => {
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
-  const { user } = useAuth()
+  const user = useUserStore((state) => state.user)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [isLoadingActionAgree, setIsLoadingActionAgree] =
@@ -245,7 +245,7 @@ export const TicketRegisterFacturable = () => {
     )
     const opt = {
       format: "a4",
-      filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+      filename: `${ticket?.CodeTicket}.pdf`,
       margin: 1,
       html2canvas: {
         dpi: 192,
@@ -289,7 +289,7 @@ export const TicketRegisterFacturable = () => {
           const base64 = btoa(pdf)
 
           const attachments: Attachement = {
-            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            filename: `${ticket?.CodeTicket}.pdf`,
             content: base64,
           }
 
@@ -374,7 +374,7 @@ export const TicketRegisterFacturable = () => {
           const base64 = btoa(pdf)
 
           const attachments: Attachement = {
-            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            filename: `${ticket?.CodeTicket}.pdf`,
             content: base64,
           }
 
@@ -498,7 +498,7 @@ export const TicketRegisterFacturable = () => {
           const base64 = btoa(pdf)
 
           const attachments: Attachement = {
-            filename: `${ticket?.CodeTicket} - Reporte de Servicio Técnico.pdf`,
+            filename: `${ticket?.CodeTicket}.pdf`,
             content: base64,
           }
 

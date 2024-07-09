@@ -1,6 +1,5 @@
 import { Menu, MenuItem } from "@mui/material"
-import { DataGrid, GridColDef } from "@mui/x-data-grid"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import {
   HiOutlineDotsHorizontal,
   HiPencil,
@@ -173,89 +172,16 @@ export const ConfigurationListTable = ({
     []
   )
 
-  // const columns: GridColDef[] = [
-  //   {
-  //     field: "IdMasterTable",
-  //     headerName: "Id",
-  //     width: 100,
-  //     disableColumnMenu: true,
-  //   },
-  //   {
-  //     field: "IdMasterTableParent",
-  //     headerName: "Id Padre",
-  //     width: 100,
-  //     disableColumnMenu: true,
-  //   },
-  //   {
-  //     field: "Name",
-  //     headerName: "Nombre",
-  //     width: 330,
-  //     disableColumnMenu: true,
-  //   },
-  //   {
-  //     field: "Value",
-  //     headerName: "Valor",
-  //     width: 160,
-  //     disableColumnMenu: true,
-  //   },
-  //   {
-  //     field: "Order",
-  //     headerName: "Orden",
-  //     width: 90,
-  //     disableColumnMenu: true,
-  //   },
-  //   {
-  //     field: "RecordCreationDate",
-  //     headerName: "Fecha de creación",
-  //     width: 150,
-  //     disableColumnMenu: true,
-  //     valueFormatter: (params) => {
-  //       const formattedDate = format(new Date(params.value), "dd/MM/yyyy")
-  //       return formattedDate
-  //     },
-  //   },
-  //   {
-  //     field: "RecordEditDate",
-  //     headerName: "Fecha de edición",
-  //     width: 150,
-  //     disableColumnMenu: true,
-  //     valueFormatter: (params) => {
-  //       const formattedDate = format(new Date(params.value), "dd/MM/yyyy")
-  //       if (params.value == null) {
-  //         return ""
-  //       } else return formattedDate
-  //     },
-  //   },
-  //   {
-  //     field: "Detail",
-  //     headerName: "",
-  //     width: 80,
-  //     disableColumnMenu: true,
-  //     renderCell: (params) => {
-  //       const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-  //         handleClick(event, params.row.IdMasterTable)
-  //       }
-
-  //       return (
-  //         <>
-  //           <div
-  //             className="flex w-full justify-center text-center cursor-pointer"
-  //             onClick={handleDetailClick}
-  //           >
-  //             <HiOutlineDotsHorizontal color="black" size={"30"} />
-  //           </div>
-  //         </>
-  //       )
-  //     },
-  //   },
-  // ]
-
   const table = useMaterialReactTable({
     columns,
     data,
     defaultColumn: {
       minSize: 80,
       size: 140,
+    },
+    initialState: {
+      pagination: { pageSize: 20, pageIndex: 0 },
+      density: "compact",
     },
     enableColumnResizing: true,
     columnResizeMode: "onChange",
@@ -272,33 +198,6 @@ export const ConfigurationListTable = ({
         <>
           <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
-              {/* <DataGrid
-                className="overflow-x-auto"
-                getRowId={(row) => row.IdMasterTable}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 20 },
-                  },
-                  columns: {
-                    columnVisibilityModel: {
-                      id: false,
-                    },
-                  },
-                }}
-                pageSizeOptions={[6, 12, 20]}
-                localeText={{
-                  noRowsLabel: "No se ha encontrado datos.",
-                  noResultsOverlayLabel: "No se ha encontrado ningún resultado",
-                  toolbarColumns: "Columnas",
-                  toolbarColumnsLabel: "Seleccionar columnas",
-                  toolbarFilters: "Filtros",
-                  toolbarFiltersLabel: "Ver filtros",
-                  toolbarFiltersTooltipHide: "Quitar filtros",
-                  toolbarFiltersTooltipShow: "Ver filtros",
-                }}
-              /> */}
               <MaterialReactTable table={table} />
             </div>
           </div>

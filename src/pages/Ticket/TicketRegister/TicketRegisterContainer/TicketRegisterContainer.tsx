@@ -17,7 +17,6 @@ import {
 } from "@mui/material"
 import { Button } from "../../../../common/components/Button/Button"
 import { Modal } from "../../../../common/components/Modal/Modal"
-import { useAuth } from "../../../../common/contexts/AuthContext"
 import { TicketService } from "../../../../common/services/TicketService"
 import {
   ConstantFilePurpose,
@@ -45,6 +44,7 @@ import {
 } from "../../../../common/services/MailService"
 import { NotificationService } from "../../../../common/services/NotificationService"
 import { RegisterNotificationRequest } from "../../../../common/interfaces/Notification.interface"
+import useUserStore from "../../../../common/stores/UserStore"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -69,9 +69,9 @@ export const TicketRegisterContainer = () => {
   const [pictures, setPictures] = useState<string[]>([])
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
-  const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const user = useUserStore((state) => state.user)
 
   const onChangePicture = (e: any) => {
     const newPictures: string[] = []

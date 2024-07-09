@@ -1,5 +1,4 @@
 import { Avatar, Menu, MenuItem } from "@mui/material"
-import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import {
   HiOutlineDotsHorizontal,
   HiPencil,
@@ -7,7 +6,7 @@ import {
   HiOutlineTrash,
 } from "react-icons/hi"
 import secureLocalStorage from "react-secure-storage"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   ConstantCompanyMessage,
@@ -16,9 +15,14 @@ import {
 } from "../../../../../common/constants"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { CompanyService } from "../../../../../common/services/CompanyService"
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table"
 
 interface TicketListTableInterface {
-  rows: Row[]
+  data: Row[]
   handleReload: () => void
 }
 
@@ -33,7 +37,7 @@ interface Row {
 }
 
 export const CompanyListTable = ({
-  rows,
+  data = [],
   handleReload,
 }: TicketListTableInterface) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -102,108 +106,101 @@ export const CompanyListTable = ({
     setSelectedId(null)
   }
 
-  const columns: GridColDef[] = [
-    {
-      field: "Name",
-      headerName: "Empresa",
-      width: 260,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Avatar
-              src={params.row.ImgUrl}
-              alt={params.row.Name}
-              sx={{ marginRight: 2 }}
-            />
-            <div>{params.value}</div>
-          </div>
-        )
-      },
-    },
-    {
-      field: "Ruc",
-      headerName: "RUC",
-      width: 180,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Address",
-      headerName: "Dirección fiscal",
-      width: 220,
-      disableColumnMenu: true,
-    },
-    {
-      field: "MainContactName",
-      headerName: "Contacto principal",
-      width: 220,
-      disableColumnMenu: true,
-    },
-    {
-      field: "MainContactEmail",
-      headerName: "C.E. Contacto principal",
-      width: 220,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Detail",
-      headerName: "",
-      width: 80,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-          handleClick(event, params.row.IdCompany)
-        }
-
-        return (
-          <>
-            <div
-              className="flex w-full justify-center text-center cursor-pointer"
-              onClick={handleDetailClick}
-            >
-              <HiOutlineDotsHorizontal color="black" size={"30"} />
+  const columns = useMemo<MRT_ColumnDef<Row>[]>(
+    () => [
+      {
+        accessorFn: (row) => row.Name,
+        header: "Empresa",
+        size: 260,
+        grow: true,
+        Cell: (params) => {
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Avatar
+                src={params.row.original.ImgUrl}
+                alt={params.row.original.Name}
+                sx={{ marginRight: 2 }}
+              />
+              <div>{params.row.original.Name}</div>
             </div>
-          </>
-        )
+          )
+        },
       },
+      {
+        accessorFn: (row) => row.Ruc,
+        header: "RUC",
+      },
+      {
+        accessorFn: (row) => row.Address,
+        header: "Dirección fiscal",
+        grow: true,
+      },
+      {
+        accessorFn: (row) => row.MainContactName,
+        header: "Contacto principal",
+        size: 220,
+      },
+      {
+        accessorFn: (row) => row.MainContactEmail,
+        header: "C.E. Contacto principal",
+        size: 220,
+      },
+      {
+        accessorKey: "Detail",
+        header: "",
+        size: 80,
+        enableResizing: false,
+
+        Cell: (params) => {
+          const handleDetailClick = (
+            event: React.MouseEvent<HTMLDivElement>
+          ) => {
+            handleClick(event, params.row.original.IdCompany)
+          }
+
+          return (
+            <>
+              <div
+                className="flex w-full justify-center text-center cursor-pointer"
+                onClick={handleDetailClick}
+              >
+                <HiOutlineDotsHorizontal color="black" size={"30"} />
+              </div>
+            </>
+          )
+        },
+      },
+    ],
+    []
+  )
+
+  const table = useMaterialReactTable({
+    columns,
+    data,
+    defaultColumn: {
+      minSize: 80,
+      size: 180,
     },
-  ]
+    initialState: {
+      pagination: { pageSize: 20, pageIndex: 0 },
+      density: "compact",
+    },
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    enableColumnActions: false,
+    enableColumnFilters: false,
+  })
 
   return (
     <>
-      {rows.length == 0 && (
+      {data?.length == 0 && (
         <div className="flex-1">No se encontraron resultados</div>
       )}
-      {rows.length !== 0 && (
+      {data?.length !== 0 && (
         <>
           <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto">
             <div style={{ height: "100%", width: "100%" }}>
-              <DataGrid
-                getRowId={(row) => row.IdCompany}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 6 },
-                  },
-                  columns: {
-                    columnVisibilityModel: {
-                      id: false,
-                    },
-                  },
-                }}
-                pageSizeOptions={[6, 12, 20]}
-                localeText={{
-                  noRowsLabel: "No se ha encontrado datos.",
-                  noResultsOverlayLabel: "No se ha encontrado ningún resultado",
-                  toolbarColumns: "Columnas",
-                  toolbarColumnsLabel: "Seleccionar columnas",
-                  toolbarFilters: "Filtros",
-                  toolbarFiltersLabel: "Ver filtros",
-                  toolbarFiltersTooltipHide: "Quitar filtros",
-                  toolbarFiltersTooltipShow: "Ver filtros",
-                }}
-              />
+              <MaterialReactTable table={table} />
             </div>
           </div>
           <Menu

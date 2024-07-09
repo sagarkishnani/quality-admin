@@ -39,7 +39,6 @@ import {
 import { generateAssignTicketMail } from "../../../../common/utils"
 import { NotificationService } from "../../../../common/services/NotificationService"
 import { RegisterNotificationRequest } from "../../../../common/interfaces/Notification.interface"
-import { useAuth } from "../../../../common/contexts/AuthContext"
 
 const validationSchema = yup.object({
   ScheduledAppointmentDate: yup
@@ -65,7 +64,6 @@ export const TicketRegisterContainerStepTwo = () => {
   const [selectedImg, setSelectedImg] = useState("")
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const navigate = useNavigate()
-  const { user } = useAuth()
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
   const bucketUrl = "/storage/v1/object/public/media/"
 

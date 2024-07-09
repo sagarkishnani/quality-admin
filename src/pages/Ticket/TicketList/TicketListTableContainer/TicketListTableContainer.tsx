@@ -7,10 +7,10 @@ import { Link } from "react-router-dom"
 import { Skeleton, Tooltip } from "@mui/material"
 import { FilteredTicketsRequest } from "../../../../common/interfaces/Ticket.interface"
 import { useTicket } from "../../../../common/contexts/TicketContext"
-import { useAuth } from "../../../../common/contexts/AuthContext"
 import { ConstantRoles } from "../../../../common/constants"
 import { PiMicrosoftExcelLogoFill } from "react-icons/pi"
 import { ExcelModal } from "../../../../common/components/ExcelModal/ExcelModal"
+import useUserStore from "../../../../common/stores/UserStore"
 
 export const TicketListTableContainer = () => {
   const [tickets, setTickets] = useState([])
@@ -19,7 +19,7 @@ export const TicketListTableContainer = () => {
   const [modalMessage] = useState("Seleccione los filtros para exportar")
   const [searchValue, setSearchValue] = useState<string>("")
   const { filteredTickets } = useTicket()
-  const { user } = useAuth()
+  const user = useUserStore((state) => state.user)
 
   async function getFilteredTickets() {
     const requestFilter: FilteredTicketsRequest = {
@@ -176,7 +176,7 @@ export const TicketListTableContainer = () => {
           </div>
         )}
         {!isLoading && (
-          <TicketListTable rows={filteredTicketsSearch} handleReload={getAll} />
+          <TicketListTable data={filteredTicketsSearch} handleReload={getAll} />
         )}
       </div>
       <ExcelModal

@@ -87,7 +87,7 @@ export const UserListTableContainer = () => {
         </div>
       )}
       {!isLoading && (
-        <UserListTable rows={filteredUsers} handleReload={getAll} />
+        <UserListTable data={filteredUsers} handleReload={getAll} />
       )}
     </div>
   )

@@ -1,6 +1,6 @@
 import "./App.css"
 import { ThemeProvider, createTheme } from "@mui/material/styles"
-import { AuthProvider, useAuth } from "./common/contexts/AuthContext"
+import { AuthProvider } from "./common/contexts/AuthContext"
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment"
 import AppRouter from "./common/routers/AppRouter"
 import { LocalizationProvider } from "@mui/x-date-pickers"

@@ -1,11 +1,11 @@
 import { Skeleton, TextField } from "@mui/material"
 import { useFormik } from "formik"
-import { useAuth } from "../../../common/contexts/AuthContext"
 import { v4 as uuidv4 } from "uuid"
 import { useState, useEffect } from "react"
 import { UserService } from "../../../common/services/UserService"
 import { ConstantStorageBuckets } from "../../../common/constants"
 import unknownUser from "../../../assets/images/user/unknown.png"
+import useUserStore from "../../../common/stores/UserStore"
 
 export const ProfileForm = () => {
   const supabaseImgUrl =
@@ -14,8 +14,10 @@ export const ProfileForm = () => {
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const { user, setUser } = useAuth()
   const [imgEvent, setImgEvent] = useState<any>()
+
+  const user = useUserStore((state) => state.user)
+  const setUser = useUserStore((state) => state.setUser)
 
   const handleImageChange = async (e: any) => {
     if (e.target.files && e.target.files.length > 0) {

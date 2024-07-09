@@ -14,7 +14,7 @@ import { Modal } from "../../../../common/components/Modal/Modal"
 import { DatePicker } from "@mui/x-date-pickers"
 import moment from "moment"
 import { useTicket } from "../../../../common/contexts/TicketContext"
-import { useAuth } from "../../../../common/contexts/AuthContext"
+import useUserStore from "../../../../common/stores/UserStore"
 
 export const TicketListFilter = () => {
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
@@ -24,7 +24,8 @@ export const TicketListFilter = () => {
   >("none")
   const [modalMessage, setModalMessage] = useState("")
   const { setFilteredTickets } = useTicket()
-  const { user } = useAuth()
+
+  const user = useUserStore((state) => state.user)
 
   const handleCloseModal = () => {
     setIsModalOpen(false)

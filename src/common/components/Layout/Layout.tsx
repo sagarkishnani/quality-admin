@@ -14,7 +14,6 @@ import { ConfigurationRegister } from "../../../pages/Configuration/Configuratio
 import { ConfigurationView } from "../../../pages/Configuration/ConfigurationView/ConfigurationView"
 import { ConfigurationEdit } from "../../../pages/Configuration/ConfigurationEdit/ConfigurationEdit"
 import { UserRegister } from "../../../pages/User/UserRegister/UserRegister"
-import { useAuth } from "../../contexts/AuthContext"
 import { UserEdit } from "../../../pages/User/UserEdit/UserEdit"
 import { UserView } from "../../../pages/User/UserView/UserView"
 import { CompanyView } from "../../../pages/Company/CompanyView/CompanyView"

@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from "react"
 import { UserService } from "../../services/UserService"
 import { useNavigate } from "react-router-dom"
-import { useAuth } from "../../contexts/AuthContext"
 import {
   ConstantLocalStorage,
   ConstantRoles,
@@ -25,6 +24,7 @@ import CustomDrawer from "../Drawer/Drawer"
 import { NotificationService } from "../../services/NotificationService"
 import { Notification } from "../../interfaces/Notification.interface"
 import moment from "moment"
+import useUserStore from "../../stores/UserStore"
 
 export const Navbar = ({ onToggleSidebar }) => {
   const supabaseImgUrl =
@@ -32,10 +32,12 @@ export const Navbar = ({ onToggleSidebar }) => {
     ConstantStorageBuckets.USER
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 
+  const user = useUserStore((state) => state.user)
+  const setUser = useUserStore((state) => state.setUser)
+
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const { user, setUser } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage] = useState("Seleccione el local activo")
   const [userCompanies, setUserCompanies] = useState<GetUserCompany[]>([])
@@ -140,7 +142,7 @@ export const Navbar = ({ onToggleSidebar }) => {
     if (idUser !== null) {
       getAll(idUser)
     }
-  }, [])
+  }, [user])
 
   return (
     <>

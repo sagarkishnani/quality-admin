@@ -19,11 +19,11 @@ import {
 import { BsWhatsapp } from "react-icons/bs"
 import { RouteLink } from "../../interfaces/RouteLink.interface"
 import { Link, useMatch } from "react-router-dom"
-import { useAuth } from "../../contexts/AuthContext"
 import { ConstantRoles } from "../../constants"
+import useUserStore from "../../stores/UserStore"
 
 export const Sidebar = ({ open, onToggleSidebar }) => {
-  const { user } = useAuth()
+  const user = useUserStore((state) => state.user)
 
   const isActiveRoute = (route: string) => {
     if (useMatch(route)) {

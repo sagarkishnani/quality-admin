@@ -2,7 +2,10 @@ import * as yup from "yup"
 import { HiChevronLeft } from "react-icons/hi"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import { MasterTableRegisterRequest } from "../../../../common/interfaces/MasterTable.interface"
+import {
+  MasterTable,
+  MasterTableRegisterRequest,
+} from "../../../../common/interfaces/MasterTable.interface"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import {
   ConstantHttpErrors,
@@ -10,7 +13,14 @@ import {
   ConstantMessage,
 } from "../../../../common/constants"
 import { Link, useNavigate } from "react-router-dom"
-import { Skeleton, TextField } from "@mui/material"
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Skeleton,
+  TextField,
+} from "@mui/material"
 import { Button } from "../../../../common/components/Button/Button"
 import { Modal } from "../../../../common/components/Modal/Modal"
 
@@ -33,6 +43,8 @@ export const ConfigurationRegisterContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [mtParents, setMtParents] = useState<any>([])
+  const [mts, setMts] = useState<any>([])
+  const [filteredChildren, setFilteredChildren] = useState<any>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
@@ -49,6 +61,23 @@ export const ConfigurationRegisterContainer = () => {
     const data = await MasterTableService.getMasterTableParents()
     if (data) {
       setMtParents(data)
+      setIsLoading(false)
+    }
+  }
+
+  const handleParentChange = (event) => {
+    const selectedValue = event.target.value
+    const chosenChildren = mts.filter(
+      (item) => item.IdMasterTableParent === selectedValue
+    )
+    setFilteredChildren(chosenChildren)
+  }
+
+  async function getMts() {
+    setIsLoading(true)
+    const data = await MasterTableService.getMasterTableItems()
+    if (data) {
+      setMts(data)
       setIsLoading(false)
     }
   }
@@ -97,6 +126,7 @@ export const ConfigurationRegisterContainer = () => {
 
   useEffect(() => {
     getMtParents()
+    getMts()
   }, [])
 
   return (
@@ -196,6 +226,52 @@ export const ConfigurationRegisterContainer = () => {
                 helperText={formik.touched.Order && formik.errors.Order}
                 label="Orden"
               />
+            </div>
+            <div className="col-span-12 md:col-span-12">
+              <hr />
+              <h2 className="font-semibold text-base py-2">Leyenda de items</h2>
+            </div>
+            <div className="col-span-12 md:col-span-12">
+              <FormControl fullWidth>
+                <InputLabel id="ParentItem">Listado de padres</InputLabel>
+                <Select
+                  labelId="ParentItem"
+                  id="ParentItem"
+                  name="ParentItem"
+                  onChange={handleParentChange}
+                >
+                  {mtParents?.map((item: MasterTable) => (
+                    <MenuItem
+                      key={item.IdMasterTable}
+                      value={item.IdMasterTable}
+                    >
+                      {item.Name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <div className="col-span-12 md:col-span-12">
+              <FormControl fullWidth>
+                <InputLabel id="MainContactPaymentLabel">
+                  Listado de items
+                </InputLabel>
+                <Select
+                  labelId="MainContactPaymentLabel"
+                  id="MainContactPayment"
+                  name="MainContactPayment"
+                >
+                  {filteredChildren?.map((item: MasterTable) => (
+                    <MenuItem
+                      key={item.IdMasterTable}
+                      value={item.IdMasterTable}
+                    >
+                      {item.IdMasterTable} - {item.IdMasterTableParent} -{" "}
+                      {item.Name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
           </div>
         </div>

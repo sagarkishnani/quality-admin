@@ -1,9 +1,8 @@
 import { Dialog, DialogContent } from "@mui/material"
-import { GetUserCompany, UserCompany } from "../../interfaces/User.interface"
+import { GetUserCompany } from "../../interfaces/User.interface"
 import { HiLocationMarker } from "react-icons/hi"
-import { useAuth } from "../../contexts/AuthContext"
-import { useEffect, useState } from "react"
 import { CompanyService } from "../../services/CompanyService"
+import useUserStore from "../../stores/UserStore"
 
 interface CompanyModalInterface {
   title: string
@@ -17,21 +16,28 @@ export const CompanyModal = ({
   companies,
   handleClose,
 }: CompanyModalInterface) => {
-  const { user, setUser } = useAuth()
+  const user = useUserStore((state) => state.user)
+  const setUser = useUserStore((state) => state.setUser)
 
   const handleCompany = async (company: GetUserCompany) => {
     const data = await CompanyService.getCompanyById(company.IdCompany)
-    user!.IdCompany = company.IdCompany
-    user!.Company.IdCompany = company.IdCompany
-    user!.Company.Name = company.Name
 
     if (data) {
-      user!.Company.Address = data?.Address
-      user!.Company.Local = data?.Local
-      user!.Company.Ruc = data?.Ruc
-      user!.Company.Mails = data?.Mails
-      user!.Company.RequiresOrder = data?.RequiresOrder
-      setUser(user)
+      setUser({
+        ...user,
+        IdCompany: company.IdCompany,
+        Company: {
+          ...user.Company,
+          IdCompany: company.IdCompany,
+          Name: company.Name,
+          Address: data?.Address,
+          Local: data?.Local,
+          Ruc: data?.Ruc,
+          Mails: data?.Mails,
+          RequiresOrder: data?.RequiresOrder,
+        },
+      })
+
       handleClose()
     }
   }

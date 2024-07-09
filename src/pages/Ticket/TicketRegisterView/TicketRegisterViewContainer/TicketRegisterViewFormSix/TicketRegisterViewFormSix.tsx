@@ -3,7 +3,6 @@ import { useFormik } from "formik"
 import { TextField } from "@mui/material"
 import moment from "moment"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
 import {
   ConstantFilePurpose,
   ConstantLocalStorage,
@@ -11,13 +10,14 @@ import {
 } from "../../../../../common/constants"
 import secureLocalStorage from "react-secure-storage"
 import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
+import useUserStore from "../../../../../common/stores/UserStore"
 
 export const TicketRegisterViewFormSix = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [firstSignature, setFirstSignature] = useState<string>("")
   const [secondSignature, setSecondSignature] = useState<string>("")
   const [ticketServices, setTicketServices] = useState([])
-  const { user } = useAuth()
+  const user = useUserStore((state) => state.user)
   const { setTicketStep } = useTicket()
 
   const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL

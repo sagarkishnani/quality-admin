@@ -44,7 +44,8 @@ const validationSchema = yup.object({
   // SeriesNumberTwo: yup.string().required("Número de serie es obligatorio"),
   // CounterTwo: yup.number().required("Contador es obligatorio"),
   // GuideTwo: yup.string().required("# Guía es obligatoria"),
-  // PartOne: yup.string().required("Falla encontrada es obligatoria"),
+  PartOne: yup.string().required("Parte uno es obligatoria"),
+  ProcedureOne: yup.string().required("Falla uno es obligatoria"),
 })
 
 export const TicketRegisterCompleteFormTwo = ({
@@ -655,13 +656,15 @@ export const TicketRegisterCompleteFormTwo = ({
         </div>
         <div className="col-span-12 md:col-span-6">
           <FormControl fullWidth>
-            <InputLabel id="PartOne">Parte Uno</InputLabel>
+            <InputLabel id="PartOne">Parte Uno*</InputLabel>
             <Select
               labelId="PartOneLabel"
               id="PartOne"
               name="PartOne"
               value={formik.values.PartOne}
               onChange={handlePartChange}
+              required
+              error={formik.touched.PartOne && Boolean(formik.errors.PartOne)}
             >
               {parts.map((part) => (
                 <MenuItem key={part.IdMasterTable} value={part.IdMasterTable}>
@@ -673,7 +676,7 @@ export const TicketRegisterCompleteFormTwo = ({
         </div>
         <div className="col-span-11 md:col-span-5">
           <FormControl fullWidth>
-            <InputLabel id="ProcedureOne">Falla Uno</InputLabel>
+            <InputLabel id="ProcedureOne">Falla Uno*</InputLabel>
             <Select
               labelId="ProcedureOneLabel"
               id="ProcedureOne"
@@ -681,6 +684,7 @@ export const TicketRegisterCompleteFormTwo = ({
               value={formik.values.ProcedureOne}
               onChange={handleProcedure}
               disabled={!selectedPart}
+              required
             >
               {filteredProcedures.map((procedure) => (
                 <MenuItem
@@ -863,7 +867,8 @@ export const TicketRegisterCompleteFormTwo = ({
         onClose={handleClose}
       >
         <Alert onClose={handleClose} severity="warning" sx={{ width: "100%" }}>
-          Debe adjuntar por lo menos 1 evidencia
+          Debe completar todos los campos obligatorios * y adjuntar por lo menos
+          1 evidencia
         </Alert>
       </Snackbar>
     </>

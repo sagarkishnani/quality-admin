@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { Login } from "../../pages/Login/Login";
-import PrivateRoute from "../guards/PrivateRoute";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { Login } from "../../pages/Login/Login"
+import PrivateRoute from "../guards/PrivateRoute"
+import useUserStore from "../stores/UserStore"
 
 const AppRouter: React.FC = () => {
-  const { user } = useAuth();
+  const user = useUserStore((state) => state.user)
 
   return (
     <Router>
@@ -13,7 +13,7 @@ const AppRouter: React.FC = () => {
         <Route path="/*" element={<PrivateRoute user={user} />} />
       </Routes>
     </Router>
-  );
-};
+  )
+}
 
-export default AppRouter;
+export default AppRouter

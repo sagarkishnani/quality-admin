@@ -1,7 +1,7 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { Badge } from "../../../../../common/components/Badge/Badge"
 import moment from "moment"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import {
   HiBan,
   HiOutlineClipboardCheck,
@@ -12,7 +12,6 @@ import {
 } from "react-icons/hi"
 import { Menu, MenuItem, Avatar } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import { useAuth } from "../../../../../common/contexts/AuthContext"
 import {
   ConstantHttpErrors,
   ConstantLocalStorage,
@@ -22,14 +21,20 @@ import {
 import secureLocalStorage from "react-secure-storage"
 import { Modal } from "../../../../../common/components/Modal/Modal"
 import { TicketService } from "../../../../../common/services/TicketService"
+import {
+  MRT_ColumnDef,
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table"
+import useUserStore from "../../../../../common/stores/UserStore"
 
 interface TicketListTableInterface {
-  rows: Row[]
+  data: Row[]
   handleReload: () => void
 }
 
 interface Row {
-  IdTicket: number
+  id: number
   CodeTicket: number
   Company: string
   Status: string
@@ -40,7 +45,7 @@ interface Row {
 }
 
 export const TicketListTable = ({
-  rows,
+  data = [],
   handleReload,
 }: TicketListTableInterface) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -52,7 +57,7 @@ export const TicketListTable = ({
   const [modalMessage, setModalMessage] = useState("")
   const [modalAction, setModalAction] = useState<string | null>("cancelar")
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const user = useUserStore((state) => state.user)
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -152,156 +157,152 @@ export const TicketListTable = ({
     }
   }
 
-  const columns: GridColDef[] = [
-    {
-      field: "id",
-      headerName: "Ticket ID",
-      width: 10,
-      disableColumnMenu: true,
-    },
-    {
-      field: "CodeTicket",
-      headerName: "ID",
-      width: 50,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Company",
-      headerName: "Empresa",
-      minWidth: 150,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Avatar
-              src={params.row.ImgUrl}
-              alt={params.row.Company}
-              sx={{ marginRight: 2 }}
-            />
-            <div>{params.value}</div>
-          </div>
-        )
+  const columns = useMemo<MRT_ColumnDef<Row>[]>(
+    () => [
+      {
+        accessorFn: (row) => row.CodeTicket,
+        header: "ID",
+        size: 80,
       },
-    },
-    {
-      field: "Status",
-      headerName: "Estado",
-      width: 130,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return <Badge status={params.value} label={params.value} />
-      },
-    },
-    {
-      field: "Type",
-      headerName: "Tipo",
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <p className={`${params.value == "NO DEFINIDO" ? "text-qGray" : ""}`}>
-            {params.value}
-          </p>
-        )
-      },
-    },
-    {
-      field: "Technician",
-      headerName: "Técnico",
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return (
-          <p className={`${params.value == "NO ASIGNADO" ? "text-qGray" : ""}`}>
-            {params.value}
-          </p>
-        )
-      },
-    },
-    {
-      field: "RecordCreationDate",
-      headerName: "Fecha de registro",
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        if (params.value) {
-          return <p>{moment(params.value).format("DD/MM/YYYY")}</p>
-        } else {
-          return ""
-        }
-      },
-    },
-    {
-      field: "AppointmentDate",
-      headerName: "Fecha de atención",
-      width: 120,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        if (params.value) {
-          return <p>{moment(params.value).format("DD/MM/YYYY")}</p>
-        } else {
-          return ""
-        }
-      },
-    },
-    {
-      field: "Detail",
-      headerName: "",
-      width: 80,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        const handleDetailClick = (event: React.MouseEvent<HTMLDivElement>) => {
-          handleClick(event, params.row)
-        }
-
-        return (
-          <>
-            <div
-              className="flex w-full justify-center text-center cursor-pointer"
-              onClick={handleDetailClick}
-            >
-              <HiOutlineDotsHorizontal color="black" size={"30"} />
+      {
+        accessorFn: (row) => row.Company,
+        header: "Empresa",
+        size: 260,
+        grow: true,
+        Cell: (params) => {
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Avatar
+                src={params.row.original.ImgUrl}
+                alt={params.row.original.Name}
+                sx={{ marginRight: 2 }}
+              />
+              <div>{params.row.original.Company}</div>
             </div>
-          </>
-        )
+          )
+        },
       },
+      {
+        accessorFn: (row) => row.Status,
+        header: "Estado",
+        size: 130,
+        Cell: (params) => {
+          return (
+            <Badge
+              status={params.row.original.Status}
+              label={params.row.original.Status}
+            />
+          )
+        },
+      },
+      {
+        accessorFn: (row) => row.Type,
+        header: "Tipo",
+        size: 120,
+        Cell: (params) => {
+          return (
+            <p
+              className={`${
+                params.row.original.Type == "NO DEFINIDO" ? "text-qGray" : ""
+              }`}
+            >
+              {params.row.original.Type}
+            </p>
+          )
+        },
+      },
+      {
+        accessorFn: (row) => row.Technician,
+        header: "Técnico",
+        size: 120,
+        Cell: (params) => {
+          return (
+            <p
+              className={`${
+                params.row.original.Technician == "NO DEFINIDO"
+                  ? "text-qGray"
+                  : ""
+              }`}
+            >
+              {params.row.original.Technician}
+            </p>
+          )
+        },
+      },
+      {
+        accessorFn: (row) => row.RecordCreationDate,
+        header: "Fecha de registro",
+        size: 120,
+        Cell: (params) => {
+          if (params.row.original.RecordCreationDate) {
+            return (
+              <p>
+                {moment(params.row.original.RecordCreationDate).format(
+                  "DD/MM/YYYY"
+                )}
+              </p>
+            )
+          } else {
+            return ""
+          }
+        },
+      },
+      {
+        accessorKey: "Detail",
+        header: "",
+        size: 80,
+        enableResizing: false,
+
+        Cell: (params) => {
+          const handleDetailClick = (
+            event: React.MouseEvent<HTMLDivElement>
+          ) => {
+            handleClick(event, params.row.original)
+          }
+
+          return (
+            <>
+              <div
+                className="flex w-full justify-center text-center cursor-pointer"
+                onClick={handleDetailClick}
+              >
+                <HiOutlineDotsHorizontal color="black" size={"30"} />
+              </div>
+            </>
+          )
+        },
+      },
+    ],
+    []
+  )
+
+  const table = useMaterialReactTable({
+    columns,
+    data,
+    defaultColumn: {
+      minSize: 80,
+      size: 180,
     },
-  ]
+    initialState: {
+      pagination: { pageSize: 20, pageIndex: 0 },
+      density: "compact",
+    },
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
+    enableColumnActions: false,
+    enableColumnFilters: false,
+  })
 
   return (
     <>
-      {rows.length == 0 && (
+      {data?.length == 0 && (
         <div className="flex-1 p-4">No se encontraron resultados</div>
       )}
-      {rows.length !== 0 && (
+      {data?.length !== 0 && (
         <>
           <div className="flex-1 m-auto w-[80vw] xl:m-0 xl:w-auto pb-6 pb:mb-0">
             <div style={{ height: "100%", width: "100%" }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: { page: 0, pageSize: 7 },
-                  },
-                  columns: {
-                    columnVisibilityModel: {
-                      id: false,
-                    },
-                  },
-                }}
-                pageSizeOptions={[7, 12, 20]}
-                localeText={{
-                  noRowsLabel: "No se ha encontrado datos.",
-                  noResultsOverlayLabel: "No se ha encontrado ningún resultado",
-                  toolbarColumns: "Columnas",
-                  toolbarColumnsLabel: "Seleccionar columnas",
-                  toolbarFilters: "Filtros",
-                  toolbarFiltersLabel: "Ver filtros",
-                  toolbarFiltersTooltipHide: "Quitar filtros",
-                  toolbarFiltersTooltipShow: "Ver filtros",
-                }}
-              />
+              <MaterialReactTable table={table} />
             </div>
           </div>
           <Menu
