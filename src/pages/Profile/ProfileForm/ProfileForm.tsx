@@ -42,17 +42,6 @@ export const ProfileForm = () => {
     }
   }
 
-  const formik = useFormik({
-    initialValues: {
-      Name: "",
-      Phone: "",
-      Email: "",
-      Company: "",
-      Role: "",
-    },
-    onSubmit: (values) => {},
-  })
-
   useEffect(() => {
     if (imgEvent !== undefined) {
       uploadUserPicture(imgEvent)
@@ -138,10 +127,20 @@ export const ProfileForm = () => {
               className="w-full"
               id="Company"
               name="Company"
-              label="Empresa / Local Actual"
+              label="Empresa"
               value={user?.Company.Name}
             />
           </div>
+          {/* <div className="mb-6">
+            <TextField
+              disabled
+              className="w-full"
+              id="Local"
+              name="Local"
+              label="Local"
+              value={user?.Local?.Name}
+            />
+          </div> */}
           <div className="mb-6">
             <TextField
               disabled

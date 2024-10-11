@@ -25,12 +25,15 @@ import { CompanyService } from "../../../../common/services/CompanyService"
 import { RoleService } from "../../../../common/services/RoleService"
 import {
   UserCompanyRegister,
+  UserLocalRegister,
   UserRegisterRequest,
 } from "../../../../common/interfaces/User.interface"
 import { UserService } from "../../../../common/services/UserService"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import { GetCompaniesResponse } from "../../../../common/interfaces/Company.interface"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
+import { CompanyLocal } from "../../../../common/interfaces/CompanyLocal.interface"
+import { CompanyLocalService } from "../../../../common/services/CompanyLocalService"
 
 const validationSchema = yup.object({
   Dni: yup
@@ -63,8 +66,10 @@ export const UserRegisterContainer = () => {
   const [companies, setCompanies] = useState<GetCompaniesResponse[]>([])
   const [roles, setRoles] = useState<any[]>([])
   const [positions, setPositions] = useState<MasterTable[]>([])
+  const [locals, setLocals] = useState<CompanyLocal[]>([])
 
   const [selectedCompanies, setSelectedCompanies] = useState([])
+  const [selectedLocals, setSelectedLocals] = useState([])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
@@ -84,6 +89,13 @@ export const UserRegisterContainer = () => {
     }
   }
 
+  async function getLocals(idCompany: string) {
+    const data = await CompanyLocalService.getLocalsByIdCompany(idCompany)
+    if (data) {
+      setLocals(data)
+    }
+  }
+
   async function getRoles() {
     const data = await RoleService.getRoles()
     if (data) {
@@ -100,8 +112,15 @@ export const UserRegisterContainer = () => {
     }
   }
 
-  const handleCompanyChange = (event) => {
-    setSelectedCompanies(event.target.value)
+  const handleCompanyChange = async (event) => {
+    // setSelectedCompanies(event.target.value)
+    formik.setFieldValue("IdCompany", event.target.value)
+    setSelectedLocals([])
+    await getLocals(event.target.value)
+  }
+
+  const handleLocalChange = (event) => {
+    setSelectedLocals(event.target.value)
   }
 
   async function getAll() {
@@ -117,20 +136,27 @@ export const UserRegisterContainer = () => {
 
     const idUser: any = await UserService.registerUser(request)
     if (idUser) {
-      for (const company of selectedCompanies) {
-        const request: UserCompanyRegister = {
-          IdUser: idUser,
-          IdCompany: company,
-        }
-        const { status }: any = await UserService.registerUserCompany(request)
+      // for (const company of selectedCompanies) {
+      //   const request: UserCompanyRegister = {
+      //     IdUser: idUser,
+      //     IdCompany: company,
+      //   }
 
-        if (status !== ConstantHttpErrors.CREATED) {
-          setIsLoadingAction(false)
-          setIsModalOpen(true)
-          setModalType("error")
-          setModalMessage(ConstantMessage.SERVICE_ERROR)
-        }
-      }
+      // for (const local of selectedLocals) {
+      //   const request: UserLocalRegister = {
+      //     IdUser: idUser,
+      //     IdLocal: local,
+      //   }
+
+      //   const { status }: any = await UserService.registerUserLocal(request)
+
+      //   if (status !== ConstantHttpErrors.CREATED) {
+      //     setIsLoadingAction(false)
+      //     setIsModalOpen(true)
+      //     setModalType("error")
+      //     setModalMessage(ConstantMessage.SERVICE_ERROR)
+      //   }
+      // }
 
       setIsModalOpen(true)
       setModalType("success")
@@ -155,13 +181,15 @@ export const UserRegisterContainer = () => {
       PhoneNumber: "",
       IdRole: "",
       IdCompany: "",
+      // Local: "",
       Position: "",
       email: "",
       password: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      values.IdCompany = selectedCompanies[0]
+      // values.IdCompany = selectedCompanies[0]
+      // values.Local = selectedLocals[0]
       registerUser(values)
     },
   })
@@ -256,6 +284,27 @@ export const UserRegisterContainer = () => {
               </div>
               <div className="col-span-12">
                 <FormControl fullWidth>
+                  <InputLabel id="RoleLabel">Empresa</InputLabel>
+                  <Select
+                    labelId="CompanyLabel"
+                    id="IdCompany"
+                    name="IdCompany"
+                    value={formik.values.IdCompany}
+                    onChange={formik.handleChange}
+                  >
+                    {companies?.map((company: any) => (
+                      <MenuItem
+                        key={company.IdCompany}
+                        value={company.IdCompany}
+                      >
+                        {company.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              {/* <div className="col-span-12">
+                <FormControl fullWidth>
                   <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
                   <Select
                     labelId="IdCompanyLabel"
@@ -294,7 +343,47 @@ export const UserRegisterContainer = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </div>
+              </div> */}
+              {/* <div className="col-span-12">
+                <FormControl fullWidth>
+                  <InputLabel id="IdLocalLabel">Locales</InputLabel>
+                  <Select
+                    labelId="IdLocalLabel"
+                    id="IdLocal"
+                    multiple
+                    value={selectedLocals}
+                    onChange={handleLocalChange}
+                    input={<OutlinedInput label="Locales" />}
+                    renderValue={() => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selectedLocals.map((idLocal: string) => {
+                          const local = locals.find(
+                            (c: CompanyLocal) => c.IdCompanyLocal === idLocal
+                          )
+                          return (
+                            <Chip
+                              key={local?.IdCompanyLocal}
+                              label={local?.Name}
+                            />
+                          )
+                        })}
+                      </Box>
+                    )}
+                  >
+                    <MenuItem disabled value="">
+                      <em>Seleccione</em>
+                    </MenuItem>
+                    {locals.map((local: CompanyLocal) => (
+                      <MenuItem
+                        key={local.IdCompanyLocal}
+                        value={local.IdCompanyLocal}
+                      >
+                        {local.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div> */}
               <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="PositionLabel">Cargo</InputLabel>

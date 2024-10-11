@@ -293,7 +293,7 @@ export const TicketRegisterFacturable = () => {
             content: base64,
           }
 
-          const companyMails = ticket?.Company.Mails.split(",")
+          const companyMails = ticket?.Local.Mails.split(",")
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
           const request: SendEmailRequest = {
@@ -378,7 +378,7 @@ export const TicketRegisterFacturable = () => {
             content: base64,
           }
 
-          const companyMails = ticket?.Company.Mails.split(",")
+          const companyMails = ticket?.Local.Mails.split(",")
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
           const request: SendEmailRequest = {
@@ -502,7 +502,7 @@ export const TicketRegisterFacturable = () => {
             content: base64,
           }
 
-          const companyMails = ticket?.Company.Mails.split(",")
+          const companyMails = ticket?.Local.Mails.split(",")
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
           const request: SendEmailRequest = {

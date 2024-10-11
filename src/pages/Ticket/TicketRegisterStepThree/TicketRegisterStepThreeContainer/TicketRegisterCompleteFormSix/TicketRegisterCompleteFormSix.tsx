@@ -518,7 +518,7 @@ export const TicketRegisterCompleteFormSix = () => {
                 content: base64,
               }
 
-              const companyMails = ticket?.Company.Mails.split(",")
+              const companyMails = ticket?.Local.Mails.split(",")
               isFacturable
                 ? companyMails?.push("asistente.adm@qualitysumprint.com")
                 : companyMails?.push("soporte.tecnico@qualitysumprint.com")

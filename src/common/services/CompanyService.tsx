@@ -4,6 +4,7 @@ import {
   CompanyRegisterRequest,
 } from "../interfaces/Company.interface"
 import { ConstantStorageBuckets } from "../constants"
+import { CompanyLocalService } from "./CompanyLocalService"
 
 const supabaseUrl = import.meta.env.VITE_REACT_APP_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_REACT_APP_SUPABASE_KEY
@@ -218,10 +219,11 @@ async function deleteCompany(idCompany: string) {
       console.warn(error)
       return { error, status }
     } else if (data) {
+      await CompanyLocalService.deleteLocalByCompany(idCompany)
       return { data, status }
     }
   } catch (error) {
-    console.error("Error al eliminar el usuario", error)
+    console.error("Error al eliminar la compañía", error)
     return error
   }
 }

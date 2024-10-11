@@ -1,7 +1,6 @@
 import { useFormik } from "formik"
 import { MasterTableService } from "../../../../common/services/MasterTableService"
 import {
-  Autocomplete,
   Box,
   Checkbox,
   Chip,
@@ -26,6 +25,7 @@ import { UbigeoService } from "../../../../common/services/UbigeoService"
 import { CompanyService } from "../../../../common/services/CompanyService"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
 import unknownUser from "../../../../assets/images/user/unknown.png"
+import { CompanyLocalService } from "../../../../common/services/CompanyLocalService"
 
 export const CompanyViewContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -38,6 +38,7 @@ export const CompanyViewContainer = () => {
   const [paymentConditions, setPaymentConditions] = useState<MasterTable[]>([])
   const [ce, setCe] = useState<MasterTable[]>([])
   const [filteredBanks, setFilteredBanks] = useState<MasterTable[]>([])
+  const [locals, setLocals] = useState<any[]>([])
 
   const [showBillingFields, setShowBillingFields] = useState(false)
   const [showReportFields, setShowReportFields] = useState(false)
@@ -62,6 +63,7 @@ export const CompanyViewContainer = () => {
       if (data) {
         await getCurrencies(data?.MainContactCurrency.split(", "))
         await getBanks(data?.MainContactBanks.split(", "))
+        await getLocals(data?.IdCompany)
       }
 
       getUbigeo(data.Ubigeo)
@@ -82,6 +84,26 @@ export const CompanyViewContainer = () => {
     if (data) {
       setPositions(data)
     }
+  }
+
+  async function getLocals(idCompany: string) {
+    const data = await CompanyLocalService.getLocalsByIdCompany(idCompany)
+    if (data) {
+      for (const local of data) {
+        const ubigeo = await getLocalUbigeo(local.Ubigeo)
+        local.Ubigeo =
+          ubigeo?.distrito +
+            ", " +
+            ubigeo?.provincia +
+            ", " +
+            ubigeo?.departamento || ""
+      }
+      setLocals(data)
+    }
+  }
+
+  async function getLocalUbigeo(idUbigeo: number) {
+    return await UbigeoService.getUbigeoById(idUbigeo)
   }
 
   async function getCurrencies(currenciesStr: string[]) {
@@ -274,7 +296,7 @@ export const CompanyViewContainer = () => {
                 />
               </div>
             </div>
-            <div className="col-span-12 md:col-span-8">
+            <div className="col-span-12 lg:col-span-8">
               <TextField
                 color="primary"
                 className="w-full"
@@ -315,7 +337,7 @@ export const CompanyViewContainer = () => {
                 value={formik.values.Address}
               />
             </div>
-            <div className="col-span-12">
+            {/* <div className="col-span-12">
               <TextField
                 className="w-full"
                 disabled
@@ -324,8 +346,8 @@ export const CompanyViewContainer = () => {
                 label="Nombre de local"
                 value={formik.values.Local}
               />
-            </div>
-            <div className="col-span-12 md:col-span-8">
+            </div> */}
+            {/* <div className="col-span-12 md:col-span-8">
               <TextField
                 color="primary"
                 disabled
@@ -335,7 +357,7 @@ export const CompanyViewContainer = () => {
                 value={formik.values.Mails}
                 label="Correos"
               />
-            </div>
+            </div> */}
             <div className="col-span-12 md:col-span-4">
               <FormControlLabel
                 name="RequiresOrder"
@@ -347,6 +369,59 @@ export const CompanyViewContainer = () => {
                 label="Requiere orden de compra"
               />
             </div>
+            <div className="col-span-12">
+              <h4 className="text-sm text-qGray font-semibold pb-2">
+                DATOS DE LOCALES
+              </h4>
+            </div>
+            {locals.map((group, groupIndex) => (
+              <div
+                key={groupIndex}
+                className="col-span-12 grid grid-cols-12 gap-4 mb-4"
+              >
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    disabled
+                    id={`Name-${groupIndex}`}
+                    name={`Name-${groupIndex}`}
+                    label="Nombre de local"
+                    value={group.Name}
+                  />
+                </div>
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    disabled
+                    id={`Address-${groupIndex}`}
+                    name={`Address-${groupIndex}`}
+                    label="Dirección Fiscal"
+                    value={group.Address}
+                  />
+                </div>
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    disabled
+                    id={`Ubigeo-${groupIndex}`}
+                    name={`Ubigeo-${groupIndex}`}
+                    value={group.Ubigeo}
+                    label="Ubigeo"
+                  />
+                </div>
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    disabled
+                    id={`Mails-${groupIndex}`}
+                    name={`Mails-${groupIndex}`}
+                    label="Correos (separados por comas)"
+                    value={group.Mails}
+                  />
+                </div>
+                <hr className="col-span-12" />
+              </div>
+            ))}
             <div className="col-span-12">
               <h4 className="text-sm text-qGray font-semibold py-2">
                 CONTACTO PRINCIPAL

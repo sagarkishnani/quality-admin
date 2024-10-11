@@ -39,7 +39,7 @@ async function getTicketById(idTicket: string) {
     const { data, error } = await supabase
       .from("Ticket")
       .select(
-        "*, Company (*), TicketStatus (Name), TicketType (Name), User (Name, email), TicketAnswer(*), TicketFile (*)"
+        "*, Company (*), TicketStatus (Name), TicketType (Name), User (Name, email), TicketAnswer(*), TicketFile (*), Local (*)"
       )
       .eq("IdTicket", idTicket)
 
@@ -149,7 +149,7 @@ async function getTicketUserById(IdUser: string) {
     const { data, error } = await supabase
       .from("User")
       .select(
-        "*, Company (IdCompany, Name, Address, Local), Role (IdRole, Name)"
+        "*, Company (IdCompany, Name, Address, Local), Role (IdRole, Name), Local (IdCompanyLocal, Name, Address, Mails)"
       )
       .eq("IdUser", IdUser)
 
@@ -175,6 +175,7 @@ async function registerTicketStepOne(request: TicketRegisterStepOneRequest) {
           IdTicketCompany: request.IdTicketCompany,
           IdTicketType:
             request.IdTicketType == "" ? null : request.IdTicketType,
+          Local: request.Local,
           IdUser: request.IdUser,
           ReportedFailure: request.ReportedFailure,
           CompanyFloor: request.CompanyFloor,

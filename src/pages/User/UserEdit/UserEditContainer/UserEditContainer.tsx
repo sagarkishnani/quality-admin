@@ -112,24 +112,24 @@ export const UserEditContainer = () => {
 
     const idUser: any = await UserService.editUser(request)
     if (idUser) {
-      const { status } = await UserService.deleteUserCompany(idUser)
-      if (status === ConstantHttpErrors.NO_CONTENT) {
-        for (const company of selectedCompanies) {
-          const request: UserCompanyRegister = {
-            IdUser: idUser,
-            IdCompany: company,
-          }
-          const { status: userCompanyStatus }: any =
-            await UserService.registerUserCompany(request)
+      // const { status } = await UserService.deleteUserCompany(idUser)
+      // if (status === ConstantHttpErrors.NO_CONTENT) {
+      //   for (const company of selectedCompanies) {
+      //     const request: UserCompanyRegister = {
+      //       IdUser: idUser,
+      //       IdCompany: company,
+      //     }
+      //     const { status: userCompanyStatus }: any =
+      //       await UserService.registerUserCompany(request)
 
-          if (userCompanyStatus !== ConstantHttpErrors.CREATED) {
-            setIsLoadingAction(false)
-            setIsModalOpen(true)
-            setModalType("error")
-            setModalMessage(ConstantMessage.SERVICE_ERROR)
-          }
-        }
-      }
+      //     if (userCompanyStatus !== ConstantHttpErrors.CREATED) {
+      //       setIsLoadingAction(false)
+      //       setIsModalOpen(true)
+      //       setModalType("error")
+      //       setModalMessage(ConstantMessage.SERVICE_ERROR)
+      //     }
+      //   }
+      // }
 
       setIsModalOpen(true)
       setModalType("success")
@@ -147,13 +147,13 @@ export const UserEditContainer = () => {
     }
   }
 
-  async function getUserCompanies(idUser: string) {
-    const data = await UserCompanyService.getUserCompanies(idUser)
-    if (data) {
-      const onlyCompanies = data.map((item) => item.Company.IdCompany)
-      setSelectedCompanies(onlyCompanies)
-    }
-  }
+  // async function getUserCompanies(idUser: string) {
+  //   const data = await UserCompanyService.getUserCompanies(idUser)
+  //   if (data) {
+  //     const onlyCompanies = data.map((item) => item.Company.IdCompany)
+  //     setSelectedCompanies(onlyCompanies)
+  //   }
+  // }
 
   async function getUserById(idUser: string) {
     const data = await UserService.getUserById(idUser)
@@ -168,7 +168,7 @@ export const UserEditContainer = () => {
     await getRoles()
     await getPositions()
     await getUserById(idUser)
-    await getUserCompanies(idUser)
+    // await getUserCompanies(idUser)
     setIsLoading(false)
   }
 
@@ -185,7 +185,7 @@ export const UserEditContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      values.IdCompany = selectedCompanies[0]
+      // values.IdCompany = selectedCompanies[0]
       values.IdUser = userData.IdUser
       editUser(values)
     },
@@ -327,7 +327,7 @@ export const UserEditContainer = () => {
                   label="Correo"
                 />
               </div>
-              <div className="col-span-12">
+              {/* <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
                   <Select
@@ -358,6 +358,27 @@ export const UserEditContainer = () => {
                       <em>Seleccione</em>
                     </MenuItem>
                     {companies.map((company: GetCompaniesResponse) => (
+                      <MenuItem
+                        key={company.IdCompany}
+                        value={company.IdCompany}
+                      >
+                        {company.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div> */}
+              <div className="col-span-12">
+                <FormControl fullWidth>
+                  <InputLabel id="RoleLabel">Empresa</InputLabel>
+                  <Select
+                    labelId="CompanyLabel"
+                    id="IdCompany"
+                    name="IdCompany"
+                    value={formik.values.IdCompany}
+                    onChange={formik.handleChange}
+                  >
+                    {companies?.map((company: any) => (
                       <MenuItem
                         key={company.IdCompany}
                         value={company.IdCompany}

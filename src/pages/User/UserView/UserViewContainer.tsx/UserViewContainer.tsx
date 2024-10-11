@@ -25,6 +25,8 @@ import { RoleService } from "../../../../common/services/RoleService"
 import unknownUser from "../../../../assets/images/user/unknown.png"
 import { UserCompanyService } from "../../../../common/services/UserCompanyService"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
+import { GetCompaniesResponse } from "../../../../common/interfaces/Company.interface"
+import { CompanyService } from "../../../../common/services/CompanyService"
 
 export const UserViewContainer = () => {
   const supabaseImgUrl =
@@ -34,9 +36,17 @@ export const UserViewContainer = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [userData, setUserData] = useState<any>(null)
-  const [userCompanies, setUserCompanies] = useState<any[]>([])
+  const [companies, setCompanies] = useState<GetCompaniesResponse[]>([])
+  // const [userCompanies, setUserCompanies] = useState<any[]>([])
   const [roles, setRoles] = useState<any[]>([])
   const [positions, setPositions] = useState<MasterTable[]>([])
+
+  async function getCompanies() {
+    const data = await CompanyService.getCompanies()
+    if (data) {
+      setCompanies(data)
+    }
+  }
 
   async function getRoles() {
     const data = await RoleService.getRoles()
@@ -61,20 +71,20 @@ export const UserViewContainer = () => {
     }
   }
 
-  async function getUserCompanies(idUser: string) {
-    const data = await UserCompanyService.getUserCompanies(idUser)
-    if (data) {
-      const onlyCompanies = data.map((item) => item.Company)
-      setUserCompanies(onlyCompanies)
-    }
-  }
+  // async function getUserCompanies(idUser: string) {
+  //   const data = await UserCompanyService.getUserCompanies(idUser)
+  //   if (data) {
+  //     const onlyCompanies = data.map((item) => item.Company)
+  //     setUserCompanies(onlyCompanies)
+  //   }
+  // }
 
   async function getAll(idUser: string) {
     setIsLoading(true)
     await getRoles()
     await getPositions()
     await getUserById(idUser)
-    await getUserCompanies(idUser)
+    await getCompanies()
     setIsLoading(false)
   }
 
@@ -249,7 +259,8 @@ export const UserViewContainer = () => {
                   label="Correo"
                 />
               </div>
-              <div className="col-span-12">
+
+              {/* <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="CompanyLabel">Empresas</InputLabel>
                   <Select
@@ -273,6 +284,27 @@ export const UserViewContainer = () => {
                       </Box>
                     )}
                   ></Select>
+                </FormControl>
+              </div> */}
+              <div className="col-span-12">
+                <FormControl fullWidth>
+                  <InputLabel id="RoleLabel">Empresa</InputLabel>
+                  <Select
+                    labelId="CompanyLabel"
+                    id="IdCompany"
+                    name="IdCompany"
+                    value={formik.values.IdCompany}
+                    disabled
+                  >
+                    {companies?.map((company: any) => (
+                      <MenuItem
+                        key={company.IdCompany}
+                        value={company.IdCompany}
+                      >
+                        {company.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
               </div>
             </div>

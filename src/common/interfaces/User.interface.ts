@@ -38,6 +38,7 @@ export interface User {
     Position: string;
     Role: UserRole;
     Company: UserCompany;
+    IdLocal: UserLocal
 }
 
 export interface UserRole {
@@ -54,12 +55,31 @@ export interface UserCompany {
     RequiresOrder: boolean;
 }
 
+export interface UserLocal {
+    IdCompanyLocal: string;
+    IdCompany: string;
+    Name: string;
+    Address: string;
+    Mails: string;
+}
+
 export interface UserCompanyRegister {
     IdUser: string;
     IdCompany: string;
 }
 
+export interface UserLocalRegister {
+    IdUser: string;
+    IdLocal: string;
+}
+
 export interface GetUserCompany {
+    IdCompany: string;
+    Name: string;
+}
+
+export interface GetUserLocal {
+    IdLocal: string;
     IdCompany: string;
     Name: string;
 }

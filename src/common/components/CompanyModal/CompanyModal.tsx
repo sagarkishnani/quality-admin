@@ -1,46 +1,63 @@
 import { Dialog, DialogContent } from "@mui/material"
-import { GetUserCompany } from "../../interfaces/User.interface"
+import { GetUserCompany, GetUserLocal } from "../../interfaces/User.interface"
 import { HiLocationMarker } from "react-icons/hi"
 import { CompanyService } from "../../services/CompanyService"
 import useUserStore from "../../stores/UserStore"
+import { CompanyLocalService } from "../../services/CompanyLocalService"
+import { CompanyLocal } from "../../interfaces/CompanyLocal.interface"
+import { useEffect } from "react"
 
 interface CompanyModalInterface {
   title: string
   open: boolean
-  companies: GetUserCompany[]
+  locals: GetUserLocal[]
   handleClose: () => void
 }
 export const CompanyModal = ({
   title,
   open,
-  companies,
+  locals,
   handleClose,
 }: CompanyModalInterface) => {
   const user = useUserStore((state) => state.user)
   const setUser = useUserStore((state) => state.setUser)
 
-  const handleCompany = async (company: GetUserCompany) => {
-    const data = await CompanyService.getCompanyById(company.IdCompany)
+  const handleCompany = async (local: GetUserLocal) => {
+    const data = await CompanyService.getCompanyById(local.IdCompany)
+    const localData = await CompanyLocalService.getLocalsByIdCompany(
+      local.IdCompany
+    )[0]
 
-    if (data) {
+    if (data && localData) {
       setUser({
         ...user,
-        IdCompany: company.IdCompany,
+        IdCompany: local.IdCompany,
         Company: {
           ...user.Company,
-          IdCompany: company.IdCompany,
-          Name: company.Name,
+          IdCompany: local.IdCompany,
+          Name: local.Name,
           Address: data?.Address,
           Local: data?.Local,
           Ruc: data?.Ruc,
           Mails: data?.Mails,
           RequiresOrder: data?.RequiresOrder,
         },
+        IdLocal: {
+          IdCompanyLocal: localData.IdCompanyLocal,
+          IdCompany: company.IdCompany,
+          Name: localData.Name,
+          Address: localData.Address,
+          Mails: localData.Mails,
+        },
       })
 
       handleClose()
     }
   }
+
+  useEffect(() => {
+    console.log(locals)
+  }, [user])
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -53,18 +70,18 @@ export const CompanyModal = ({
         </div>
         <DialogContent>
           <div className="flex flex-row flex-wrap justify-center">
-            {companies.map((company: GetUserCompany) => (
+            {locals?.map((local: GetUserLocal) => (
               <div
                 className="bg-qLightGray px-6 py-2 m-1 rounded-full hover:bg-qGreen hover:text-white"
                 style={
-                  company.IdCompany === user?.IdCompany
+                  local?.IdLocal === user?.IdLocal?.IdCompanyLocal
                     ? { backgroundColor: "#74C947", color: "white" }
                     : {}
                 }
-                key={company.IdCompany}
+                key={local?.IdLocal}
               >
-                <button onClick={() => handleCompany(company)}>
-                  {company.Name}
+                <button onClick={() => handleCompany(local)}>
+                  {local?.Name}
                 </button>
               </div>
             ))}

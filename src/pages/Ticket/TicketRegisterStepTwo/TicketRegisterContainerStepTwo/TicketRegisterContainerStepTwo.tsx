@@ -132,7 +132,7 @@ export const TicketRegisterContainerStepTwo = () => {
       ticket.IdTicket
     )
 
-    const companyMails = ticket?.Company.Mails.split(",")
+    const companyMails = ticket?.Local.Mails.split(",")
     companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
     if (status == ConstantHttpErrors.OK) {

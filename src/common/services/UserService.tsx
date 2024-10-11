@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js"
 import {
   UserCompanyRegister,
   UserEditRequest,
+  UserLocalRegister,
   UserRegisterRequest,
 } from "../interfaces/User.interface"
 
@@ -267,6 +268,30 @@ async function registerUserCompany(request: UserCompanyRegister) {
   }
 }
 
+async function registerUserLocal(request: UserLocalRegister) {
+  try {
+    const { data, error, status } = await supabase
+      .from("UserLocal")
+      .insert([
+        {
+          IdUser: request.IdUser,
+          IdLocal: request.IdLocal,
+        },
+      ])
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar local del usuario:", error)
+    return error
+  }
+}
+
 async function deleteUserCompany(idUser: string) {
   try {
     const { error, status } = await supabase
@@ -411,6 +436,7 @@ export const UserService = {
   getUsersByRole,
   registerUser,
   registerUserCompany,
+  registerUserLocal,
   editUser,
   deleteUser,
   loginUser,

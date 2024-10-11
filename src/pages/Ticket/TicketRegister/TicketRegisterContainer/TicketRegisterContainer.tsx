@@ -45,6 +45,8 @@ import {
 import { NotificationService } from "../../../../common/services/NotificationService"
 import { RegisterNotificationRequest } from "../../../../common/interfaces/Notification.interface"
 import useUserStore from "../../../../common/stores/UserStore"
+import { CompanyLocalService } from "../../../../common/services/CompanyLocalService"
+import { CompanyLocal } from "../../../../common/interfaces/CompanyLocal.interface"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -64,7 +66,8 @@ export const TicketRegisterContainer = () => {
   >("none")
   const [modalMessage, setModalMessage] = useState("")
   const [areas, setAreas] = useState<MasterTable[]>([])
-  const [selectedArea, setSelectedArea] = useState<MasterTable>()
+  const [locals, setLocals] = useState<CompanyLocal[]>([])
+  const [selectedArea] = useState<MasterTable>()
   const [floors, setFloors] = useState<MasterTable[]>([])
   const [pictures, setPictures] = useState<string[]>([])
   const [selectedImg, setSelectedImg] = useState("")
@@ -125,6 +128,25 @@ export const TicketRegisterContainer = () => {
     setPictures(newPictures)
   }
 
+  const handleLocalChange = (event) => {
+    const selectedValue = event.target.value
+    const chosenLocal = locals.filter(
+      (local) => local.IdCompanyLocal === selectedValue
+    )[0]
+
+    formik.setFieldValue("Local", selectedValue)
+    formik.setFieldValue("Address", chosenLocal.Address)
+  }
+
+  async function getLocals() {
+    const data = await CompanyLocalService.getLocalsByIdCompany(
+      user!.Company.IdCompany
+    )
+    if (data) {
+      setLocals(data)
+    }
+  }
+
   async function getAreas() {
     const data = await MasterTableService.getMasterTableByIdParent(
       ConstantsMasterTable.AREAS
@@ -162,6 +184,7 @@ export const TicketRegisterContainer = () => {
 
   async function getAll() {
     setIsLoading(true)
+    await getLocals()
     await getAreas()
     await getFloors()
     setIsLoading(false)
@@ -259,6 +282,7 @@ export const TicketRegisterContainer = () => {
       IdTicketStatus: "",
       IdTicketCompany: "",
       IdTicketType: "",
+      Local: "",
       Address: "",
       CompanyFloor: "",
       CompanyArea: "",
@@ -291,7 +315,8 @@ export const TicketRegisterContainer = () => {
         IdTicketStatus: "",
         IdTicketCompany: user.Company.Name || "",
         IdTicketType: "",
-        Address: user.Company.Address || "",
+        Local: "",
+        Address: "",
         CompanyFloor: "",
         CompanyArea: "",
         IdUser: user.Name || "",
@@ -321,7 +346,7 @@ export const TicketRegisterContainer = () => {
                   {moment(Date.now()).format("DD/MM/YYYY")}
                 </h2>
               </div>
-              <div className="col-span-12 md:col-span-6">
+              <div className="col-span-12">
                 <TextField
                   disabled
                   color="primary"
@@ -331,6 +356,29 @@ export const TicketRegisterContainer = () => {
                   value={formik.values.IdTicketCompany}
                   label="Empresa"
                 />
+              </div>
+              <div className="col-span-12 md:col-span-6">
+                <FormControl fullWidth>
+                  <InputLabel required id="LocalLabel">
+                    Local
+                  </InputLabel>
+                  <Select
+                    labelId="LocalLabel"
+                    id="Local"
+                    name="Local"
+                    value={formik.values.Local}
+                    onChange={handleLocalChange}
+                  >
+                    {locals?.map((local: CompanyLocal) => (
+                      <MenuItem
+                        key={local.IdCompanyLocal}
+                        value={local.IdCompanyLocal}
+                      >
+                        {local.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
               <div className="col-span-12 md:col-span-6">
                 <TextField

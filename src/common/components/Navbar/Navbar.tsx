@@ -17,7 +17,7 @@ import {
 import { HiOutlineUser, HiOutlineLogout } from "react-icons/hi"
 import unknownUser from "../../../assets/images/user/unknown.png"
 import { CompanyModal } from "../CompanyModal/CompanyModal"
-import { GetUserCompany } from "../../interfaces/User.interface"
+import { GetUserCompany, GetUserLocal } from "../../interfaces/User.interface"
 import { UserCompanyService } from "../../services/UserCompanyService"
 import secureLocalStorage from "react-secure-storage"
 import CustomDrawer from "../Drawer/Drawer"
@@ -25,6 +25,7 @@ import { NotificationService } from "../../services/NotificationService"
 import { Notification } from "../../interfaces/Notification.interface"
 import moment from "moment"
 import useUserStore from "../../stores/UserStore"
+import { UserLocalService } from "../../services/UserLocalService"
 
 export const Navbar = ({ onToggleSidebar }) => {
   const supabaseImgUrl =
@@ -41,6 +42,7 @@ export const Navbar = ({ onToggleSidebar }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage] = useState("Seleccione el local activo")
   const [userCompanies, setUserCompanies] = useState<GetUserCompany[]>([])
+  const [userLocals, setUserLocals] = useState<GetUserLocal[]>([])
   const [notifications, setNotifications] = useState<Notification[]>([])
   const navigate = useNavigate()
 
@@ -87,11 +89,19 @@ export const Navbar = ({ onToggleSidebar }) => {
     setIsModalOpen(true)
   }
 
-  async function getUserCompanies(idUser: string) {
-    const data = await UserCompanyService.getUserCompanies(idUser)
+  // async function getUserCompanies(idUser: string) {
+  //   const data = await UserCompanyService.getUserCompanies(idUser)
+  //   if (data) {
+  //     const onlyCompanies = data.map((item) => item.Company)
+  //     setUserCompanies(onlyCompanies)
+  //   }
+  // }
+
+  async function getUserLocals(idUser: string) {
+    const data = await UserLocalService.getUserLocals(idUser)
     if (data) {
-      const onlyCompanies = data.map((item) => item.Company)
-      setUserCompanies(onlyCompanies)
+      const onlyLocals = data.map((item) => item.CompanyLocal)
+      setUserLocals(onlyLocals)
     }
   }
 
@@ -132,7 +142,7 @@ export const Navbar = ({ onToggleSidebar }) => {
 
   async function getAll(idUser: string) {
     setIsLoading(true)
-    await getUserCompanies(idUser)
+    await getUserLocals(idUser)
     await getNotifications()
     setIsLoading(false)
   }
@@ -173,16 +183,15 @@ export const Navbar = ({ onToggleSidebar }) => {
               <HiChevronDown color="#00A0DF" size={"20"} />
             </div>
           </div>
-          {userCompanies.length > 1 &&
-            user?.IdRole == ConstantRoles.USUARIO && (
-              <div>
-                <Tooltip title="Cambiar local">
-                  <button onClick={handleOpenLocation}>
-                    <HiLocationMarker color="#74C947" size={"32"} />
-                  </button>
-                </Tooltip>
-              </div>
-            )}
+          {/* {userLocals.length > 1 && user?.IdRole == ConstantRoles.USUARIO && (
+            <div>
+              <Tooltip title="Cambiar local">
+                <button onClick={handleOpenLocation}>
+                  <HiLocationMarker color="#74C947" size={"32"} />
+                </button>
+              </Tooltip>
+            </div>
+          )} */}
           <div onClick={() => setDrawerOpen(true)} className="cursor-pointer">
             <Badge
               badgeContent={notifications.length > 0 ? notifications.length : 0}
@@ -215,7 +224,7 @@ export const Navbar = ({ onToggleSidebar }) => {
         title={modalMessage}
         open={isModalOpen}
         handleClose={handleCloseModal}
-        companies={userCompanies}
+        locals={userLocals}
       />
       <CustomDrawer open={drawerOpen} onClose={handleDrawerClose}>
         <div className="mt-12 p-6">

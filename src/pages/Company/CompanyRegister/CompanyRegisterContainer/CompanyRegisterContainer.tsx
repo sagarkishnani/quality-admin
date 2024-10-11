@@ -15,7 +15,7 @@ import {
 import { useState, useEffect } from "react"
 import { Button } from "../../../../common/components/Button/Button"
 import * as yup from "yup"
-import { HiChevronLeft } from "react-icons/hi"
+import { HiChevronLeft, HiOutlineUserAdd, HiOutlineX } from "react-icons/hi"
 import { useFormik } from "formik"
 import { CompanyService } from "../../../../common/services/CompanyService"
 import { CompanyRegisterRequest } from "../../../../common/interfaces/Company.interface"
@@ -31,6 +31,8 @@ import {
 } from "../../../../common/constants"
 import { Link, useNavigate } from "react-router-dom"
 import { MasterTable } from "../../../../common/interfaces/MasterTable.interface"
+import { CompanyLocalService } from "../../../../common/services/CompanyLocalService"
+import { CompanyLocalRegisterRequest } from "../../../../common/interfaces/CompanyLocal.interface"
 
 const validationSchema = yup.object({
   Name: yup.string().required("Nombre de empresa es obligatorio"),
@@ -44,8 +46,8 @@ const validationSchema = yup.object({
     .min(8, "La dirección debe tener como mínimo 8 caracteres")
     .required("Dirección es obligatoria"),
   // ImageUrl: yup.string().required("Debe seleccionar una imagen"),
-  Local: yup.string().required("Local es obligatorio"),
-  Mails: yup.string().required("Correos son obligatorios"),
+  // Local: yup.string().required("Local es obligatorio"),
+  // Mails: yup.string().required("Correos son obligatorios"),
   MainContactName: yup
     .string()
     .required("Nombre de contacto principal es obligatorio"),
@@ -91,6 +93,14 @@ export const CompanyRegisterContainer = () => {
   const [modalMessage, setModalMessage] = useState("")
   const [selectedCurrencies, setSelectedCurrencies] = useState([])
   const [selectedBanks, setSelectedBanks] = useState([])
+  const [localGroups, setLocalGroups] = useState([
+    {
+      Name: "",
+      Address: "",
+      Ubigeo: {},
+      Mails: "",
+    },
+  ])
 
   const [showBillingFields, setShowBillingFields] = useState(false)
   const [showReportFields, setShowReportFields] = useState(false)
@@ -116,6 +126,24 @@ export const CompanyRegisterContainer = () => {
     if (e.target.files && e.target.files.length > 0) {
       setImgEvent(e.target.files[0])
     }
+  }
+
+  const handleAddGroup = () => {
+    setLocalGroups([...localGroups, { Local: "", Ubigeo: "" }])
+  }
+
+  const handleRemoveGroup = (index) => {
+    const updatedGroups = localGroups.filter(
+      (_, groupIndex) => groupIndex !== index
+    )
+    setLocalGroups(updatedGroups)
+  }
+
+  const handleChange = (index, field, value) => {
+    const updatedGroups = localGroups.map((group, groupIndex) =>
+      groupIndex === index ? { ...group, [field]: value } : group
+    )
+    setLocalGroups(updatedGroups)
   }
 
   async function getAll() {
@@ -181,6 +209,14 @@ export const CompanyRegisterContainer = () => {
     }
   }
 
+  async function registerLocal(request: CompanyLocalRegisterRequest) {
+    const { data, status }: any = await CompanyLocalService.registerLocal(
+      request
+    )
+
+    return { data, status }
+  }
+
   useEffect(() => {
     getAll()
   }, [])
@@ -197,6 +233,18 @@ export const CompanyRegisterContainer = () => {
       return
     }
     const { data, status }: any = await CompanyService.registerCompany(request)
+
+    for (const element of localGroups) {
+      const req: CompanyLocalRegisterRequest = {
+        IdCompany: data[0].IdCompany,
+        Name: element.Name,
+        Address: element.Address,
+        Mails: element.Mails,
+        Ubigeo: element.Ubigeo.id_ubigeo,
+      }
+
+      await registerLocal(req)
+    }
     const dataImage = await CompanyService.uploadCompanyLogo(
       request.ImgUrl,
       imageFile
@@ -402,21 +450,7 @@ export const CompanyRegisterContainer = () => {
                 {imgEvent == null ? "Seleccione logo" : imgEvent.name}
               </label>
             </div>
-            <div className="col-span-12">
-              <TextField
-                className="w-full"
-                required
-                id="Local"
-                name="Local"
-                label="Nombre de local"
-                value={formik.values.Local}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.Local && Boolean(formik.errors.Local)}
-                helperText={formik.touched.Local && formik.errors.Local}
-              />
-            </div>
-            <div className="col-span-12 md:col-span-8">
+            {/* <div className="col-span-12 md:col-span-8">
               <TextField
                 color="primary"
                 className="w-full"
@@ -430,7 +464,7 @@ export const CompanyRegisterContainer = () => {
                 helperText={formik.touched.Mails && formik.errors.Mails}
                 label="Correos (separados por comas)"
               />
-            </div>
+            </div> */}
             <div className="col-span-12 md:col-span-4">
               <FormControlLabel
                 name="RequiresOrder"
@@ -440,6 +474,143 @@ export const CompanyRegisterContainer = () => {
                 control={<Switch />}
                 label="Requiere orden de compra"
               />
+            </div>
+            <div className="col-span-12">
+              <h4 className="text-sm text-qGray font-semibold pb-2">
+                DATOS DE LOCALES
+              </h4>
+            </div>
+            {localGroups.map((group, groupIndex) => (
+              <div
+                key={groupIndex}
+                className="col-span-12 grid grid-cols-12 gap-4 mb-4"
+              >
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    required
+                    id={`Name-${groupIndex}`}
+                    name={`Name-${groupIndex}`}
+                    label="Nombre de local"
+                    value={group.Name}
+                    onChange={(e) =>
+                      handleChange(groupIndex, "Name", e.target.value)
+                    }
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.Name && Boolean(formik.errors.Name)}
+                    helperText={formik.touched.Name && formik.errors.Name}
+                  />
+                </div>
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    required
+                    id={`Address-${groupIndex}`}
+                    name={`Address-${groupIndex}`}
+                    label="Dirección Fiscal"
+                    value={group.Address}
+                    onChange={(e) =>
+                      handleChange(groupIndex, "Address", e.target.value)
+                    }
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.Address && Boolean(formik.errors.Address)
+                    }
+                    helperText={formik.touched.Address && formik.errors.Address}
+                  />
+                </div>
+                <div className="col-span-6">
+                  <Autocomplete
+                    className="w-full"
+                    disablePortal
+                    options={ubigeos}
+                    onChange={(event, newValue) => {
+                      handleChange(
+                        groupIndex,
+                        "Ubigeo",
+                        newValue ? newValue : ""
+                      )
+                    }}
+                    value={
+                      ubigeos.find(
+                        (option) =>
+                          option.departamento === group.Ubigeo.departamento &&
+                          option.provincia === group.Ubigeo.provincia &&
+                          option.distrito === group.Ubigeo.distrito
+                      ) || null
+                    }
+                    filterOptions={(options, { inputValue }) =>
+                      options
+                        .filter(
+                          (item) =>
+                            item.departamento
+                              .toLowerCase()
+                              .includes(inputValue.toLowerCase()) ||
+                            item.provincia
+                              .toLowerCase()
+                              .includes(inputValue.toLowerCase()) ||
+                            item.distrito
+                              .toLowerCase()
+                              .includes(inputValue.toLowerCase())
+                        )
+                        .slice(0, 25)
+                    }
+                    getOptionLabel={(option) =>
+                      option?.departamento
+                        ? `${option.departamento} - ${option.provincia} - ${option.distrito}`
+                        : ""
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        name={`Ubigeo-${groupIndex}`}
+                        {...params}
+                        label="Departamento - Provincia - Distrito"
+                      />
+                    )}
+                    openText="Mostrar opciones"
+                    noOptionsText="No hay opciones"
+                  />
+                </div>
+                <div className="col-span-6">
+                  <TextField
+                    className="w-full"
+                    required
+                    id={`Mails-${groupIndex}`}
+                    name={`Mails-${groupIndex}`}
+                    label="Correos (separados por comas)"
+                    value={group.Mails}
+                    onChange={(e) =>
+                      handleChange(groupIndex, "Mails", e.target.value)
+                    }
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.Mails && Boolean(formik.errors.Mails)}
+                    helperText={formik.touched.Mails && formik.errors.Mails}
+                  />
+                </div>
+                <div className="text-left col-span-12">
+                  {localGroups.length > 1 && (
+                    <>
+                      <HiOutlineX
+                        color="#C94F47"
+                        className="inline cursor-pointer"
+                        size={"24"}
+                        onClick={() => handleRemoveGroup(groupIndex)}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+            <div
+              className="text-right col-span-12 cursor-pointer"
+              onClick={handleAddGroup}
+            >
+              <HiOutlineUserAdd
+                color="#00A0DF"
+                className="inline"
+                size={"24"}
+              />
+              <div className="text-qBlue">Agregar local</div>
             </div>
             <div className="col-span-12">
               <h4 className="text-sm text-qGray font-semibold py-2">

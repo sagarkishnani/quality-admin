@@ -67,6 +67,7 @@ export const TicketRegisterCompleteFormOne = ({
       IdTicketStatus: "",
       IdTicketCompany: "",
       IdTicketType: "",
+      Local: "",
       Address: "",
       CompanyFloor: "",
       CompanyArea: "",
@@ -97,6 +98,7 @@ export const TicketRegisterCompleteFormOne = ({
         IdTicketCompany: ticket.Company.Name || "",
         IdTicketType: ticket.IdTicketType || "",
         Address: ticket.Company.Address || "",
+        Local: ticket.Local.Name || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
         IdUser: ticket?.User?.Name || "",
@@ -147,7 +149,7 @@ export const TicketRegisterCompleteFormOne = ({
             }
           />
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-12">
           <TextField
             disabled
             color="primary"
@@ -156,6 +158,17 @@ export const TicketRegisterCompleteFormOne = ({
             name="IdTicketCompany"
             value={formik.values.IdTicketCompany}
             label="Empresa"
+          />
+        </div>
+        <div className="col-span-12 md:col-span-6">
+          <TextField
+            disabled
+            color="primary"
+            className="w-full"
+            id="Local"
+            name="Local"
+            value={formik.values.Local}
+            label="Local"
           />
         </div>
         <div className="col-span-12 md:col-span-6">

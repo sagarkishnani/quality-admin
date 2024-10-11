@@ -8,9 +8,13 @@ import { ConstantLocalStorage, ConstantRoles } from "../../../common/constants"
 import { UserCompanyService } from "../../../common/services/UserCompanyService"
 import { useEffect, useState } from "react"
 import { CompanyModal } from "../../../common/components/CompanyModal/CompanyModal"
-import { GetUserCompany } from "../../../common/interfaces/User.interface"
+import {
+  GetUserCompany,
+  GetUserLocal,
+} from "../../../common/interfaces/User.interface"
 import secureLocalStorage from "react-secure-storage"
 import useUserStore from "../../../common/stores/UserStore"
+import { UserLocalService } from "../../../common/services/UserLocalService"
 
 export const WelcomeScreen = () => {
   const user = useUserStore((state) => state.user)
@@ -19,25 +23,45 @@ export const WelcomeScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalMessage] = useState("Seleccione el local activo")
   const [userCompanies, setUserCompanies] = useState<GetUserCompany[]>([])
+  const [userLocals, setUserLocals] = useState<GetUserLocal[]>([])
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
   }
 
-  async function getUserCompanies(idUser: string) {
+  // async function getUserCompanies(idUser: string) {
+  //   const hasLocation = secureLocalStorage.getItem(
+  //     ConstantLocalStorage.LOCATION
+  //   )
+  //   const data = await UserCompanyService.getUserCompanies(idUser)
+  //   if (data) {
+  //     const onlyCompanies = data.map((item) => item.Company)
+  //     setUserCompanies(onlyCompanies)
+  //     if (
+  //       data.length > 1 &&
+  //       user?.IdRole === ConstantRoles.USUARIO &&
+  //       !hasLocation
+  //     ) {
+  //       setIsModalOpen(true)
+  //       secureLocalStorage.setItem(ConstantLocalStorage.LOCATION, true)
+  //     }
+  //   }
+  // }
+
+  async function getUserLocals(idUser: string) {
     const hasLocation = secureLocalStorage.getItem(
       ConstantLocalStorage.LOCATION
     )
-    const data = await UserCompanyService.getUserCompanies(idUser)
+    const data = await UserLocalService.getUserLocals(idUser)
     if (data) {
-      const onlyCompanies = data.map((item) => item.Company)
-      setUserCompanies(onlyCompanies)
+      const onlyCompanies = data.map((item) => item.CompanyLocal)
+      setUserLocals(onlyCompanies)
       if (
         data.length > 1 &&
         user?.IdRole === ConstantRoles.USUARIO &&
         !hasLocation
       ) {
-        setIsModalOpen(true)
+        // setIsModalOpen(true)
         secureLocalStorage.setItem(ConstantLocalStorage.LOCATION, true)
       }
     }
@@ -45,7 +69,7 @@ export const WelcomeScreen = () => {
 
   async function getAll(idUser: string) {
     setIsLoading(true)
-    await getUserCompanies(idUser)
+    await getUserLocals(idUser)
     setIsLoading(false)
   }
 
@@ -100,7 +124,7 @@ export const WelcomeScreen = () => {
         title={modalMessage}
         open={isModalOpen}
         handleClose={handleCloseModal}
-        companies={userCompanies}
+        locals={userLocals}
       />
     </>
   )

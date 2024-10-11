@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react"
 import { useFormik } from "formik"
-import { InputLabel, TextField } from "@mui/material"
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material"
 import moment from "moment"
 import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
 import { ConstantFilePurpose } from "../../../../../common/constants"
+import { CompanyLocal } from "../../../../../common/interfaces/CompanyLocal.interface"
 
 export const TicketRegisterViewFormOne = ({ ticket }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [pictures, setTicketPictures] = useState<[]>(ticket.TicketFile)
   const [selectedImg, setSelectedImg] = useState("")
+  const [locals, setLocals] = useState<CompanyLocal[]>([])
   const [isImageModal, setIsImageModal] = useState<boolean>(false)
   const { setTicketStep } = useTicket()
 
@@ -35,6 +43,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
       IdTicketStatus: "",
       IdTicketCompany: "",
       IdTicketType: "",
+      Local: "",
       Address: "",
       CompanyFloor: "",
       CompanyArea: "",
@@ -58,7 +67,12 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
         IdTicketStatus: ticket.IdTicketStatus || "",
         IdTicketCompany: ticket.Company.Name || "",
         IdTicketType: ticket.IdTicketType || "",
-        Address: ticket.Company.Address || "",
+        Local: ticket?.Local?.Name || "",
+        Address: ticket?.Local?.Address
+          ? ticket?.Local?.Address
+          : ticket?.Company?.Address
+          ? ticket?.Company?.Address
+          : "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
         IdUser: ticket?.User.Name || "",
@@ -143,7 +157,7 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
               </div>
             </>
           ))}
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-12">
           <TextField
             disabled
             color="primary"
@@ -154,7 +168,26 @@ export const TicketRegisterViewFormOne = ({ ticket }) => {
             label="Empresa"
           />
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div
+          className={
+            ticket?.Local?.Name ? "col-span-12 md:col-span-6" : "hidden"
+          }
+        >
+          <TextField
+            disabled
+            color="primary"
+            className="w-full"
+            id="Local"
+            name="Local"
+            value={formik.values.Local}
+            label="Local"
+          />
+        </div>
+        <div
+          className={
+            ticket?.Local?.Name ? "col-span-12 md:col-span-6" : "col-span-12"
+          }
+        >
           <TextField
             disabled
             color="primary"

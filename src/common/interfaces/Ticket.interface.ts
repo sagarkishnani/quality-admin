@@ -1,5 +1,6 @@
 import { Moment } from "moment";
 import { RegisterTicketAnswerRequest } from "./TicketAnswer.interface";
+import { CompanyLocal } from "./CompanyLocal.interface";
 
 export interface GetTicketsResponse {
     IdTicket: string;
@@ -25,6 +26,7 @@ export interface TicketRegisterStepOneRequest {
     IdTicketStatus: string;
     IdTicketCompany: string;
     IdTicketType: string;
+    Local: string;
     IdUser: string;
     ReportedFailure: string;
     CompanyFloor: string;
@@ -125,6 +127,7 @@ export interface GetTicketById {
     GuideTwo: string | null;
     FoundFailure: string | null;
     Company: GetTicketByIdCompany;
+    Local: CompanyLocal;
     CompanyFloor: string;
     CompanyArea: string;
     ReportedFailure: string;
