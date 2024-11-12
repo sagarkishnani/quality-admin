@@ -97,8 +97,12 @@ export const TicketRegisterCompleteFormOne = ({
         IdTicketStatus: ticket.IdTicketStatus || "",
         IdTicketCompany: ticket.Company.Name || "",
         IdTicketType: ticket.IdTicketType || "",
-        Address: ticket.Company.Address || "",
-        Local: ticket.Local.Name || "",
+        Address: ticket?.Local?.Address
+          ? ticket?.Local?.Address
+          : ticket?.Company?.Address
+          ? ticket?.Company?.Address
+          : "",
+        Local: ticket?.Local?.Name || "",
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
         IdUser: ticket?.User?.Name || "",
@@ -160,7 +164,11 @@ export const TicketRegisterCompleteFormOne = ({
             label="Empresa"
           />
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div
+          className={
+            ticket?.Local?.Name ? "col-span-12 md:col-span-6" : "hidden"
+          }
+        >
           <TextField
             disabled
             color="primary"
@@ -171,7 +179,11 @@ export const TicketRegisterCompleteFormOne = ({
             label="Local"
           />
         </div>
-        <div className="col-span-12 md:col-span-6">
+        <div
+          className={
+            ticket?.Local?.Name ? "col-span-12 md:col-span-6" : "col-span-12"
+          }
+        >
           <TextField
             disabled
             color="primary"

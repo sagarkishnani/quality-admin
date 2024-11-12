@@ -368,9 +368,9 @@ export const TicketRegisterCompleteFormSix = () => {
 
         if (dataSignatureOne && dataSignatureTwo) {
           const pdfData = {
-            RecordCreationDate: moment(ticket?.RecordCreationDate).format(
-              "DD/MM/YYYY"
-            ),
+            RecordCreationDate: moment(
+              request.StepOne.AppointmentInitTime
+            ).format("DD/MM/YYYY"),
             AppointmentInitTime: moment(
               request.StepOne.AppointmentInitTime
             ).format("HH:mm"),
@@ -518,7 +518,16 @@ export const TicketRegisterCompleteFormSix = () => {
                 content: base64,
               }
 
-              const companyMails = ticket?.Local.Mails.split(",")
+              let companyMails: string[] = []
+
+              if (ticket?.Local?.Mails) {
+                companyMails = ticket?.Local?.Mails.split(",")
+              } else if (ticket?.Local?.Mails == null) {
+                companyMails = ticket?.Company?.Mails.split(",")
+              } else {
+                companyMails = []
+              }
+
               isFacturable
                 ? companyMails?.push("asistente.adm@qualitysumprint.com")
                 : companyMails?.push("soporte.tecnico@qualitysumprint.com")
@@ -792,7 +801,7 @@ export const TicketRegisterCompleteFormSix = () => {
                   <div className="register_profile_image overflow-x-hidden">
                     <input
                       type="file"
-                      accept=".png, .jpg, .gif, .svg, .webp"
+                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp"
                       onChange={onChangeFirstSignature}
                       className="border-none bg-none text-qBlue underline font-medium"
                     />
@@ -858,7 +867,7 @@ export const TicketRegisterCompleteFormSix = () => {
                   <div className="register_profile_image overflow-x-hidden">
                     <input
                       type="file"
-                      accept=".png, .jpg, .gif, .svg, .webp"
+                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp"
                       onChange={onChangeSecondSignature}
                       className="border-none bg-none text-qBlue underline font-medium"
                     />

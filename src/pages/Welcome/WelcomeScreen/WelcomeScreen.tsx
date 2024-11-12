@@ -29,47 +29,47 @@ export const WelcomeScreen = () => {
     setIsModalOpen(false)
   }
 
-  // async function getUserCompanies(idUser: string) {
-  //   const hasLocation = secureLocalStorage.getItem(
-  //     ConstantLocalStorage.LOCATION
-  //   )
-  //   const data = await UserCompanyService.getUserCompanies(idUser)
-  //   if (data) {
-  //     const onlyCompanies = data.map((item) => item.Company)
-  //     setUserCompanies(onlyCompanies)
-  //     if (
-  //       data.length > 1 &&
-  //       user?.IdRole === ConstantRoles.USUARIO &&
-  //       !hasLocation
-  //     ) {
-  //       setIsModalOpen(true)
-  //       secureLocalStorage.setItem(ConstantLocalStorage.LOCATION, true)
-  //     }
-  //   }
-  // }
-
-  async function getUserLocals(idUser: string) {
+  async function getUserCompanies(idUser: string) {
     const hasLocation = secureLocalStorage.getItem(
       ConstantLocalStorage.LOCATION
     )
-    const data = await UserLocalService.getUserLocals(idUser)
+    const data = await UserCompanyService.getUserCompanies(idUser)
     if (data) {
-      const onlyCompanies = data.map((item) => item.CompanyLocal)
-      setUserLocals(onlyCompanies)
+      const onlyCompanies = data.map((item) => item.Company)
+      setUserCompanies(onlyCompanies)
       if (
         data.length > 1 &&
         user?.IdRole === ConstantRoles.USUARIO &&
         !hasLocation
       ) {
-        // setIsModalOpen(true)
+        setIsModalOpen(true)
         secureLocalStorage.setItem(ConstantLocalStorage.LOCATION, true)
       }
     }
   }
 
+  // async function getUserLocals(idUser: string) {
+  //   const hasLocation = secureLocalStorage.getItem(
+  //     ConstantLocalStorage.LOCATION
+  //   )
+  //   const data = await UserLocalService.getUserLocals(idUser)
+  //   if (data) {
+  //     const onlyCompanies = data.map((item) => item.CompanyLocal)
+  //     setUserLocals(onlyCompanies)
+  //     if (
+  //       data.length > 1 &&
+  //       user?.IdRole === ConstantRoles.USUARIO &&
+  //       !hasLocation
+  //     ) {
+  //       // setIsModalOpen(true)
+  //       secureLocalStorage.setItem(ConstantLocalStorage.LOCATION, true)
+  //     }
+  //   }
+  // }
+
   async function getAll(idUser: string) {
     setIsLoading(true)
-    await getUserLocals(idUser)
+    await getUserCompanies(idUser)
     setIsLoading(false)
   }
 
@@ -124,7 +124,7 @@ export const WelcomeScreen = () => {
         title={modalMessage}
         open={isModalOpen}
         handleClose={handleCloseModal}
-        locals={userLocals}
+        companies={userCompanies}
       />
     </>
   )

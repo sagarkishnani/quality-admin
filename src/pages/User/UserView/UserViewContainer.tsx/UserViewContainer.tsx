@@ -37,7 +37,7 @@ export const UserViewContainer = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [userData, setUserData] = useState<any>(null)
   const [companies, setCompanies] = useState<GetCompaniesResponse[]>([])
-  // const [userCompanies, setUserCompanies] = useState<any[]>([])
+  const [userCompanies, setUserCompanies] = useState<any[]>([])
   const [roles, setRoles] = useState<any[]>([])
   const [positions, setPositions] = useState<MasterTable[]>([])
 
@@ -71,19 +71,20 @@ export const UserViewContainer = () => {
     }
   }
 
-  // async function getUserCompanies(idUser: string) {
-  //   const data = await UserCompanyService.getUserCompanies(idUser)
-  //   if (data) {
-  //     const onlyCompanies = data.map((item) => item.Company)
-  //     setUserCompanies(onlyCompanies)
-  //   }
-  // }
+  async function getUserCompanies(idUser: string) {
+    const data = await UserCompanyService.getUserCompanies(idUser)
+    if (data) {
+      const onlyCompanies = data.map((item) => item.Company)
+      setUserCompanies(onlyCompanies)
+    }
+  }
 
   async function getAll(idUser: string) {
     setIsLoading(true)
     await getRoles()
     await getPositions()
     await getUserById(idUser)
+    await getUserCompanies(idUser)
     await getCompanies()
     setIsLoading(false)
   }
@@ -260,7 +261,7 @@ export const UserViewContainer = () => {
                 />
               </div>
 
-              {/* <div className="col-span-12">
+              <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="CompanyLabel">Empresas</InputLabel>
                   <Select
@@ -285,8 +286,8 @@ export const UserViewContainer = () => {
                     )}
                   ></Select>
                 </FormControl>
-              </div> */}
-              <div className="col-span-12">
+              </div>
+              {/* <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="RoleLabel">Empresa</InputLabel>
                   <Select
@@ -306,7 +307,7 @@ export const UserViewContainer = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </div>
+              </div> */}
             </div>
           )}
           {isLoading && (

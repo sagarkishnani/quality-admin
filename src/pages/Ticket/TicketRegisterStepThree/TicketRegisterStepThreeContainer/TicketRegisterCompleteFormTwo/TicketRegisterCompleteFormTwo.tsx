@@ -808,7 +808,7 @@ export const TicketRegisterCompleteFormTwo = ({
               <input
                 id="profilePic"
                 type="file"
-                accept=".png, .jpg, .gif, .svg, .webp"
+                accept=".png, .jpg, .jpeg, .gif, .svg, .webp"
                 onChange={onChangePicture}
                 multiple
                 className="border-none bg-none text-qBlue underline font-medium"

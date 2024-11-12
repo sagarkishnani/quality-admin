@@ -120,7 +120,7 @@ export const TicketRegisterFacturable = () => {
     )[0]
 
     const pdfData = {
-      RecordCreationDate: moment(ticket?.RecordCreationDate).format(
+      RecordCreationDate: moment(ticket?.AppointmentInitTime).format(
         "DD/MM/YYYY"
       ),
       AppointmentInitTime: moment(ticket?.AppointmentInitTime).format("HH:mm"),

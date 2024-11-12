@@ -113,10 +113,10 @@ export const UserRegisterContainer = () => {
   }
 
   const handleCompanyChange = async (event) => {
-    // setSelectedCompanies(event.target.value)
-    formik.setFieldValue("IdCompany", event.target.value)
-    setSelectedLocals([])
-    await getLocals(event.target.value)
+    setSelectedCompanies(event.target.value)
+    // formik.setFieldValue("IdCompany", event.target.value)
+    // setSelectedLocals([])
+    // await getLocals(event.target.value)
   }
 
   const handleLocalChange = (event) => {
@@ -136,27 +136,27 @@ export const UserRegisterContainer = () => {
 
     const idUser: any = await UserService.registerUser(request)
     if (idUser) {
-      // for (const company of selectedCompanies) {
-      //   const request: UserCompanyRegister = {
-      //     IdUser: idUser,
-      //     IdCompany: company,
-      //   }
+      for (const company of selectedCompanies) {
+        const request: UserCompanyRegister = {
+          IdUser: idUser,
+          IdCompany: company,
+        }
 
-      // for (const local of selectedLocals) {
-      //   const request: UserLocalRegister = {
-      //     IdUser: idUser,
-      //     IdLocal: local,
-      //   }
+        // for (const local of selectedLocals) {
+        //   const request: UserLocalRegister = {
+        //     IdUser: idUser,
+        //     IdLocal: local,
+        //   }
 
-      //   const { status }: any = await UserService.registerUserLocal(request)
+        const { status }: any = await UserService.registerUserCompany(request)
 
-      //   if (status !== ConstantHttpErrors.CREATED) {
-      //     setIsLoadingAction(false)
-      //     setIsModalOpen(true)
-      //     setModalType("error")
-      //     setModalMessage(ConstantMessage.SERVICE_ERROR)
-      //   }
-      // }
+        if (status !== ConstantHttpErrors.CREATED) {
+          setIsLoadingAction(false)
+          setIsModalOpen(true)
+          setModalType("error")
+          setModalMessage(ConstantMessage.SERVICE_ERROR)
+        }
+      }
 
       setIsModalOpen(true)
       setModalType("success")
@@ -188,7 +188,7 @@ export const UserRegisterContainer = () => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      // values.IdCompany = selectedCompanies[0]
+      values.IdCompany = selectedCompanies[0]
       // values.Local = selectedLocals[0]
       registerUser(values)
     },
@@ -282,7 +282,7 @@ export const UserRegisterContainer = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div className="col-span-12">
+              {/* <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="RoleLabel">Empresa</InputLabel>
                   <Select
@@ -302,8 +302,8 @@ export const UserRegisterContainer = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </div>
-              {/* <div className="col-span-12">
+              </div> */}
+              <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="IdCompanyLabel">Empresas</InputLabel>
                   <Select
@@ -343,7 +343,7 @@ export const UserRegisterContainer = () => {
                     ))}
                   </Select>
                 </FormControl>
-              </div> */}
+              </div>
               {/* <div className="col-span-12">
                 <FormControl fullWidth>
                   <InputLabel id="IdLocalLabel">Locales</InputLabel>

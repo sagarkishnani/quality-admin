@@ -89,21 +89,21 @@ export const Navbar = ({ onToggleSidebar }) => {
     setIsModalOpen(true)
   }
 
-  // async function getUserCompanies(idUser: string) {
-  //   const data = await UserCompanyService.getUserCompanies(idUser)
-  //   if (data) {
-  //     const onlyCompanies = data.map((item) => item.Company)
-  //     setUserCompanies(onlyCompanies)
-  //   }
-  // }
-
-  async function getUserLocals(idUser: string) {
-    const data = await UserLocalService.getUserLocals(idUser)
+  async function getUserCompanies(idUser: string) {
+    const data = await UserCompanyService.getUserCompanies(idUser)
     if (data) {
-      const onlyLocals = data.map((item) => item.CompanyLocal)
-      setUserLocals(onlyLocals)
+      const onlyCompanies = data.map((item) => item.Company)
+      setUserCompanies(onlyCompanies)
     }
   }
+
+  // async function getUserLocals(idUser: string) {
+  //   const data = await UserLocalService.getUserLocals(idUser)
+  //   if (data) {
+  //     const onlyLocals = data.map((item) => item.CompanyLocal)
+  //     setUserLocals(onlyLocals)
+  //   }
+  // }
 
   async function getNotifications() {
     if (
@@ -142,7 +142,7 @@ export const Navbar = ({ onToggleSidebar }) => {
 
   async function getAll(idUser: string) {
     setIsLoading(true)
-    await getUserLocals(idUser)
+    await getUserCompanies(idUser)
     await getNotifications()
     setIsLoading(false)
   }
@@ -183,15 +183,16 @@ export const Navbar = ({ onToggleSidebar }) => {
               <HiChevronDown color="#00A0DF" size={"20"} />
             </div>
           </div>
-          {/* {userLocals.length > 1 && user?.IdRole == ConstantRoles.USUARIO && (
-            <div>
-              <Tooltip title="Cambiar local">
-                <button onClick={handleOpenLocation}>
-                  <HiLocationMarker color="#74C947" size={"32"} />
-                </button>
-              </Tooltip>
-            </div>
-          )} */}
+          {userCompanies.length > 1 &&
+            user?.IdRole == ConstantRoles.USUARIO && (
+              <div>
+                <Tooltip title="Cambiar empresa">
+                  <button onClick={handleOpenLocation}>
+                    <HiLocationMarker color="#74C947" size={"32"} />
+                  </button>
+                </Tooltip>
+              </div>
+            )}
           <div onClick={() => setDrawerOpen(true)} className="cursor-pointer">
             <Badge
               badgeContent={notifications.length > 0 ? notifications.length : 0}
@@ -224,7 +225,7 @@ export const Navbar = ({ onToggleSidebar }) => {
         title={modalMessage}
         open={isModalOpen}
         handleClose={handleCloseModal}
-        locals={userLocals}
+        companies={userCompanies}
       />
       <CustomDrawer open={drawerOpen} onClose={handleDrawerClose}>
         <div className="mt-12 p-6">
