@@ -411,7 +411,7 @@ async function getFilteredTicketsByExcel(
   const initdate = request.InitDate
   const enddate = request.EndDate
   try {
-    const { data, error } = await supabase.rpc("exportar_excel", {
+    const { data, error } = await supabase.rpc("exportar_excel_v2", {
       attended,
       cancelled,
       initdate,

@@ -271,7 +271,7 @@ export const ExcelModal = ({
                 </div>
                 <div className="col-span-4 mt-2">
                   <h4 className="text-qGreen font-medium pb-2">
-                    Seleccione las empresas/locales
+                    Seleccione las empresas
                   </h4>
                   <FormControl fullWidth>
                     <InputLabel id="IdCompanyLabel">Empresas</InputLabel>

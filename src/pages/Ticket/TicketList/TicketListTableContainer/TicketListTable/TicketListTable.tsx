@@ -1,7 +1,7 @@
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
 import { Badge } from "../../../../../common/components/Badge/Badge"
 import moment from "moment"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   HiBan,
   HiOutlineClipboardCheck,
@@ -162,11 +162,13 @@ export const TicketListTable = ({
       {
         accessorFn: (row) => row.CodeTicket,
         header: "ID",
+        enableHiding: false,
         size: 80,
       },
       {
         accessorFn: (row) => row.Company,
         header: "Empresa",
+        enableHiding: false,
         size: 260,
         grow: true,
         Cell: (params) => {
@@ -185,6 +187,7 @@ export const TicketListTable = ({
       {
         accessorFn: (row) => row.Status,
         header: "Estado",
+        enableHiding: false,
         size: 130,
         Cell: (params) => {
           return (
@@ -248,6 +251,24 @@ export const TicketListTable = ({
         },
       },
       {
+        accessorFn: (row) => row.AppointmentDate,
+        header: "Fecha de atención",
+        size: 120,
+        Cell: (params) => {
+          if (params.row.original.AppointmentDate) {
+            return (
+              <p>
+                {moment(params.row.original.AppointmentDate).format(
+                  "DD/MM/YYYY"
+                )}
+              </p>
+            )
+          } else {
+            return ""
+          }
+        },
+      },
+      {
         accessorKey: "Detail",
         header: "",
         size: 80,
@@ -292,6 +313,21 @@ export const TicketListTable = ({
     enableColumnActions: false,
     enableColumnFilters: false,
   })
+
+  useEffect(() => {
+    const updateColumnVisibility = () => {
+      const isWideScreen = window.innerWidth > 1669
+      table.setColumnVisibility({ "Fecha de atención": isWideScreen })
+    }
+
+    updateColumnVisibility()
+
+    window.addEventListener("resize", updateColumnVisibility)
+
+    return () => {
+      window.removeEventListener("resize", updateColumnVisibility)
+    }
+  }, [table])
 
   return (
     <>
