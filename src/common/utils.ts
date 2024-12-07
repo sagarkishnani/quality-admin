@@ -72,7 +72,7 @@ export const generateTableHTML = (serviceList: any[]) => {
 };
 
 export function generateRegisterTicketMail(user: string, company: string, link: string) {
-  const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user}</strong> de la empresa <strong>${company}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href=${link} target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z">`
+  const html = `<p>Se ha registrado un nuevo ticket por parte del usuario <strong>${user}</strong> de la empresa <strong>${company}</strong>.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z">`
 
   return html
 }
@@ -87,31 +87,31 @@ export function generateAssignTicketMail(idTechnician: string | null, scheduledA
       ScheduledAppointmentTime
     ).format("HH:MM")}</strong> en <strong>${company} - ${address
     } - Piso ${floor
-    }</strong>. </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href=${link} target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z">`
+    }</strong>. </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z">`
 
   return html
 }
 
 export function generateMailNotFacturable(user: string, company: string, isFacturable: boolean, requiresOrder: boolean) {
-  const html = `<p>Se ${isFacturable ? 'atendió' : 'dio por finalizado'} el ticket del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>. ${requiresOrder && isFacturable ? 'La empresa <strong>requiere orden de compra</strong>' : ''} Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+  const html = `<p>Se ${isFacturable ? 'atendió' : 'dio por finalizado'} el ticket del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>. ${requiresOrder && isFacturable ? 'La empresa <strong>requiere orden de compra</strong>' : ''} Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
   return html
 }
 
 export function generateMailFacturable(user: string, company: string) {
-  const html = `<p>Se atendió el ticket del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+  const html = `<p>Se atendió el ticket del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
   return html
 }
 
 export function generateMailFacturableWithServices(user: string, company: string, servicesTable: string, total: number) {
-  const html = `<p>Se envía el costo y detalle del servicio de ticket del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br> <p>Para realizar acciones y confirmar el servicio, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+  const html = `<p>Se envía el costo y detalle del servicio de ticket del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
   return html
 }
 
 export function generateMailFacturableWithServicesUserResponse(user: string, company: string, servicesTable: string, total: number, response: boolean, requiresOrder: boolean) {
-  const html = `<p>El usuario <strong>${user}</strong> de la empresa <strong>${company}</strong> ${response ? 'aceptó' : 'rechazó'} la cotización del servicio, por lo que el ticket ${response ? 'ha finalizado' : 'quedará abierto'}.</p> ${requiresOrder && response ? 'La empresa <strong>requiere orden de compra</strong>' : ''}. </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br> <p>Para realizar acciones, ingresar al siguiente enlace <a href="https://qa.qualitysumprint.com" target="_blank">Haz click aquí</a></p> </br></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
+  const html = `<p>El usuario <strong>${user}</strong> de la empresa <strong>${company}</strong> ${response ? 'aceptó' : 'rechazó'} la cotización del servicio, por lo que el ticket ${response ? 'ha finalizado' : 'quedará abierto'}.</p> ${requiresOrder && response ? 'La empresa <strong>requiere orden de compra</strong>' : ''}. </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-footer.jpg?t=2023-12-15T16%3A01%3A39.800Z" alt="">`
 
   return html
 }
