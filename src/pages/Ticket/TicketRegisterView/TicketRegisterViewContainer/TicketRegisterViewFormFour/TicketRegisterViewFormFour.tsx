@@ -407,7 +407,7 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
                 }
               />
               <FormControlLabel
-                label="Cambio de AOF"
+                label="Cambio de ADF"
                 control={
                   <Checkbox
                     id="CambioAOF"
