@@ -301,6 +301,7 @@ export const TicketRegisterFacturable = () => {
             to: companyMails,
             subject: "Finalización de servicio - Facturable",
             html: generateMailFacturableWithServicesUserResponse(
+              ticket?.IdTicket,
               ticket?.User.Name,
               ticket?.Company.Name,
               mailOptions().servicesTableHTML,
@@ -511,6 +512,7 @@ export const TicketRegisterFacturable = () => {
             subject:
               "Costo de servicios - Facturable (En espera de confirmación)",
             html: generateMailFacturableWithServices(
+              ticket?.IdTicket,
               ticket?.User.Name,
               ticket?.Company.Name,
               mailOptions().servicesTableHTML,

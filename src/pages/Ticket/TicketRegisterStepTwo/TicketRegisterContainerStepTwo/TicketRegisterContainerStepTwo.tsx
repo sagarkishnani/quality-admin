@@ -141,15 +141,16 @@ export const TicketRegisterContainerStepTwo = () => {
         to: companyMails,
         subject: ConstantMailTicketInProgress.SUBJECT,
         html: generateAssignTicketMail(
+          ticket.IdTicket,
           request.IdTechnician === null
             ? null
             : getTechnician(request?.IdTechnician),
           request.ScheduledAppointmentDate,
           request.ScheduledAppointmentTime,
           ticket.Company.Name,
-          ticket.Company.Address,
-          ticket.CompanyFloor,
-          "https://qa.qualitysumprint.com"
+          ticket?.Local ? ticket?.Local.Name : ticket?.Company.Local,
+          ticket?.Local ? ticket?.Local.Address : ticket?.Company.Address,
+          ticket.CompanyFloor
         ),
         attachments: [],
       }

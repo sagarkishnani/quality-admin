@@ -544,7 +544,8 @@ export const TicketRegisterCompleteFormSix = () => {
                   ticket?.User.Name,
                   ticket?.Company.Name,
                   isFacturable,
-                  ticket?.Company.RequiresOrder
+                  ticket?.Company.RequiresOrder,
+                  ticket?.IdTicket
                 ),
                 attachments: [attachments],
               }
