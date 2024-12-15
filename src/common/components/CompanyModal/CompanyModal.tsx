@@ -3,9 +3,6 @@ import { GetUserCompany, GetUserLocal } from "../../interfaces/User.interface"
 import { HiLocationMarker } from "react-icons/hi"
 import { CompanyService } from "../../services/CompanyService"
 import useUserStore from "../../stores/UserStore"
-import { CompanyLocalService } from "../../services/CompanyLocalService"
-import { CompanyLocal } from "../../interfaces/CompanyLocal.interface"
-import { useEffect } from "react"
 import { UserCompanyService } from "../../services/UserCompanyService"
 
 interface CompanyModalInterface {

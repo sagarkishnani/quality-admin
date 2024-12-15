@@ -378,8 +378,10 @@ export const TicketRegisterCompleteFormSix = () => {
               request.StepOne.AppointmentEndTime
             ).format("HH:mm"),
             Company: ticket?.Company.Name,
-            Address: ticket?.Company.Address,
-            Local: ticket?.Company.Local,
+            Address: ticket?.Local
+              ? ticket?.Local.Address
+              : ticket?.Company.Address,
+            Local: ticket?.Local ? ticket?.Local.Name : ticket?.Company.Local,
             CompanyFloor: ticket?.CompanyFloor,
             CompanyArea: ticket?.CompanyArea,
             User: ticket?.User.Name,
@@ -546,9 +548,14 @@ export const TicketRegisterCompleteFormSix = () => {
                 ),
                 attachments: [attachments],
               }
-              const res = await MailService.sendEmail(requestMail)
 
-              if (res.ok) {
+              let res
+
+              if (!isFacturable) {
+                res = await MailService.sendEmail(requestMail)
+              }
+
+              if (isFacturable || (!isFacturable && res?.ok)) {
                 const requestNotification: RegisterNotificationRequest = {
                   IdTicket: ticket.IdTicket,
                   CodeTicket: ticket.CodeTicket,
