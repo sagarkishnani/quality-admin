@@ -141,7 +141,7 @@ export const TicketRegisterContainerStepTwo = () => {
         to: companyMails,
         subject: ConstantMailTicketInProgress.SUBJECT,
         html: generateAssignTicketMail(
-          ticket.IdTicket,
+          ticket?.CodeTicket.toString(),
           request.IdTechnician === null
             ? null
             : getTechnician(request?.IdTechnician),

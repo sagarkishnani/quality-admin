@@ -232,7 +232,7 @@ export const TicketRegisterContainer = () => {
             html: generateRegisterTicketMail(
               user!.Name,
               user!.Company.Name,
-              data[0].IdTicket
+              data[0].CodeTicket
             ),
             attachments: [],
           }
