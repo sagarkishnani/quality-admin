@@ -15,6 +15,7 @@ import {
   HiOutlineCog,
   HiOutlineUserGroup,
   HiX,
+  HiOutlineClipboardList,
 } from "react-icons/hi"
 import { BsWhatsapp } from "react-icons/bs"
 import { RouteLink } from "../../interfaces/RouteLink.interface"
@@ -77,6 +78,13 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
     },
     {
       Id: 5,
+      Name: "Servicios",
+      Link: "servicios",
+      Icon: <HiOutlineClipboardList className="inline" size={"20"} />,
+      Roles: [ConstantRoles.LIDER_FUNCIONAL],
+    },
+    {
+      Id: 6,
       Name: "Configuración",
       Link: "configuracion",
       Icon: <HiOutlineCog className="inline" size={"20"} />,
@@ -112,7 +120,7 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
           </Link>
           <div className="w-60">
             {routeLinks.map((route, index) => (
-              <Link key={index} to={route.Link}>
+              <Link className="z-20" key={index} to={route.Link}>
                 {hasRole(route.Roles) && (
                   <div
                     key={route.Id}
@@ -168,7 +176,7 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
             </div>
             <div className="p-6">
               {routeLinks.map((route, index) => (
-                <Link key={index} to={route.Link}>
+                <Link className="z-20" key={index} to={route.Link}>
                   {hasRole(route.Roles) && (
                     <div
                       key={route.Id}
@@ -193,7 +201,7 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
           </div>
           <div className="h-full p-6 mb-8">
             <div className="flex flex-row justify-between hover:text-qGreen cursor-pointer">
-              <div className="basis-4/5">
+              <div className="z-20 basis-4/5">
                 <h3 className="font-semibold">
                   <a
                     href="https://api.whatsapp.com/send?phone=51951392306&text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n"

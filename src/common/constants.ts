@@ -76,6 +76,14 @@ export const ConstantMasterTableMessage = {
     MT_DELETE_QUESTION: '¿Está seguro de eliminar el item?'
 }
 
+export const ConstantServiceMessage = {
+    SERVICE_REGISTER_SUCCESS: 'El servicio se registró correctamente',
+    SERVICE_EDIT_SUCCESS: 'El servicio se actualizó correctamente',
+    SERVICE_DELETE_SUCCESS: 'El servicio se eliminó correctamente',
+    SERVICE_DELETE_ERROR: 'Hubo un error al eliminar',
+    SERVICE_DELETE_QUESTION: '¿Está seguro de eliminar el servicio?'
+}
+
 export const ConstantUserMessage = {
     USER_INCORRECT: 'El usuario o contraseña es incorrecto.',
     USER_DELETE_QUESTION: '¿Está seguro de eliminar el usuario?',
@@ -112,6 +120,7 @@ export const ConstantFilePurpose = {
 export const ConstantLocalStorage = {
     ID_COMPANY: 'localStorageIdCompany',
     ID_MASTER_TABLE: 'localStorageIdMasterTable',
+    ID_SERVICE: 'localStorageIdService',
     ID_TICKET: 'localStorageIdTicket',
     ID_USER: 'localStorageIdUser',
     TICKET_STEP_THREE_FORM_ONE: 'localStorageTicketStepThreeFormOne',

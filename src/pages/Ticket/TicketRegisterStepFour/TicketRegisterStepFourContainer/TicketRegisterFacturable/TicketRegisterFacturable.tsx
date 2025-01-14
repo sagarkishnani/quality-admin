@@ -1,10 +1,6 @@
 import {
   Alert,
   Autocomplete,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Skeleton,
   Snackbar,
   TextField,
@@ -18,8 +14,6 @@ import {
   ConstantHttpErrors,
   ConstantLocalStorage,
   ConstantMailConfigFacturable,
-  ConstantMessage,
-  ConstantRoles,
   ConstantTicketMessage,
 } from "../../../../../common/constants"
 import { useEffect, useState } from "react"
@@ -29,13 +23,9 @@ import { TicketService } from "../../../../../common/services/TicketService"
 import { GetTicketById } from "../../../../../common/interfaces/Ticket.interface"
 import { TicketServicesService } from "../../../../../common/services/TicketServicesService"
 import { DataGrid, GridColDef } from "@mui/x-data-grid"
-import {
-  HiDocumentAdd,
-  HiOutlineDocumentAdd,
-  HiOutlineTrash,
-} from "react-icons/hi"
+import { HiOutlineTrash } from "react-icons/hi"
 import { Modal } from "../../../../../common/components/Modal/Modal"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import TechnicalServiceReport from "../../../../../common/mailTemplates/technicalServiceReport"
 import ReactDOMServer from "react-dom/server"
 import html2pdf from "html2pdf.js"
@@ -47,12 +37,14 @@ import {
 import {
   generateMailFacturableWithServices,
   generateTableHTML,
-  procesarCadena,
 } from "../../../../../common/utils"
 import { Button } from "../../../../../common/components/Button/Button"
 import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
 import { NotificationService } from "../../../../../common/services/NotificationService"
-import { ConstantTicketStatus } from "../../../../../common/constants"
+import {
+  ConstantTicketStatus,
+  ConstantRoles,
+} from "../../../../../common/constants"
 import { generateMailFacturableWithServicesUserResponse } from "../../../../../common/utils"
 import { ServiceModal } from "../../../../../common/components/ServiceModal/ServiceModal"
 import useUserStore from "../../../../../common/stores/UserStore"
@@ -72,17 +64,19 @@ export const TicketRegisterFacturable = () => {
   const [services, setServices] = useState<any[]>([])
   const [selectedService, setSelectedService] = useState<any>()
   const [selectedServices, setSelectedServices] = useState<any[]>([])
+  const [isView, setIsView] = useState(false)
+  const [isConfirm, setIsConfirm] = useState(false)
   const [total, setTotal] = useState<number>()
-  const [ticketServices, setTicketServices] = useState([])
+  // const [ticketServices, setTicketServices] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false)
   const [modalType, setModalType] = useState<
     "success" | "error" | "question" | "none"
   >("none")
   const [modalMessage, setModalMessage] = useState("")
-  const [serviceModalMessage, setServiceModalMessage] =
-    useState("Añadir servicio")
+  const [serviceModalMessage] = useState("Añadir servicio")
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleDeleteClick = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -236,9 +230,7 @@ export const TicketRegisterFacturable = () => {
       },
     }
 
-    const servicesTableHTML = generateTableHTML(
-      selectedServices.length === 0 ? ticketServices : selectedServices
-    )
+    const servicesTableHTML = generateTableHTML(selectedServices)
 
     const printElement = ReactDOMServer.renderToString(
       TechnicalServiceReport({ data: pdfData })
@@ -263,17 +255,13 @@ export const TicketRegisterFacturable = () => {
     setIsModalOpen(false)
   }
 
-  const handleOpenServiceModal = () => {
-    setIsServiceModalOpen(true)
-  }
-
   const handleCloseServiceModal = () => {
     setIsServiceModalOpen(false)
   }
 
   const handleConfirm = async () => {
     setIsLoadingActionAgree(true)
-    const { data, status }: any = await TicketService.registerTicketStepFive(
+    const { status }: any = await TicketService.registerTicketStepFive(
       ticket.IdTicket,
       true
     )
@@ -471,11 +459,15 @@ export const TicketRegisterFacturable = () => {
       await TicketService.registerTicketStepFour(ticket.IdTicket)
 
     if (ticketStatus == ConstantHttpErrors.OK) {
+      await TicketServicesService.deleteTicketServices(ticket.IdTicket)
+
       for (const service of selectedServices) {
         const { status }: any =
           await TicketServicesService.registerTicketService(
             ticket.IdTicket,
-            service.IdService
+            service.IdService,
+            service.Name,
+            service.Cost
           )
 
         if (
@@ -507,6 +499,9 @@ export const TicketRegisterFacturable = () => {
           const companyMails = ticket?.Local.Mails.split(",")
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
+          const isWaiting =
+            ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA
+
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
             to: companyMails,
@@ -517,7 +512,8 @@ export const TicketRegisterFacturable = () => {
               ticket?.User.Name,
               ticket?.Company.Name,
               mailOptions().servicesTableHTML,
-              total!
+              total!,
+              isWaiting
             ),
             attachments: [attachments],
           }
@@ -617,8 +613,8 @@ export const TicketRegisterFacturable = () => {
   async function getTicketServices(idTicket: string) {
     const { data } = await TicketServicesService.getTicketServices(idTicket)
     if (data) {
-      const onlyServices = data.map((item) => item.Services)
-      setTicketServices(onlyServices)
+      // const onlyServices = data.map((item) => item.Services)
+      setSelectedServices(data)
     }
   }
 
@@ -635,10 +631,6 @@ export const TicketRegisterFacturable = () => {
   }, [selectedServices])
 
   useEffect(() => {
-    setTotal(ticketServices.reduce((acc, service) => acc + service.Cost, 0))
-  }, [ticketServices])
-
-  useEffect(() => {
     const idTicket = secureLocalStorage.getItem(ConstantLocalStorage.ID_TICKET)
     if (idTicket !== null) {
       getAll(idTicket)
@@ -646,9 +638,11 @@ export const TicketRegisterFacturable = () => {
   }, [])
 
   useEffect(() => {
-    return () => {
-      secureLocalStorage.removeItem(ConstantLocalStorage.TICKET_FACTURABLE)
-    }
+    // return () => {
+    //   secureLocalStorage.removeItem(ConstantLocalStorage.TICKET_FACTURABLE)
+    // }
+    setIsView(location.pathname.includes("/ver"))
+    setIsConfirm(location.pathname.includes("/confirmar-facturable"))
   }, [])
 
   const columns: GridColDef[] = [
@@ -684,38 +678,16 @@ export const TicketRegisterFacturable = () => {
 
         return (
           <>
-            <div
-              className="flex w-full justify-center text-center cursor-pointer"
-              onClick={handleClick}
-            >
-              <HiOutlineTrash color="#C94F47" size={"20"} />
-            </div>
+            {!isView && !isConfirm && (
+              <div
+                className="flex w-full justify-center text-center cursor-pointer"
+                onClick={handleClick}
+              >
+                <HiOutlineTrash color="#C94F47" size={"20"} />
+              </div>
+            )}
           </>
         )
-      },
-    },
-  ]
-
-  const columnsView: GridColDef[] = [
-    {
-      field: "IdService",
-      headerName: "Service ID",
-      width: 10,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Name",
-      headerName: "Descripción del servicio",
-      width: 550,
-      disableColumnMenu: true,
-    },
-    {
-      field: "Cost",
-      headerName: "Precio + IGV",
-      width: 100,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        return <div>${params.value}</div>
       },
     },
   ]
@@ -735,28 +707,9 @@ export const TicketRegisterFacturable = () => {
                 {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
               </h2>
             </div>
-            {ticketServices?.length == 0 && (
-              <>
-                <div className="col-span-12 md:col-span-8">
-                  {/* <FormControl fullWidth>
-                    <InputLabel id="ServiceLabel">Servicios</InputLabel>
-                    <Select
-                      labelId="ServiceLabel"
-                      id="Service"
-                      name="Service"
-                      value={formik.values.Service}
-                      onChange={formik.handleChange}
-                    >
-                      {services?.map((service: any) => (
-                        <MenuItem
-                          key={service.IdService}
-                          value={service.IdService}
-                        >
-                          {service.Name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl> */}
+            <>
+              <div className="col-span-12 md:col-span-8">
+                {!isView && user?.IdRole === ConstantRoles.LIDER_FUNCIONAL && (
                   <Autocomplete
                     className="w-full"
                     disablePortal
@@ -778,7 +731,9 @@ export const TicketRegisterFacturable = () => {
                     openText="Mostrar opciones"
                     noOptionsText="No hay opciones"
                   />
-                </div>
+                )}
+              </div>
+              {!isView && user?.IdRole === ConstantRoles.LIDER_FUNCIONAL && (
                 <div className="col-span-12 justify-center md:justify-normal md:col-span-4 flex items-center">
                   <button
                     className={`px-8 py-2 font-medium rounded-md text-white ${
@@ -791,78 +746,23 @@ export const TicketRegisterFacturable = () => {
                   >
                     Añadir
                   </button>
-                  <Tooltip title="Añadir nuevo servicio">
-                    <button onClick={handleOpenServiceModal}>
-                      <HiDocumentAdd
-                        className="ml-4 align-middle"
-                        size={32}
-                        color="#00A0DF"
-                      />
-                    </button>
-                  </Tooltip>
                 </div>
-                <div className="col-span-12">
-                  <>
-                    {selectedServices?.length == 0 && (
-                      <div className="flex-1 p-4">
-                        No se ha agregado ningún servicio
-                      </div>
-                    )}
-                    {selectedServices?.length !== 0 && (
-                      <>
-                        <div className="flex-1 w-full md:w-[80vw] lg:w-auto">
-                          <div style={{ height: "100%", width: "100%" }}>
-                            <DataGrid
-                              rows={selectedServices}
-                              getRowId={(row) => row.IdService}
-                              columns={columns}
-                              initialState={{
-                                pagination: {
-                                  paginationModel: { page: 0, pageSize: 8 },
-                                },
-                                columns: {
-                                  columnVisibilityModel: {
-                                    IdService: false,
-                                  },
-                                },
-                              }}
-                              pageSizeOptions={[8, 12, 20]}
-                              localeText={{
-                                noRowsLabel: "No se ha encontrado datos.",
-                                noResultsOverlayLabel:
-                                  "No se ha encontrado ningún resultado",
-                                toolbarColumns: "Columnas",
-                                toolbarColumnsLabel: "Seleccionar columnas",
-                                toolbarFilters: "Filtros",
-                                toolbarFiltersLabel: "Ver filtros",
-                                toolbarFiltersTooltipHide: "Quitar filtros",
-                                toolbarFiltersTooltipShow: "Ver filtros",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </>
-                </div>
-              </>
-            )}
-            {ticketServices.length > 0 && (
+              )}
               <div className="col-span-12">
                 <>
-                  {ticketServices?.length == 0 && (
+                  {selectedServices?.length == 0 && (
                     <div className="flex-1 p-4">
                       No se ha agregado ningún servicio
                     </div>
                   )}
-                  {ticketServices?.length !== 0 && (
+                  {selectedServices?.length !== 0 && (
                     <>
-                      <div className="flex-1 w-[80vw] lg:w-auto">
+                      <div className="flex-1 w-full md:w-[80vw] lg:w-auto">
                         <div style={{ height: "100%", width: "100%" }}>
                           <DataGrid
-                            rows={ticketServices}
+                            rows={selectedServices}
                             getRowId={(row) => row.IdService}
-                            columns={columnsView}
+                            columns={columns}
                             initialState={{
                               pagination: {
                                 paginationModel: { page: 0, pageSize: 8 },
@@ -892,7 +792,7 @@ export const TicketRegisterFacturable = () => {
                   )}
                 </>
               </div>
-            )}
+            </>
           </>
         ) : (
           <div className="col-span-12">
@@ -918,8 +818,8 @@ export const TicketRegisterFacturable = () => {
         </div>
       )}
       {!isLoading &&
-        ticketServices.length === 0 &&
-        user?.IdRole === ConstantRoles.LIDER_FUNCIONAL && (
+        user?.IdRole === ConstantRoles.LIDER_FUNCIONAL &&
+        !isView && (
           <div className="w-full mt-12 flex justify-center lg:justify-end">
             <Tooltip title="Enviar a espera de confirmación">
               <Button
@@ -939,7 +839,8 @@ export const TicketRegisterFacturable = () => {
           </div>
         )}
       {user?.IdRole === ConstantRoles.USUARIO &&
-        ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA && (
+        ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA &&
+        !isView && (
           <div className="w-full mt-12 flex justify-end">
             <Button
               className="px-8 mr-4"

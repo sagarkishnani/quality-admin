@@ -191,10 +191,13 @@ export const TicketRegisterViewFormSix = ({ ticket }) => {
         >
           Anterior
         </button>
-        {((ticket?.TicketStatus?.Name == "Atendido" &&
-          user?.IdRole == ConstantRoles.LIDER_FUNCIONAL &&
-          ticket?.TicketType?.Name == "Facturable" &&
-          isFacturableView()) ||
+        {(((ticket?.TicketStatus?.Name == "Atendido" ||
+          ticket?.TicketStatus?.Name == "Abierto") &&
+          user?.IdRole == ConstantRoles.LIDER_FUNCIONAL) ||
+          (user?.IdRole == ConstantRoles.USUARIO &&
+            ticket?.TicketType?.Name == "Facturable" &&
+            isFacturableView() &&
+            ticketServices.length > 0) ||
           ((ticket?.TicketStatus?.Name == "Finalizado" ||
             ticket?.TicketStatus?.Name == "En espera" ||
             (ticket?.TicketStatus?.Name == "Cancelado" &&

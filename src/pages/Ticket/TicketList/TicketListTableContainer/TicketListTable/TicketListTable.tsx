@@ -369,7 +369,9 @@ export const TicketListTable = ({
               </MenuItem>
             )}
             {user?.IdRole === ConstantRoles.LIDER_FUNCIONAL &&
-              selectedTicket?.Status === "Atendido" && (
+              (selectedTicket?.Status === "Atendido" ||
+                selectedTicket?.Status === "Abierto" ||
+                selectedTicket?.Status === "En espera") && (
                 <MenuItem onClick={handleFacturableForm}>
                   <HiOutlineClipboardCheck size={"20"} className="mr-2" />
                   Revisar formulario

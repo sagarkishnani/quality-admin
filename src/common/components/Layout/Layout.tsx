@@ -29,6 +29,11 @@ import { Welcome } from "../../../pages/Welcome/Welcome"
 import { CompanyEdit } from "../../../pages/Company/CompanyEdit/CompanyEdit"
 import { TicketRegisterStepFive } from "../../../pages/Ticket/TicketRegisterStepFive/TicketRegisterStepFive"
 import { useState } from "react"
+import { Services } from "../../../pages/Services/Services"
+import { ServicesList } from "../../../pages/Services/ServicesList/ServicesList"
+import { ServicesRegister } from "../../../pages/Services/ServicesRegister/ServicesRegister"
+import { ServicesView } from "../../../pages/Services/ServicesView/ServicesView"
+import { ServicesEdit } from "../../../pages/Services/ServicesEdit/ServicesEdit"
 
 export const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -92,6 +97,12 @@ export const Layout = () => {
               <Route path="nueva" element={<ConfigurationRegister />} />
               <Route path="ver" element={<ConfigurationView />} />
               <Route path="editar" element={<ConfigurationEdit />} />
+            </Route>
+            <Route path="/servicios" element={<Services />}>
+              <Route index element={<ServicesList />} />
+              <Route path="nuevo" element={<ServicesRegister />} />
+              <Route path="ver" element={<ServicesView />} />
+              <Route path="editar" element={<ServicesEdit />} />
             </Route>
           </Routes>
         </div>

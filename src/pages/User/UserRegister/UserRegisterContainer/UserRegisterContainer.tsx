@@ -333,7 +333,7 @@ export const UserRegisterContainer = () => {
                     <MenuItem disabled value="">
                       <em>Seleccione</em>
                     </MenuItem>
-                    {companies.map((company: GetCompaniesResponse) => (
+                    {companies?.map((company: GetCompaniesResponse) => (
                       <MenuItem
                         key={company.IdCompany}
                         value={company.IdCompany}

@@ -4,7 +4,13 @@ export interface RegisterServiceInterface {
 }
 
 export interface ServiceInterface {
+    IdService: string;
     Name: string;
     Cost: number;
     RecordCreationDate: Date;
+}
+
+export interface ServiceEditInterface {
+    Name: string;
+    Cost: number;
 }
