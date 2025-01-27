@@ -379,6 +379,25 @@ async function ticketRegisterAndUploadImage(
   }
 }
 
+async function getTicketFiles(idTicket: string) {
+  try {
+    const { data, error } = await supabase
+      .from("TicketFile")
+      .select("*")
+      .eq("IdTicket", idTicket)
+
+    if (error) {
+      console.warn(error)
+      return []
+    } else if (data) {
+      return data
+    }
+  } catch (error) {
+    console.error("El item no tiene imágenes:", error)
+    return []
+  }
+}
+
 async function uploadTicketFiles(imgName: string, file: File) {
   try {
     const { data, error } = await supabase.storage
@@ -448,4 +467,5 @@ export const TicketService = {
   cancelTicket,
   ticketRegisterAndUploadImage,
   getFilteredTicketsByExcel,
+  getTicketFiles,
 }

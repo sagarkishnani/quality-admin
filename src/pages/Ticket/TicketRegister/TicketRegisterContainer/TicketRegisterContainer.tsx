@@ -36,6 +36,7 @@ import { ImageModal } from "../../../../common/components/ImageModal/ImageModal"
 import moment from "moment"
 import {
   dataURLtoFile,
+  generateImageTable,
   generateRegisterTicketMail,
 } from "../../../../common/utils"
 import {
@@ -199,7 +200,6 @@ export const TicketRegisterContainer = () => {
     const { data, status }: any = await TicketService.registerTicketStepOne(
       request
     )
-
     if (status == ConstantHttpErrors.CREATED && data) {
       for (const picture of pictures) {
         const requestImg: TicketRegisterAndUploadImage = {
@@ -221,52 +221,57 @@ export const TicketRegisterContainer = () => {
           setModalType("error")
           setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
           return
+        }
+      }
+
+      const companyMails = user?.Company.Mails.split(",")
+      companyMails?.push("soporte.tecnico@qualitysumprint.com")
+
+      const images = await TicketService.getTicketFiles(data[0].IdTicket)
+
+      if (images?.length === pictures.length) {
+        const requestMail: SendEmailRequest = {
+          from: ConstantMailTicketPending.FROM,
+          to: companyMails,
+          subject: ConstantMailTicketPending.SUBJECT,
+          html: generateRegisterTicketMail(
+            user!.Name,
+            user!.Company.Name,
+            data[0].CodeTicket,
+            generateImageTable(images)
+          ),
+          attachments: [],
+        }
+
+        const res = await MailService.sendEmail(requestMail)
+
+        if (res.ok) {
+          const requestNotification: RegisterNotificationRequest = {
+            IdTicket: data[0].IdTicket,
+            CodeTicket: data[0].CodeTicket,
+            IdCompany: request.IdTicketCompany,
+            IdTechnician: null,
+            IdTicketStatus: request.IdTicketStatus,
+            IdUser: request.IdUser,
+          }
+
+          await registerNotification(requestNotification)
+
+          setIsModalOpen(true)
+          setModalType("success")
+          setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
+          setIsLoadingAction(false)
+          setTimeout(() => {
+            navigate("/tickets")
+          }, 2000)
         } else {
-          const companyMails = user?.Company.Mails.split(",")
-          companyMails?.push("soporte.tecnico@qualitysumprint.com")
-
-          const requestMail: SendEmailRequest = {
-            from: ConstantMailTicketPending.FROM,
-            to: companyMails,
-            subject: ConstantMailTicketPending.SUBJECT,
-            html: generateRegisterTicketMail(
-              user!.Name,
-              user!.Company.Name,
-              data[0].CodeTicket
-            ),
-            attachments: [],
-          }
-
-          const res = await MailService.sendEmail(requestMail)
-
-          if (res.ok) {
-            const requestNotification: RegisterNotificationRequest = {
-              IdTicket: data[0].IdTicket,
-              CodeTicket: data[0].CodeTicket,
-              IdCompany: request.IdTicketCompany,
-              IdTechnician: null,
-              IdTicketStatus: request.IdTicketStatus,
-              IdUser: request.IdUser,
-            }
-
-            await registerNotification(requestNotification)
-
-            setIsModalOpen(true)
-            setModalType("success")
-            setModalMessage(ConstantTicketMessage.TICKET_REGISTER_SUCCESS)
-            setIsLoadingAction(false)
-            setTimeout(() => {
-              navigate("/tickets")
-            }, 2000)
-          } else {
-            setIsLoadingAction(false)
-            setIsModalOpen(true)
-            setModalType("error")
-            setModalMessage(ConstantTicketMessage.TICKET_MAIL_REGISTER_ERROR)
-            setTimeout(() => {
-              navigate("/tickets")
-            }, 2000)
-          }
+          setIsLoadingAction(false)
+          setIsModalOpen(true)
+          setModalType("error")
+          setModalMessage(ConstantTicketMessage.TICKET_MAIL_REGISTER_ERROR)
+          setTimeout(() => {
+            navigate("/tickets")
+          }, 2000)
         }
       }
     } else {

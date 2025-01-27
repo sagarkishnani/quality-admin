@@ -35,6 +35,7 @@ import {
   SendEmailRequest,
 } from "../../../../../common/services/MailService"
 import {
+  generateImageTable,
   generateMailFacturableWithServices,
   generateTableHTML,
 } from "../../../../../common/utils"
@@ -284,6 +285,8 @@ export const TicketRegisterFacturable = () => {
           const companyMails = ticket?.Local.Mails.split(",")
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
+          const images = await TicketService.getTicketFiles(ticket.IdTicket)
+
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
             to: companyMails,
@@ -295,7 +298,8 @@ export const TicketRegisterFacturable = () => {
               mailOptions().servicesTableHTML,
               total!,
               true,
-              ticket.Company.RequiresOrder
+              ticket.Company.RequiresOrder,
+              generateImageTable(images)
             ),
             attachments: [attachments],
           }
@@ -370,6 +374,8 @@ export const TicketRegisterFacturable = () => {
           const companyMails = ticket?.Local.Mails.split(",")
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
+          const images = await TicketService.getTicketFiles(ticket.IdTicket)
+
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
             to: companyMails,
@@ -381,7 +387,8 @@ export const TicketRegisterFacturable = () => {
               mailOptions().servicesTableHTML,
               total!,
               false,
-              ticket.Company.RequiresOrder
+              ticket.Company.RequiresOrder,
+              generateImageTable(images)
             ),
             attachments: [attachments],
           }
@@ -502,6 +509,8 @@ export const TicketRegisterFacturable = () => {
           const isWaiting =
             ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA
 
+          const images = await TicketService.getTicketFiles(ticket.IdTicket)
+
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
             to: companyMails,
@@ -513,7 +522,8 @@ export const TicketRegisterFacturable = () => {
               ticket?.Company.Name,
               mailOptions().servicesTableHTML,
               total!,
-              isWaiting
+              isWaiting,
+              generateImageTable(images)
             ),
             attachments: [attachments],
           }

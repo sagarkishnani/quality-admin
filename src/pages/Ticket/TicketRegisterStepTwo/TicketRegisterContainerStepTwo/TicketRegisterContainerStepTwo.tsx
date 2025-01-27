@@ -36,7 +36,10 @@ import {
   MailService,
   SendEmailRequest,
 } from "../../../../common/services/MailService"
-import { generateAssignTicketMail } from "../../../../common/utils"
+import {
+  generateAssignTicketMail,
+  generateImageTable,
+} from "../../../../common/utils"
 import { NotificationService } from "../../../../common/services/NotificationService"
 import { RegisterNotificationRequest } from "../../../../common/interfaces/Notification.interface"
 
@@ -136,6 +139,8 @@ export const TicketRegisterContainerStepTwo = () => {
     companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
     if (status == ConstantHttpErrors.OK) {
+      const images = await TicketService.getTicketFiles(ticket.IdTicket)
+
       const requestMail: SendEmailRequest = {
         from: ConstantMailTicketInProgress.FROM,
         to: companyMails,
@@ -150,7 +155,8 @@ export const TicketRegisterContainerStepTwo = () => {
           ticket.Company.Name,
           ticket?.Local ? ticket?.Local.Name : ticket?.Company.Local,
           ticket?.Local ? ticket?.Local.Address : ticket?.Company.Address,
-          ticket.CompanyFloor
+          ticket.CompanyFloor,
+          generateImageTable(images)
         ),
         attachments: [],
       }

@@ -39,7 +39,7 @@ import { TicketAnswerService } from "../../../../../common/services/TicketAnswer
 import { TicketRegisterStepThreePicture } from "../../../../../common/interfaces/Ticket.interface"
 import {
   dataURLtoFile,
-  generateMailFacturable,
+  generateImageTable,
   generateMailNotFacturable,
 } from "../../../../../common/utils"
 import TechnicalServiceReport from "../../../../../common/mailTemplates/technicalServiceReport"
@@ -534,6 +534,8 @@ export const TicketRegisterCompleteFormSix = () => {
                 ? companyMails?.push("asistente.adm@qualitysumprint.com")
                 : companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
+              const images = await TicketService.getTicketFiles(ticket.IdTicket)
+
               const requestMail: SendEmailRequest = {
                 from: ConstantMailConfigNonFacturable.FROM,
                 to: companyMails,
@@ -545,7 +547,8 @@ export const TicketRegisterCompleteFormSix = () => {
                   ticket?.Company.Name,
                   isFacturable,
                   ticket?.Company.RequiresOrder,
-                  ticket?.CodeTicket.toString()
+                  ticket?.CodeTicket.toString(),
+                  generateImageTable(images)
                 ),
                 attachments: [attachments],
               }

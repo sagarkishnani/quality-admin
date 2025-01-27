@@ -1,6 +1,7 @@
 import moment from "moment";
 import XLSXStyle from "xlsx-js-style"
 import { TicketRegisterStepThreePicture } from "./interfaces/Ticket.interface";
+import { ConstantFilePurpose } from "./constants";
 
 export function checkIfNotNullOrEmpty(value: any) {
   if (value !== null && value !== '') return true;
@@ -71,13 +72,13 @@ export const generateTableHTML = (serviceList: any[]) => {
   return tableHTML;
 };
 
-export function generateRegisterTicketMail(user: string, company: string, idTicket: string) {
-  const html = `<p>Se ha registrado el <strong>ticket ${idTicket}</strong> por parte del usuario <strong>${user}</strong> de la empresa <strong>${company}</strong>.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg">`
+export function generateRegisterTicketMail(user: string, company: string, idTicket: string, imageTable: string) {
+  const html = `<p>Se ha registrado el <strong>ticket ${idTicket}</strong> por parte del usuario <strong>${user}</strong> de la empresa <strong>${company}</strong>.</p> </br></br></br> ${imageTable} </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg">`
 
   return html
 }
 
-export function generateAssignTicketMail(idTicket: string, idTechnician: string | null, scheduledAppointmentDate: Date, ScheduledAppointmentTime: Date, company: string, local: string, address: string, floor: string) {
+export function generateAssignTicketMail(idTicket: string, idTechnician: string | null, scheduledAppointmentDate: Date, ScheduledAppointmentTime: Date, company: string, local: string, address: string, floor: string, imageTable: string) {
   const html = `<p>Se ha asignado ${idTechnician == null
     ? "a un técnico de garantía"
     : "al técnico <strong>" + idTechnician
@@ -87,31 +88,31 @@ export function generateAssignTicketMail(idTicket: string, idTechnician: string 
       ScheduledAppointmentTime
     ).format("HH:MM")}</strong> en <strong>${company} - ${local} - ${address
     } - Piso ${floor
-    }</strong>. </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg">`
+    }</strong>. </br></br></br> ${imageTable} </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg">`
 
   return html
 }
 
-export function generateMailNotFacturable(user: string, company: string, isFacturable: boolean, requiresOrder: boolean, idTicket: string) {
-  const html = `<p>Se ${isFacturable ? 'atendió' : 'dio por finalizado'} el <strong>ticket ${idTicket}</strong> del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>. ${requiresOrder && isFacturable ? 'La empresa <strong>requiere orden de compra</strong>' : ''} Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
+export function generateMailNotFacturable(user: string, company: string, isFacturable: boolean, requiresOrder: boolean, idTicket: string, imageTable: string) {
+  const html = `<p>Se ${isFacturable ? 'atendió' : 'dio por finalizado'} el <strong>ticket ${idTicket}</strong> del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>. ${requiresOrder && isFacturable ? 'La empresa <strong>requiere orden de compra</strong>' : ''} Se adjunta el documento PDF para ver un mayor detalle.</p> </br></br></br> ${imageTable} </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
 
   return html
 }
 
-export function generateMailFacturable(user: string, company: string, idTicket: string) {
-  const html = `<p>Se atendió el <strong>ticket ${idTicket}</strong>  del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
+// export function generateMailFacturable(user: string, company: string, idTicket: string) {
+//   const html = `<p>Se atendió el <strong>ticket ${idTicket}</strong>  del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
+
+//   return html
+// }
+
+export function generateMailFacturableWithServices(idTicket: string, user: string, company: string, servicesTable: string, total: number, isWaiting: boolean, imageTable: string) {
+  const html = `<p>Se envía la cotización ${isWaiting ? ' actualizada' : ' '}y detalle del servicio de ticket ${idTicket} del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br> ${imageTable} </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
 
   return html
 }
 
-export function generateMailFacturableWithServices(idTicket: string, user: string, company: string, servicesTable: string, total: number, isWaiting: boolean) {
-  const html = `<p>Se envía la cotización ${isWaiting ? ' actualizada' : ' '}y detalle del servicio de ticket ${idTicket} del usuario <strong>${user}</strong> en la empresa <strong>${company}</strong>.</p> </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
-
-  return html
-}
-
-export function generateMailFacturableWithServicesUserResponse(idTicket: string, user: string, company: string, servicesTable: string, total: number, response: boolean, requiresOrder: boolean) {
-  const html = `<p>El usuario <strong>${user}</strong> de la empresa <strong>${company}</strong> ${response ? 'aceptó' : 'rechazó'} la cotización del servicio, por lo que el ticket <strong>${idTicket}</strong> ${response ? ' ha finalizado' : 'quedará abierto'}.</p> ${requiresOrder && response ? 'La empresa <strong>requiere orden de compra.</strong>' : ''} </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
+export function generateMailFacturableWithServicesUserResponse(idTicket: string, user: string, company: string, servicesTable: string, total: number, response: boolean, requiresOrder: boolean, imageTable: string) {
+  const html = `<p>El usuario <strong>${user}</strong> de la empresa <strong>${company}</strong> ${response ? 'aceptó' : 'rechazó'} la cotización del servicio, por lo que el ticket <strong>${idTicket}</strong> ${response ? ' ha finalizado' : 'quedará abierto'}.</p> ${requiresOrder && response ? 'La empresa <strong>requiere orden de compra.</strong>' : ''} </br></br> Se adjunta el documento PDF para ver un mayor detalle como también el detalle de costos del servicio.</p> </br></br> ${servicesTable} </br></br></br> <strong>El costo total del servicio es: $${total} (No incluye IGV)</strong></br></br></br> ${imageTable} </br></br></br> <img src="https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/mail/mail-qs.jpg" alt="">`
 
   return html
 }
@@ -258,4 +259,63 @@ export function combinarValores(valores: (string | undefined)[]): string {
   }
 
   return combinados.join(', ');
+}
+
+export function generateImageTable(images: any[]) {
+  const baseUrl = "https://vauxeythnbsssxnhvntg.supabase.co/storage/v1/object/public/media/";
+
+  // Filtrar imágenes por propósito
+  const evidencias = images.filter(image => image.FilePurpose === ConstantFilePurpose.IMAGEN_USUARIO);
+  const evidenciasTecnico = images.filter(image => image.FilePurpose === ConstantFilePurpose.IMAGEN_TECNICO);
+
+  // Función para generar una tabla HTML con las imágenes
+  const createTable = (images: any[], title: string) => {
+    if (images.length === 0) return ""; // No mostrar si no hay imágenes
+
+    let tableContent = "";
+    let rowContent = "";
+
+    // Mapear las imágenes en filas de máximo 3 columnas
+    images.forEach((image, index) => {
+      const fullUrl = baseUrl + image.FileUrl;
+
+      // Crear una celda con la imagen
+      rowContent += `
+        <td style="text-align: center; padding: 10px;">
+          <img style="width: 200px; height: 200px; object-fit: contain;" src="${fullUrl}" alt="Evidencia">
+        </td>
+      `;
+
+      // Cada 3 imágenes, cerrar la fila y abrir una nueva
+      if ((index + 1) % 3 === 0) {
+        tableContent += `<tr>${rowContent}</tr>`;
+        rowContent = ""; // Reiniciar la fila
+      }
+    });
+
+    // Si quedan imágenes al final que no completan una fila, cerrarla
+    if (rowContent) {
+      tableContent += `<tr>${rowContent}</tr>`;
+    }
+
+    return `
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+          <tr>
+            <th colspan="3" style="text-align: left;">${title}:</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableContent}
+        </tbody>
+      </table>
+    `;
+  };
+
+  // Generar tablas para las dos categorías
+  const evidenciasTable = createTable(evidencias, "Evidencias");
+  const evidenciasTecnicoTable = createTable(evidenciasTecnico, "Evidencias del técnico");
+
+  // Devolver ambas tablas si existen
+  return `${evidenciasTable}${evidenciasTecnicoTable}`;
 }
