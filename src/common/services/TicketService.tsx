@@ -353,29 +353,51 @@ async function cancelTicket(idTicket: string) {
 async function ticketRegisterAndUploadImage(
   request: TicketRegisterAndUploadImage
 ) {
-  const res = await uploadTicketFiles(request.imgName, request.file)
+  const maxRetries = 3
 
-  try {
-    const { data, error, status } = await supabase
-      .from("TicketFile")
-      .insert([
-        {
-          IdTicket: request.IdTicket,
-          FileUrl: res.path,
-          FilePurpose: request.FilePurpose,
-        },
-      ])
-      .select()
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      // Intentamos subir la imagen
+      const uploadResponse = await uploadTicketFiles(
+        request.imgName,
+        request.file
+      )
+      if (uploadResponse.error) {
+        throw new Error(
+          `Error al subir la imagen: ${uploadResponse.error.message}`
+        )
+      }
 
-    if (error) {
-      console.warn(error)
-      return { error, status }
-    } else if (data) {
-      return { data, status }
+      // Intentamos insertar en la base de datos
+      const { data, error, status } = await supabase
+        .from("TicketFile")
+        .insert([
+          {
+            IdTicket: request.IdTicket,
+            FileUrl: uploadResponse.path,
+            FilePurpose: request.FilePurpose,
+          },
+        ])
+        .select()
+
+      if (error) {
+        throw new Error(`Error al insertar en TicketFile: ${error.message}`)
+      }
+
+      return { data, status } // Si todo salió bien, retornamos el resultado
+    } catch (error) {
+      console.warn(`Intento ${attempt + 1} fallido: ${error.message}`)
+      if (attempt < maxRetries - 1) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * Math.pow(2, attempt))
+        ) // Backoff exponencial
+      } else {
+        console.error(
+          "No se pudo completar la operación después de múltiples intentos"
+        )
+        return { error: error.message, status: "failed" }
+      }
     }
-  } catch (error) {
-    console.error("Error al registrar ticket", error)
-    return error
   }
 }
 
