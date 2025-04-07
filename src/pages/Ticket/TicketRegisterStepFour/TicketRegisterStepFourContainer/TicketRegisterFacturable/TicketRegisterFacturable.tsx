@@ -49,6 +49,10 @@ import {
 import { generateMailFacturableWithServicesUserResponse } from "../../../../../common/utils"
 import { ServiceModal } from "../../../../../common/components/ServiceModal/ServiceModal"
 import useUserStore from "../../../../../common/stores/UserStore"
+import CostServiceReport, {
+  CostService,
+  ServicePdfData,
+} from "../../../../../common/mailTemplates/servicesCostReport"
 
 const validationSchema = yup.object({})
 
@@ -249,7 +253,62 @@ export const TicketRegisterFacturable = () => {
       devicePixelRatio: 1.5,
     }
 
-    return { pdfData, servicesTableHTML, printElement, opt }
+    return {
+      pdfData,
+      servicesTableHTML,
+      printElement,
+      opt,
+    }
+  }
+
+  const mailOptionsServices = () => {
+    const pdfCostServices: CostService[] = selectedServices.map((service) => ({
+      Name: service.Name,
+      Price: service.Cost,
+      Quantity: (1).toString(),
+      TotalPrice: (service.Cost * 1).toString(),
+    }))
+
+    const subtotal = pdfCostServices.reduce(
+      (acc, curr) => acc + parseFloat(curr.TotalPrice),
+      0
+    )
+
+    const igv = subtotal * 0.18
+
+    const total = subtotal + igv
+
+    const servicePdfData: ServicePdfData = {
+      CodeTicket: ticket.CodeTicket.toString(),
+      Company: ticket.Company.Name,
+      UserCompany: ticket.User.Name,
+      ServiceDate: moment(new Date()).format("DD/MM/YYYY"),
+      CostService: pdfCostServices,
+      IGV: igv.toFixed(2),
+      Subtotal: subtotal.toFixed(2),
+      Total: total.toFixed(2),
+    }
+
+    const printElementServices = ReactDOMServer.renderToString(
+      CostServiceReport({ data: servicePdfData })
+    )
+    const optServices = {
+      format: "a4",
+      filename: `Cotización - ${ticket?.CodeTicket}.pdf`,
+      margin: 1,
+      html2canvas: {
+        dpi: 192,
+        scale: 4,
+        letterRendering: true,
+        useCORS: true,
+      },
+      devicePixelRatio: 1.5,
+    }
+
+    return {
+      printElementServices,
+      optServices,
+    }
   }
 
   const handleCloseModal = () => {
@@ -490,77 +549,89 @@ export const TicketRegisterFacturable = () => {
       }
 
       html2pdf().from(mailOptions().printElement).set(mailOptions().opt).save()
-
       html2pdf()
-        .from(mailOptions().printElement)
-        .set(mailOptions().opt)
-        .outputPdf()
-        .then(async (pdf) => {
-          const base64 = btoa(pdf)
+        .from(mailOptionsServices().printElementServices)
+        .set(mailOptionsServices().optServices)
+        .save()
 
-          const attachments: Attachement = {
-            filename: `${ticket?.CodeTicket}.pdf`,
-            content: base64,
-          }
+      const [pdfGeneral, pdfServices] = await Promise.all([
+        html2pdf()
+          .from(mailOptions().printElement)
+          .set(mailOptions().opt)
+          .outputPdf(),
+        html2pdf()
+          .from(mailOptionsServices().printElementServices)
+          .set(mailOptionsServices().optServices)
+          .outputPdf(),
+      ])
 
-          const companyMails = ticket?.Local.Mails.split(",")
-          companyMails?.push("soporte.tecnico@qualitysumprint.com")
+      const attachments: Attachement[] = [
+        {
+          filename: `${ticket?.CodeTicket}.pdf`,
+          content: btoa(pdfGeneral),
+        },
+        {
+          filename: `${ticket?.CodeTicket}-servicios.pdf`,
+          content: btoa(pdfServices),
+        },
+      ]
 
-          const isWaiting =
-            ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA
+      const companyMails = ticket?.Local.Mails.split(",")
+      companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
-          const images = await TicketService.getTicketFiles(ticket.IdTicket)
+      const isWaiting =
+        ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA
 
-          const request: SendEmailRequest = {
-            from: ConstantMailConfigFacturable.FROM,
-            to: companyMails,
-            subject:
-              "Costo de servicios - Facturable (En espera de confirmación)",
-            html: generateMailFacturableWithServices(
-              ticket?.CodeTicket.toString(),
-              ticket?.User.Name,
-              ticket?.Company.Name,
-              mailOptions().servicesTableHTML,
-              total!,
-              isWaiting,
-              generateImageTable(images)
-            ),
-            attachments: [attachments],
-          }
+      const images = await TicketService.getTicketFiles(ticket.IdTicket)
 
-          const res = await MailService.sendEmail(request)
+      const request: SendEmailRequest = {
+        from: ConstantMailConfigFacturable.FROM,
+        to: companyMails,
+        subject: "Costo de servicios - Facturable (En espera de confirmación)",
+        html: generateMailFacturableWithServices(
+          ticket?.CodeTicket.toString(),
+          ticket?.User.Name,
+          ticket?.Company.Name,
+          mailOptions().servicesTableHTML,
+          total!,
+          isWaiting,
+          generateImageTable(images)
+        ),
+        attachments: attachments,
+      }
 
-          if (res.ok) {
-            const requestNotification: RegisterNotificationRequest = {
-              IdTicket: ticket.IdTicket,
-              CodeTicket: ticket.CodeTicket,
-              IdCompany: ticket.IdTicketCompany,
-              IdTechnician: ticket.IdTechnician,
-              IdTicketStatus: ConstantTicketStatus.EN_ESPERA,
-              IdUser: ticket.IdUser,
-            }
+      const res = await MailService.sendEmail(request)
 
-            await registerNotification(requestNotification)
+      if (res.ok) {
+        const requestNotification: RegisterNotificationRequest = {
+          IdTicket: ticket.IdTicket,
+          CodeTicket: ticket.CodeTicket,
+          IdCompany: ticket.IdTicketCompany,
+          IdTechnician: ticket.IdTechnician,
+          IdTicketStatus: ConstantTicketStatus.EN_ESPERA,
+          IdUser: ticket.IdUser,
+        }
 
-            setIsModalOpen(true)
-            setModalType("success")
-            setModalMessage(ConstantTicketMessage.TICKET_WAITING_SUCCESS)
-            setIsLoadingAction(false)
-            setTimeout(() => {
-              navigate("/tickets")
-            }, 2000)
-            return
-          } else {
-            setIsLoadingAction(false)
-            setIsModalOpen(true)
-            setModalType("error")
-            setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
-            setTimeout(() => {
-              navigate("/tickets")
-            }, 2000)
-            return
-          }
-        })
+        await registerNotification(requestNotification)
+
+        setIsModalOpen(true)
+        setModalType("success")
+        setModalMessage(ConstantTicketMessage.TICKET_WAITING_SUCCESS)
+        setIsLoadingAction(false)
+        setTimeout(() => {
+          navigate("/tickets")
+        }, 2000)
+        return
+      } else {
+        setIsLoadingAction(false)
+        setIsModalOpen(true)
+        setModalType("error")
+        setModalMessage(ConstantTicketMessage.TICKET_MAIL_FINISH_ERROR)
+        setTimeout(() => {
+          navigate("/tickets")
+        }, 2000)
+        return
+      }
     } else {
       setIsLoadingAction(false)
       setIsModalOpen(true)

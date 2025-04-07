@@ -476,6 +476,23 @@ async function getFilteredTicketsByExcel(
   }
 }
 
+async function deleteTicketById(idTicket: string) {
+  try {
+    const { data, error } = await supabase.rpc("eliminar_ticket_por_id", {
+      idTicket,
+    })
+    if (error) {
+      console.warn(error)
+      return error
+    } else if (data) {
+      return data
+    }
+  } catch (error) {
+    console.error("Error al traer la lista de tickets:", error)
+    return []
+  }
+}
+
 export const TicketService = {
   getTickets,
   getFilteredTickets,
@@ -490,4 +507,5 @@ export const TicketService = {
   ticketRegisterAndUploadImage,
   getFilteredTicketsByExcel,
   getTicketFiles,
+  deleteTicketById,
 }

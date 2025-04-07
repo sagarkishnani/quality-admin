@@ -220,6 +220,7 @@ export const TicketRegisterContainer = () => {
           setIsModalOpen(true)
           setModalType("error")
           setModalMessage(ConstantTicketMessage.TICKET_IMAGE_ERROR)
+          await TicketService.deleteTicketById(data[0].IdTicket)
           return
         }
       }
