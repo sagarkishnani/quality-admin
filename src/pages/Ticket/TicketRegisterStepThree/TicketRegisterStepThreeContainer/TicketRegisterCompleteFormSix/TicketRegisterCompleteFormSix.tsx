@@ -53,6 +53,7 @@ import {
 import { RegisterNotificationRequest } from "../../../../../common/interfaces/Notification.interface"
 import { NotificationService } from "../../../../../common/services/NotificationService"
 import { UserService } from "../../../../../common/services/UserService"
+import heic2any from "heic2any"
 
 const validationSchema = yup.object({
   Comment: yup
@@ -112,9 +113,41 @@ export const TicketRegisterCompleteFormSix = () => {
   const navigate = useNavigate()
   const { setTicketStep } = useTicket()
 
-  const onChangeFirstSignature = (e: any) => {
-    const file = e.target.files[0]
+  const onChangeFirstSignature = async (e: any) => {
+    let file = e.target.files[0]
     if (file) {
+      const fileName = file.name.toLowerCase()
+      const fileType =
+        file.type ||
+        (fileName.endsWith(".heic") || fileName.endsWith(".heif")
+          ? "image/heic"
+          : "")
+
+      // Detecta y convierte si es HEIC
+      if (
+        fileType === "image/heic" ||
+        fileType === "image/heif" ||
+        fileType === "application/octet-stream"
+      ) {
+        console.log("Convirtiendo archivo HEIC para la primera firma...")
+        try {
+          const conversionResult = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.8,
+          })
+
+          file = new File(
+            [conversionResult],
+            file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+            { type: "image/jpeg" }
+          )
+        } catch (err) {
+          console.error("Error al convertir HEIC:", err)
+          return
+        }
+      }
+
       const reader = new FileReader()
       reader.onload = (e) => {
         setFirstSignatureImg(e.target?.result as string)
@@ -123,9 +156,41 @@ export const TicketRegisterCompleteFormSix = () => {
     }
   }
 
-  const onChangeSecondSignature = (e: any) => {
-    const file = e.target.files[0]
+  const onChangeSecondSignature = async (e: any) => {
+    let file = e.target.files[0]
     if (file) {
+      const fileName = file.name.toLowerCase()
+      const fileType =
+        file.type ||
+        (fileName.endsWith(".heic") || fileName.endsWith(".heif")
+          ? "image/heic"
+          : "")
+
+      // Detecta y convierte si es HEIC
+      if (
+        fileType === "image/heic" ||
+        fileType === "image/heif" ||
+        fileType === "application/octet-stream"
+      ) {
+        console.log("Convirtiendo archivo HEIC para la segunda firma...")
+        try {
+          const conversionResult = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.8,
+          })
+
+          file = new File(
+            [conversionResult],
+            file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+            { type: "image/jpeg" }
+          )
+        } catch (err) {
+          console.error("Error al convertir HEIC:", err)
+          return
+        }
+      }
+
       const reader = new FileReader()
       reader.onload = (e) => {
         setSecondSignatureImg(e.target?.result as string)
@@ -299,7 +364,7 @@ export const TicketRegisterCompleteFormSix = () => {
         for (const picture of request.StepTwo.Pictures) {
           const picReq: TicketRegisterAndUploadImage = {
             IdTicket: ticket.IdTicket,
-            file: dataURLtoFile(picture.Content),
+            file: await dataURLtoFile(picture.Content),
             FilePurpose: ConstantFilePurpose.IMAGEN_TECNICO,
             imgName: uuidv4(),
           }
@@ -321,7 +386,9 @@ export const TicketRegisterCompleteFormSix = () => {
 
           const signOneRequest: TicketRegisterAndUploadImage = {
             IdTicket: ticket.IdTicket,
-            file: dataURLtoFile(request.StepSix.ResponsibleSignature.Content),
+            file: await dataURLtoFile(
+              request.StepSix.ResponsibleSignature.Content
+            ),
             FilePurpose: request.StepSix.ResponsibleSignature.FilePurpose,
             imgName: uuidv4(),
           }
@@ -344,7 +411,9 @@ export const TicketRegisterCompleteFormSix = () => {
 
           const signTwoRequest: TicketRegisterAndUploadImage = {
             IdTicket: ticket.IdTicket,
-            file: dataURLtoFile(request.StepSix.TechnicianSignature.Content),
+            file: await dataURLtoFile(
+              request.StepSix.TechnicianSignature.Content
+            ),
             FilePurpose: request.StepSix.TechnicianSignature.FilePurpose,
             imgName: uuidv4(),
           }
@@ -812,7 +881,7 @@ export const TicketRegisterCompleteFormSix = () => {
                   <div className="register_profile_image overflow-x-hidden">
                     <input
                       type="file"
-                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp"
+                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp, .heif, .heic"
                       onChange={onChangeFirstSignature}
                       className="border-none bg-none text-qBlue underline font-medium"
                     />
@@ -878,7 +947,7 @@ export const TicketRegisterCompleteFormSix = () => {
                   <div className="register_profile_image overflow-x-hidden">
                     <input
                       type="file"
-                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp"
+                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp, .heif, .heic"
                       onChange={onChangeSecondSignature}
                       className="border-none bg-none text-qBlue underline font-medium"
                     />

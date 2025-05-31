@@ -2,6 +2,7 @@ import moment from "moment";
 import XLSXStyle from "xlsx-js-style"
 import { TicketRegisterStepThreePicture } from "./interfaces/Ticket.interface";
 import { ConstantFilePurpose } from "./constants";
+import heic2any from 'heic2any';
 
 export function checkIfNotNullOrEmpty(value: any) {
   if (value !== null && value !== '') return true;
@@ -18,16 +19,46 @@ export function getCurrentDate(): string {
   return currentDate
 }
 
-export function dataURLtoFile(dataurl) {
-  let arr = dataurl.split(','),
-    mime = arr[0].match(/:(.*?);/)[1],
-    bstr = atob(arr[arr.length - 1]),
-    n = bstr.length,
-    u8arr = new Uint8Array(n);
+export async function dataURLtoFile(dataurl, filename = 'image.jpg') {
+  const arr = dataurl.split(',');
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  if (!mimeMatch) throw new Error('MIME no detectado.');
+
+  const mime = mimeMatch[1];
+  const bstr = atob(arr[arr.length - 1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
-  return new File([u8arr], '', { type: mime });
+
+  let file = new File([u8arr], filename, { type: mime });
+
+  const isSuspectHeic = mime === 'application/octet-stream';
+  // Si es HEIC/HEIF, conviértelo a JPEG
+  if (mime === 'image/heic' || mime === 'image/heif' || isSuspectHeic) {
+    console.log('Convirtiendo HEIC a JPEG...');
+
+    try {
+      const conversionResult = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.8,
+      });
+
+      file = new File(
+        [conversionResult],
+        filename.replace(/\.(heic|heif)$/i, '.jpg'),
+        { type: 'image/jpeg' },
+      );
+      console.log('¡Conversión exitosa!');
+    } catch (err) {
+      console.error('Error al convertir HEIC:', err);
+      throw err;
+    }
+  }
+
+  return file;
 }
 
 export function loopPictures(pictures: string[], filePurpose: string) {

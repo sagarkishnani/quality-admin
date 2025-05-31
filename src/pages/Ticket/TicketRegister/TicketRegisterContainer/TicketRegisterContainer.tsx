@@ -48,6 +48,7 @@ import { RegisterNotificationRequest } from "../../../../common/interfaces/Notif
 import useUserStore from "../../../../common/stores/UserStore"
 import { CompanyLocalService } from "../../../../common/services/CompanyLocalService"
 import { CompanyLocal } from "../../../../common/interfaces/CompanyLocal.interface"
+import heic2any from "heic2any"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -77,21 +78,56 @@ export const TicketRegisterContainer = () => {
   const navigate = useNavigate()
   const user = useUserStore((state) => state.user)
 
-  const onChangePicture = (e: any) => {
+  const onChangePicture = async (e) => {
     const newPictures: string[] = []
     const files = e.target.files
 
     for (let i = 0; i < files.length; i++) {
-      const reader = new FileReader()
+      let file = files[i]
 
+      // 👇 Detecta si el tipo está vacío y la extensión es HEIC/HEIF
+      const fileName = file.name.toLowerCase()
+      const fileType =
+        file.type ||
+        (fileName.endsWith(".heic") || fileName.endsWith(".heif")
+          ? "image/heic"
+          : "")
+
+      // 👇 Si detectamos HEIC, conviértelo
+      if (
+        fileType === "image/heic" ||
+        fileType === "image/heif" ||
+        fileType === "application/octet-stream"
+      ) {
+        console.log("Convirtiendo archivo HEIC para previsualizar...")
+        try {
+          const conversionResult = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.8,
+          })
+
+          // conversionResult puede ser Blob o ArrayBuffer
+          file = new File(
+            [conversionResult],
+            file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+            { type: "image/jpeg" }
+          )
+        } catch (err) {
+          console.error("Error al convertir HEIC para previsualización:", err)
+          continue
+        }
+      }
+
+      // Ahora lee el archivo convertido o normal
+      const reader = new FileReader()
       reader.onload = (e) => {
-        newPictures.push(e.target?.result)
+        newPictures.push(e.target?.result as string)
         if (newPictures.length === files.length) {
           setPictures([...pictures, ...newPictures])
         }
       }
-
-      reader.readAsDataURL(files[i])
+      reader.readAsDataURL(file)
     }
   }
 
@@ -204,7 +240,7 @@ export const TicketRegisterContainer = () => {
       for (const picture of pictures) {
         const requestImg: TicketRegisterAndUploadImage = {
           IdTicket: data[0].IdTicket,
-          file: dataURLtoFile(picture),
+          file: await dataURLtoFile(picture),
           FilePurpose: ConstantFilePurpose.IMAGEN_USUARIO,
           imgName: uuidv4(),
         }
@@ -484,7 +520,7 @@ export const TicketRegisterContainer = () => {
                     <input
                       id="profilePic"
                       type="file"
-                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp"
+                      accept=".png, .jpg, .jpeg, .gif, .svg, .webp, .heif, .heic"
                       onChange={onChangePicture}
                       multiple
                       className="border-none bg-none text-qBlue underline font-medium"
