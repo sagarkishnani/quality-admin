@@ -272,6 +272,7 @@ export const CompanyRegisterContainer = () => {
       Ruc: "",
       Ubigeo: ubigeos[0],
       Address: "",
+      FacturableMails: "",
       ImgUrl: "",
       Local: "",
       Mails: "",
@@ -449,6 +450,25 @@ export const CompanyRegisterContainer = () => {
               >
                 {imgEvent == null ? "Seleccione logo" : imgEvent.name}
               </label>
+            </div>
+            <div className="col-span-12">
+              <TextField
+                className="w-full"
+                id="FacturableMails"
+                name="FacturableMails"
+                label="Correos para tickets facturables (separados por comas)"
+                value={formik.values.FacturableMails}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.FacturableMails &&
+                  Boolean(formik.errors.FacturableMails)
+                }
+                helperText={
+                  formik.touched.FacturableMails &&
+                  formik.errors.FacturableMails
+                }
+              />
             </div>
             {/* <div className="col-span-12 md:col-span-8">
               <TextField

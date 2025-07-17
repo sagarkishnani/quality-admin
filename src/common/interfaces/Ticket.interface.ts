@@ -152,6 +152,7 @@ export interface GetTicketByIdCompany {
     Name: string;
     ImgUrl: string;
     Address: string;
+    FacturableMails: string;
     Local: string;
     RequiresOrder: boolean;
     Mails: string;

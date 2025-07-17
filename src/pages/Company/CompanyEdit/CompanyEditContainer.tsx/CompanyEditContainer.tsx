@@ -303,6 +303,7 @@ export const CompanyEditContainer = () => {
       Address: "",
       ImgUrl: "",
       Local: "",
+      FacturableMails: "",
       Mails: "",
       RequiresOrder: false,
       MainContactName: "",
@@ -366,6 +367,7 @@ export const CompanyEditContainer = () => {
         Ruc: company?.Ruc || "",
         Ubigeo: ubigeo || "",
         Address: company?.Address || "",
+        FacturableMails: company?.FacturableMails || "",
         ImgUrl: company?.ImgUrl || "",
         Local: company?.Local || "",
         Mails: company?.Mails || "",
@@ -534,6 +536,25 @@ export const CompanyEditContainer = () => {
                 onBlur={formik.handleBlur}
                 error={formik.touched.Address && Boolean(formik.errors.Address)}
                 helperText={formik.touched.Address && formik.errors.Address}
+              />
+            </div>
+            <div className="col-span-12">
+              <TextField
+                className="w-full"
+                id="FacturableMails"
+                name="FacturableMails"
+                label="Correos para tickets facturables (separados por comas)"
+                value={formik.values.FacturableMails}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.FacturableMails &&
+                  Boolean(formik.errors.FacturableMails)
+                }
+                helperText={
+                  formik.touched.FacturableMails &&
+                  formik.errors.FacturableMails
+                }
               />
             </div>
             {/* <div className="col-span-12">

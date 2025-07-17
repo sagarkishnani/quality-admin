@@ -576,8 +576,25 @@ export const TicketRegisterFacturable = () => {
         },
       ]
 
-      const companyMails = ticket?.Local.Mails.split(",")
-      companyMails?.push("soporte.tecnico@qualitysumprint.com")
+      debugger
+      let companyMails: string[] = ticket?.Local?.Mails?.split(",") || []
+
+      const extraMails1 =
+        "soporte.tecnico@qualitysumprint.com, asistente.adm@qualitysumprint.com"
+      const extraMails2 = ticket?.Company?.FacturableMails || ""
+
+      // Agrega los nuevos correos desglosados
+      companyMails = companyMails
+        .concat(extraMails1.split(","))
+        .concat(extraMails2.split(","))
+
+      // Limpia espacios en blanco y elimina duplicados si es necesario
+      companyMails = companyMails
+        .map((mail) => mail.trim())
+        .filter((mail) => mail !== "")
+
+      // Opcional: eliminar duplicados
+      companyMails = [...new Set(companyMails)]
 
       const isWaiting =
         ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA

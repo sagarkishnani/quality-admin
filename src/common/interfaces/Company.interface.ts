@@ -3,6 +3,7 @@ export interface CompanyRegisterRequest {
     Ruc: string;
     Ubigeo: number;
     Address: string;
+    FacturableMails: string;
     ImgUrl: string;
     Local: string;
     Mails: string;
@@ -50,6 +51,7 @@ export interface CompanyEditRequest {
     Ruc: string;
     Ubigeo: number;
     Address: string;
+    FacturableMails: string;
     Local: string;
     Mails: string;
     RequiresOrder: boolean;

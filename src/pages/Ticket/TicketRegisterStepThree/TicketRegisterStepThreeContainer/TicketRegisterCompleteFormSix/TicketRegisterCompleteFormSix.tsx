@@ -599,6 +599,14 @@ export const TicketRegisterCompleteFormSix = () => {
                 companyMails = []
               }
 
+              if (isFacturable) {
+                companyMails?.push("asistente.adm@qualitysumprint.com")
+                companyMails?.push(ticket?.Company?.FacturableMails)
+              } else {
+                companyMails?.push("soporte.tecnico@qualitysumprint.com")
+              }
+
+              //No se envía correo para facturable
               isFacturable
                 ? companyMails?.push("asistente.adm@qualitysumprint.com")
                 : companyMails?.push("soporte.tecnico@qualitysumprint.com")

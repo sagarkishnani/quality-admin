@@ -34,29 +34,29 @@ export async function dataURLtoFile(dataurl, filename = 'image.jpg') {
 
   let file = new File([u8arr], filename, { type: mime });
 
-  const isSuspectHeic = mime === 'application/octet-stream';
-  // Si es HEIC/HEIF, conviértelo a JPEG
-  if (mime === 'image/heic' || mime === 'image/heif' || isSuspectHeic) {
-    console.log('Convirtiendo HEIC a JPEG...');
+  // const isSuspectHeic = mime === 'application/octet-stream';
+  // // Si es HEIC/HEIF, conviértelo a JPEG
+  // if (mime === 'image/heic' || mime === 'image/heif' || isSuspectHeic) {
+  //   console.log('Convirtiendo HEIC a JPEG...');
 
-    try {
-      const conversionResult = await heic2any({
-        blob: file,
-        toType: 'image/jpeg',
-        quality: 0.8,
-      });
+  //   try {
+  //     const conversionResult = await heic2any({
+  //       blob: file,
+  //       toType: 'image/jpeg',
+  //       quality: 0.8,
+  //     });
 
-      file = new File(
-        [conversionResult],
-        filename.replace(/\.(heic|heif)$/i, '.jpg'),
-        { type: 'image/jpeg' },
-      );
-      console.log('¡Conversión exitosa!');
-    } catch (err) {
-      console.error('Error al convertir HEIC:', err);
-      throw err;
-    }
-  }
+  //     file = new File(
+  //       [conversionResult],
+  //       filename.replace(/\.(heic|heif)$/i, '.jpg'),
+  //       { type: 'image/jpeg' },
+  //     );
+  //     console.log('¡Conversión exitosa!');
+  //   } catch (err) {
+  //     console.error('Error al convertir HEIC:', err);
+  //     throw err;
+  //   }
+  // }
 
   return file;
 }

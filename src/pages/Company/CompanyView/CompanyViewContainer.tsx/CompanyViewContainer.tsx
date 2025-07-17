@@ -154,6 +154,7 @@ export const CompanyViewContainer = () => {
       Ruc: "",
       Ubigeo: "",
       Address: "",
+      FacturableMails: "",
       ImgUrl: "",
       Local: "",
       Mails: "",
@@ -219,6 +220,7 @@ export const CompanyViewContainer = () => {
             ", " +
             ubigeo?.departamento || "",
         Address: company?.Address || "",
+        FacturableMails: company?.FacturableMails || "",
         ImgUrl: company?.ImgUrl || "",
         Local: company?.Local || "",
         Mails: company?.Mails || "",
@@ -335,6 +337,16 @@ export const CompanyViewContainer = () => {
                 name="Address"
                 label="Dirección fiscal"
                 value={formik.values.Address}
+              />
+            </div>
+            <div className="col-span-12">
+              <TextField
+                className="w-full"
+                disabled
+                id="FacturableMails"
+                name="FacturableMails"
+                label="Correos para tickets facturables (separados por comas)"
+                value={formik.values.FacturableMails}
               />
             </div>
             {/* <div className="col-span-12">

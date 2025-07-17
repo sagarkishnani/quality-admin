@@ -49,6 +49,7 @@ import useUserStore from "../../../../common/stores/UserStore"
 import { CompanyLocalService } from "../../../../common/services/CompanyLocalService"
 import { CompanyLocal } from "../../../../common/interfaces/CompanyLocal.interface"
 import heic2any from "heic2any"
+import imageCompression from "browser-image-compression"
 
 const validationSchema = yup.object({
   CompanyFloor: yup.string().required(),
@@ -85,7 +86,6 @@ export const TicketRegisterContainer = () => {
     for (let i = 0; i < files.length; i++) {
       let file = files[i]
 
-      // 👇 Detecta si el tipo está vacío y la extensión es HEIC/HEIF
       const fileName = file.name.toLowerCase()
       const fileType =
         file.type ||
@@ -93,7 +93,7 @@ export const TicketRegisterContainer = () => {
           ? "image/heic"
           : "")
 
-      // 👇 Si detectamos HEIC, conviértelo
+      // 🔄 Conversión si es HEIC/HEIF
       if (
         fileType === "image/heic" ||
         fileType === "image/heif" ||
@@ -104,22 +104,49 @@ export const TicketRegisterContainer = () => {
           const conversionResult = await heic2any({
             blob: file,
             toType: "image/jpeg",
-            quality: 0.8,
+            quality: 0.6, // ⚠️ Baja calidad para reducir tamaño
           })
 
-          // conversionResult puede ser Blob o ArrayBuffer
           file = new File(
             [conversionResult],
             file.name.replace(/\.(heic|heif)$/i, ".jpg"),
             { type: "image/jpeg" }
           )
+          console.log(
+            "Archivo convertido:",
+            file.name,
+            file.type,
+            (file.size / 1024 / 1024).toFixed(2),
+            "MB"
+          )
         } catch (err) {
-          console.error("Error al convertir HEIC para previsualización:", err)
+          console.error("Error al convertir HEIC:", err)
           continue
         }
       }
 
-      // Ahora lee el archivo convertido o normal
+      // 🔻 Compresión si supera 2MB
+      if (file.size > 2 * 1024 * 1024) {
+        try {
+          const compressed = await imageCompression(file, {
+            maxSizeMB: 2,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          })
+          console.log(
+            "Archivo comprimido:",
+            compressed.name,
+            (compressed.size / 1024 / 1024).toFixed(2),
+            "MB"
+          )
+          file = compressed
+        } catch (err) {
+          console.error("Error al comprimir imagen:", err)
+          continue
+        }
+      }
+
+      // 📷 Previsualización (convertida o normal)
       const reader = new FileReader()
       reader.onload = (e) => {
         newPictures.push(e.target?.result as string)
