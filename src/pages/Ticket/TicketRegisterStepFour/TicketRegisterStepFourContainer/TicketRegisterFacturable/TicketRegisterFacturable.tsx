@@ -14,6 +14,7 @@ import {
   ConstantHttpErrors,
   ConstantLocalStorage,
   ConstantMailConfigFacturable,
+  ConstantProject,
   ConstantTicketMessage,
 } from "../../../../../common/constants"
 import { useEffect, useState } from "react"
@@ -119,6 +120,7 @@ export const TicketRegisterFacturable = () => {
     )[0]
 
     const pdfData = {
+      CodeTicket: ticket.CodeTicket.toString(),
       RecordCreationDate: moment(ticket?.AppointmentInitTime).format(
         "DD/MM/YYYY"
       ),
@@ -242,7 +244,7 @@ export const TicketRegisterFacturable = () => {
     )
     const opt = {
       format: "a4",
-      filename: `${ticket?.CodeTicket}.pdf`,
+      filename: `${ticket?.Company.Name} - Ticket ${ticket?.CodeTicket}.pdf`,
       margin: 1,
       html2canvas: {
         dpi: 192,
@@ -294,7 +296,7 @@ export const TicketRegisterFacturable = () => {
     )
     const optServices = {
       format: "a4",
-      filename: `Cotización - ${ticket?.CodeTicket}.pdf`,
+      filename: `${ticket.Company.Name} - Ticket ${ticket?.CodeTicket} - Proforma.pdf`,
       margin: 1,
       html2canvas: {
         dpi: 192,
@@ -341,7 +343,7 @@ export const TicketRegisterFacturable = () => {
             content: base64,
           }
 
-          const companyMails = ticket?.Local.Mails.split(",")
+          const companyMails: string[] = []
           companyMails?.push("soporte.tecnico@qualitysumprint.com")
 
           const images = await TicketService.getTicketFiles(ticket.IdTicket)
@@ -349,7 +351,9 @@ export const TicketRegisterFacturable = () => {
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
             to: companyMails,
-            subject: "Finalización de servicio - Facturable",
+            subject: `${
+              ticket?.Company.Name
+            } - Ticket N°${ticket?.CodeTicket.toString()} - Finalización de servicio - Facturable`,
             html: generateMailFacturableWithServicesUserResponse(
               ticket?.CodeTicket.toString(),
               ticket?.User.Name,
@@ -426,7 +430,7 @@ export const TicketRegisterFacturable = () => {
           const base64 = btoa(pdf)
 
           const attachments: Attachement = {
-            filename: `${ticket?.CodeTicket}.pdf`,
+            filename: `${ticket?.Company.Name} - Ticket ${ticket?.CodeTicket}.pdf`,
             content: base64,
           }
 
@@ -438,7 +442,7 @@ export const TicketRegisterFacturable = () => {
           const request: SendEmailRequest = {
             from: ConstantMailConfigFacturable.FROM,
             to: companyMails,
-            subject: "Costo de servicio rechazado - Ticket abierto",
+            subject: `${ticket?.Company.Name} - Ticket N°${data[0].CodeTicket} - Costo de servicio rechazado - Ticket abierto`,
             html: generateMailFacturableWithServicesUserResponse(
               ticket?.CodeTicket.toString(),
               ticket?.User.Name,
@@ -576,7 +580,6 @@ export const TicketRegisterFacturable = () => {
         },
       ]
 
-      debugger
       let companyMails: string[] = ticket?.Local?.Mails?.split(",") || []
 
       const extraMails1 =
@@ -604,7 +607,9 @@ export const TicketRegisterFacturable = () => {
       const request: SendEmailRequest = {
         from: ConstantMailConfigFacturable.FROM,
         to: companyMails,
-        subject: "Costo de servicios - Facturable (En espera de confirmación)",
+        subject: `${
+          ticket?.Company.Name
+        } - Ticket N°${ticket?.CodeTicket.toString()} - Costo de servicios - Facturable (En espera de confirmación)`,
         html: generateMailFacturableWithServices(
           ticket?.CodeTicket.toString(),
           ticket?.User.Name,

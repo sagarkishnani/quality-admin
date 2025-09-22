@@ -22,6 +22,7 @@ import {
   ConstantFilePurpose,
   ConstantHttpErrors,
   ConstantMailTicketPending,
+  ConstantProject,
   ConstantTicketMessage,
   ConstantTicketStatus,
   ConstantsMasterTable,
@@ -297,7 +298,9 @@ export const TicketRegisterContainer = () => {
         const requestMail: SendEmailRequest = {
           from: ConstantMailTicketPending.FROM,
           to: companyMails,
-          subject: ConstantMailTicketPending.SUBJECT,
+          subject: `${user!.Company.Name} - Ticket N°${data[0].CodeTicket} - ${
+            ConstantMailTicketPending.SUBJECT
+          }`,
           html: generateRegisterTicketMail(
             user!.Name,
             user!.Company.Name,

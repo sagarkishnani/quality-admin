@@ -177,6 +177,7 @@ export interface TicketRegisterStepTwoRequest {
 export interface TicketRegisterStepThreeRequestFormOne {
     AppointmentInitTime: Moment;
     AppointmentEndTime: Moment;
+    ScheduledAppointmentDate: Date;
 }
 
 export interface TicketRegisterStepThreeRequestFormTwo {

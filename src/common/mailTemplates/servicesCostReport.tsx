@@ -1,5 +1,5 @@
 import React from "react"
-import bg from "../../assets/mailBackgrounds/servicesReportBG.svg"
+import bg from "../../assets/mailBackgrounds/servicesReportNewBG.svg"
 
 export interface ServicePdfData {
   CodeTicket: string
@@ -28,8 +28,8 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
       <div
         style={{
           position: "absolute",
-          top: "220px",
-          left: "570px",
+          top: "125px",
+          left: "620px",
           width: "160px",
         }}
       >
@@ -38,8 +38,8 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
       <div
         style={{
           position: "absolute",
-          top: "235px",
-          left: "120px",
+          top: "159px",
+          left: "150px",
           width: "200px",
         }}
       >
@@ -48,8 +48,8 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
       <div
         style={{
           position: "absolute",
-          top: "275px",
-          left: "120px",
+          top: "198px",
+          left: "150px",
           width: "400px",
         }}
       >
@@ -58,8 +58,8 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
       <div
         style={{
           position: "absolute",
-          top: "315px",
-          left: "120px",
+          top: "241px",
+          left: "150px",
           width: "400px",
         }}
       >
@@ -68,15 +68,15 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
 
       {/* Tabla de servicios */}
       {data.CostService.map((item, index) => {
-        const topOffset = 535 + index * 28
+        const topOffset = 535 + index * 32
         return (
           <React.Fragment key={index}>
             <div
               style={{
                 position: "absolute",
                 top: `${topOffset}px`,
-                left: "120px",
-                width: "300px",
+                left: "210px",
+                width: "310px",
                 lineHeight: "14px",
               }}
             >
@@ -86,7 +86,7 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
               style={{
                 position: "absolute",
                 top: `${topOffset}px`,
-                left: "400px",
+                left: "510px",
                 width: "60px",
                 textAlign: "center",
               }}
@@ -97,7 +97,7 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
               style={{
                 position: "absolute",
                 top: `${topOffset}px`,
-                left: "460px",
+                left: "525px",
                 width: "100px",
                 textAlign: "right",
               }}
@@ -108,7 +108,7 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
               style={{
                 position: "absolute",
                 top: `${topOffset}px`,
-                left: "560px",
+                left: "590px",
                 width: "100px",
                 textAlign: "right",
               }}
@@ -120,22 +120,22 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
       })}
 
       {/* Totales */}
-      <div
+      {/* <div
         style={{
           position: "absolute",
           top: "775px",
-          left: "540px",
+          left: "590px",
           width: "100px",
           textAlign: "right",
         }}
       >
         {data.Subtotal}
-      </div>
+      </div> */}
       <div
         style={{
           position: "absolute",
-          top: "800px",
-          left: "540px",
+          top: "732px",
+          left: "590px",
           width: "100px",
           textAlign: "right",
         }}
@@ -145,8 +145,8 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
       <div
         style={{
           position: "absolute",
-          top: "825px",
-          left: "540px",
+          top: "755px",
+          left: "590px",
           width: "100px",
           fontWeight: "bold",
           textAlign: "right",

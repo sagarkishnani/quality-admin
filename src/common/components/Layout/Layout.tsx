@@ -65,6 +65,10 @@ export const Layout = () => {
                 element={<TicketRegisterStepTwo />}
               />
               <Route
+                path="reasignar-tecnico"
+                element={<TicketRegisterStepTwo />}
+              />
+              <Route
                 path="completar-formulario"
                 element={<TicketRegisterStepThree />}
               />

@@ -244,6 +244,7 @@ async function registerTicketStepThree(
         AppointmentDate: request.StepOne.AppointmentInitTime,
         AppointmentInitTime: request.StepOne.AppointmentInitTime,
         AppointmentEndTime: request.StepOne.AppointmentEndTime,
+        ScheduledAppointmentDate: request.StepOne.ScheduledAppointmentDate,
         FoundFailure: request.StepTwo.FoundFailure,
         DeviceOne: request.StepTwo.DeviceOne,
         DeviceOneValue: request.StepTwo.DeviceOneValue,

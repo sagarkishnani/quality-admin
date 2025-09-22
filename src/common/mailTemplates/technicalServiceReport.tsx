@@ -1,6 +1,7 @@
 import logo from "../../assets/mailBackgrounds/technicalServiceReportBG.svg"
 
 export interface PDFData {
+  CodeTicket: string
   RecordCreationDate: string
   AppointmentInitTime: string
   AppointmentEndTime: string
@@ -237,6 +238,21 @@ export default function TechnicalServiceReport({ data }: { data: PDFData }) {
           }}
         >
           {data.RecordCreationDate}
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            height: "10px",
+            width: "100px",
+            top: "25px",
+            left: "516px",
+            zIndex: "99",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {"Ticket-" + data.CodeTicket}
         </div>
         <div
           style={{

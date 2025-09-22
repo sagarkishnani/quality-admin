@@ -12,7 +12,7 @@ import {
 } from "../../../../../common/interfaces/Ticket.interface"
 import { InputLabel, TextField } from "@mui/material"
 import moment from "moment"
-import { TimePicker } from "@mui/x-date-pickers"
+import { DatePicker, TimePicker } from "@mui/x-date-pickers"
 import { useTicket } from "../../../../../common/contexts/TicketContext"
 import { ImageModal } from "../../../../../common/components/ImageModal/ImageModal"
 
@@ -42,6 +42,7 @@ export const TicketRegisterCompleteFormOne = ({
       const requestFormOne: TicketRegisterStepThreeRequestFormOne = {
         AppointmentInitTime: formik.values.AppointmentInitTime,
         AppointmentEndTime: formik.values.AppointmentEndTime,
+        ScheduledAppointmentDate: formik.values.ScheduledAppointmentDate,
       }
 
       secureLocalStorage.setItem(
@@ -77,6 +78,7 @@ export const TicketRegisterCompleteFormOne = ({
       AppointmentEndTime: moment(
         new Date().setHours(new Date().getHours() + 1)
       ),
+      ScheduledAppointmentDate: new Date(),
       ReportedFailure: "",
     },
     validationSchema: validationSchema,
@@ -109,6 +111,7 @@ export const TicketRegisterCompleteFormOne = ({
         IdTechnician: "",
         AppointmentInitTime: ticketFormOne?.AppointmentInitTime,
         AppointmentEndTime: ticketFormOne?.AppointmentEndTime,
+        ScheduledAppointmentDate: ticketFormOne?.ScheduledAppointmentDate,
         ReportedFailure: ticket.ReportedFailure || "",
       })
 
@@ -150,6 +153,19 @@ export const TicketRegisterCompleteFormOne = ({
             value={moment(formik.values.AppointmentEndTime)}
             onChange={(value) =>
               formik.setFieldValue("AppointmentEndTime", value, true)
+            }
+          />
+        </div>
+        <div className="col-span-12 md:col-span-12">
+          <InputLabel id="ScheduledAppointmentDate" required>
+            Fecha de atención
+          </InputLabel>
+          <DatePicker
+            className="w-full"
+            format="DD/MM/YYYY"
+            value={moment(formik.values.ScheduledAppointmentDate)}
+            onChange={(value) =>
+              formik.setFieldValue("ScheduledAppointmentDate", value, true)
             }
           />
         </div>

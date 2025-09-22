@@ -2,7 +2,7 @@ import * as yup from "yup"
 import { HiChevronLeft } from "react-icons/hi"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import {
   FormControl,
   InputLabel,
@@ -55,6 +55,8 @@ const validationSchema = yup.object({
 })
 
 export const TicketRegisterContainerStepTwo = () => {
+  const location = useLocation()
+  const isReassignMode = location.pathname.includes("reasignar-tecnico")
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -144,7 +146,11 @@ export const TicketRegisterContainerStepTwo = () => {
       const requestMail: SendEmailRequest = {
         from: ConstantMailTicketInProgress.FROM,
         to: companyMails,
-        subject: ConstantMailTicketInProgress.SUBJECT,
+        subject: `${
+          ticket.Company.Name
+        } - Ticket N°${ticket?.CodeTicket.toString()} - ${
+          ConstantMailTicketInProgress.SUBJECT
+        }`,
         html: generateAssignTicketMail(
           ticket?.CodeTicket.toString(),
           request.IdTechnician === null
@@ -244,9 +250,13 @@ export const TicketRegisterContainerStepTwo = () => {
         CompanyFloor: ticket.CompanyFloor || "",
         CompanyArea: ticket.CompanyArea || "",
         IdUser: ticket?.User?.Name || "",
-        IdTechnician: "",
-        ScheduledAppointmentTime: new Date(),
-        ScheduledAppointmentDate: new Date(),
+        IdTechnician: isReassignMode ? ticket.IdTechnician : "",
+        ScheduledAppointmentTime: isReassignMode
+          ? ticket.ScheduledAppointmentTime
+          : new Date(),
+        ScheduledAppointmentDate: isReassignMode
+          ? ticket.ScheduledAppointmentDate
+          : new Date(),
         ReportedFailure: ticket.ReportedFailure || "",
       })
     }
@@ -424,7 +434,9 @@ export const TicketRegisterContainerStepTwo = () => {
         <div className="col-span-12 md:col-span-3">
           <div className="bg-white grid grid-cols-2 shadow-sm p-4">
             <div className="col-span-2">
-              <h4 className="font-semibold py-2">ASIGNAR TÉCNICO</h4>
+              <h4 className="font-semibold py-2">
+                {isReassignMode ? "REASIGNAR TÉCNICO" : "ASIGNAR TÉCNICO"}
+              </h4>
             </div>
             <div className="col-span-2 flex flex-col text-sm text-qBlack space-y-6">
               <div>
@@ -487,7 +499,7 @@ export const TicketRegisterContainerStepTwo = () => {
           <div className="flex justify-center mt-8 pb-4 md:pb-0">
             <Button
               color="#74C947"
-              label="Asignar técnico"
+              label={isReassignMode ? "Reasignar técnico" : "Asignar técnico"}
               disabled={!formik.isValid || isLoadingAction}
               isLoading={isLoadingAction}
               type="submit"

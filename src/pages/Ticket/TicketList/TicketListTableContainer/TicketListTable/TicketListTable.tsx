@@ -9,6 +9,7 @@ import {
   HiOutlineDotsHorizontal,
   HiOutlineEye,
   HiOutlineUser,
+  HiOutlineUsers,
 } from "react-icons/hi"
 import { Menu, MenuItem, Avatar } from "@mui/material"
 import { useNavigate } from "react-router-dom"
@@ -83,6 +84,10 @@ export const TicketListTable = ({
 
   const handleAssignTechnician = () => {
     navigate("asignar-tecnico")
+  }
+
+  const handleReassignTechnician = () => {
+    navigate("reasignar-tecnico")
   }
 
   const handleCompleteForm = () => {
@@ -360,6 +365,14 @@ export const TicketListTable = ({
                 <MenuItem onClick={handleAssignTechnician}>
                   <HiOutlineUser size={"20"} className="mr-2" />
                   Asignar técnico
+                </MenuItem>
+              )}
+            {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
+              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+              selectedTicket?.Status === "En progreso" && (
+                <MenuItem onClick={handleReassignTechnician}>
+                  <HiOutlineUsers size={"20"} className="mr-2" />
+                  Reasignar técnico
                 </MenuItem>
               )}
             {getCompletarFormulario(selectedTicket) && (

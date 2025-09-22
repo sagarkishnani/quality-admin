@@ -437,8 +437,12 @@ export const TicketRegisterCompleteFormSix = () => {
 
         if (dataSignatureOne && dataSignatureTwo) {
           const pdfData = {
+            CodeTicket: ticket.CodeTicket.toString(),
             RecordCreationDate: moment(
               request.StepOne.AppointmentInitTime
+            ).format("DD/MM/YYYY"),
+            ScheduledAppointmentDate: moment(
+              request.StepOne.ScheduledAppointmentDate
             ).format("DD/MM/YYYY"),
             AppointmentInitTime: moment(
               request.StepOne.AppointmentInitTime
@@ -564,7 +568,7 @@ export const TicketRegisterCompleteFormSix = () => {
           )
           const opt = {
             format: "a4",
-            filename: `${ticket?.CodeTicket}.pdf`,
+            filename: `${ticket?.Company.Name} - Ticket ${ticket?.CodeTicket}.pdf`,
             margin: 1,
             html2canvas: {
               dpi: 192,
@@ -617,8 +621,12 @@ export const TicketRegisterCompleteFormSix = () => {
                 from: ConstantMailConfigNonFacturable.FROM,
                 to: companyMails,
                 subject: isFacturable
-                  ? "Atención del servicio - Facturable"
-                  : "Finalización servicio - No facturable",
+                  ? `${
+                      ticket?.Company.Name
+                    } - Ticket N°${ticket?.CodeTicket.toString()} - Atención del servicio - Facturable`
+                  : `${
+                      ticket?.Company.Name
+                    } - Ticket N°${ticket?.CodeTicket.toString()} - Finalización servicio - No facturable`,
                 html: generateMailNotFacturable(
                   ticket?.User.Name,
                   ticket?.Company.Name,

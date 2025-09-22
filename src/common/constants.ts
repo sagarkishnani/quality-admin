@@ -1,3 +1,7 @@
+export const ConstantProject = {
+    NAME: 'Quality Sumprint'
+}
+
 export const ConstantHttpErrors = {
     OK: 200,
     CREATED: 201,
