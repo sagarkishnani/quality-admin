@@ -77,6 +77,10 @@ export const Layout = () => {
                 element={<TicketRegisterStepFour />}
               />
               <Route
+                path="registrar-orden"
+                element={<TicketRegisterStepFour />}
+              />
+              <Route
                 path="confirmar-facturable"
                 element={<TicketRegisterStepFive />}
               />

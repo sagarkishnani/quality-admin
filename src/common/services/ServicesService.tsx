@@ -53,6 +53,7 @@ async function registerService(request: RegisterServiceInterface) {
       .from("Services")
       .insert([
         {
+          Code: request.Code,
           Name: request.Name,
           Cost: request.Cost,
         },
@@ -77,6 +78,7 @@ async function editService(request: ServiceEditInterface, idService: string) {
       .from("Services")
       .update([
         {
+          Code: request.Code,
           Name: request.Name,
           Cost: request.Cost,
         },

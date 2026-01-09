@@ -25,6 +25,7 @@ export const TicketListTableContainer = () => {
     const requestFilter: FilteredTicketsRequest = {
       IdCompany:
         user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
+        user?.IdRole === ConstantRoles.ASISTENTE_ADMINISTRATIVO ||
         user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
         user?.IdRole === ConstantRoles.TECNICO
           ? null
@@ -41,6 +42,7 @@ export const TicketListTableContainer = () => {
       Facturable: null,
       NotFacturable: null,
       RecordCreationDate: null,
+      RequiresOrder: null,
     }
     const data = await TicketService.getFilteredTickets(requestFilter)
 
@@ -61,6 +63,7 @@ export const TicketListTableContainer = () => {
         IsGuaranteeTechnician: entry?.IsGuaranteeTechnician,
         RecordCreationDate: entry.RecordCreationDate,
         AppointmentDate: entry.AppointmentDate,
+        RequiresOrder: entry?.RequiresOrder,
       }))
       setTickets(output_data)
     } else if (data && filteredTickets!.length > 0) {
@@ -80,6 +83,7 @@ export const TicketListTableContainer = () => {
         IsGuaranteeTechnician: entry?.IsGuaranteeTechnician,
         RecordCreationDate: entry.RecordCreationDate,
         AppointmentDate: entry.AppointmentDate,
+        RequiresOrder: entry?.RequiresOrder,
       }))
       setTickets(output_data)
     } else if (data && filteredTickets?.length === 0) {

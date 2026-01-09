@@ -329,6 +329,28 @@ async function registerTicketStepFive(idTicket: string, isFinished: boolean) {
   }
 }
 
+async function registerPurchaseOrder(idTicket: string, purchaseOrder: string) {
+  try {
+    const { data, error, status } = await supabase
+      .from("Ticket")
+      .update({
+        PurchaseOrder: purchaseOrder,
+      })
+      .eq("IdTicket", idTicket)
+      .select()
+
+    if (error) {
+      console.warn(error)
+      return { error, status }
+    } else if (data) {
+      return { data, status }
+    }
+  } catch (error) {
+    console.error("Error al registrar la orden de compra", error)
+    return error
+  }
+}
+
 async function cancelTicket(idTicket: string) {
   try {
     const { data, error, status } = await supabase
@@ -509,4 +531,5 @@ export const TicketService = {
   getFilteredTicketsByExcel,
   getTicketFiles,
   deleteTicketById,
+  registerPurchaseOrder,
 }

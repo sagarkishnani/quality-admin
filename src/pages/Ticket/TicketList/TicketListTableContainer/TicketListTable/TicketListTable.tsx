@@ -94,6 +94,11 @@ export const TicketListTable = ({
     navigate("completar-formulario")
   }
 
+  const handleRequiresOrder = () => {
+    secureLocalStorage.setItem(ConstantLocalStorage.TICKET_REQUIRES_ORDER, true)
+    navigate("registrar-orden")
+  }
+
   const handleFacturableForm = () => {
     secureLocalStorage.setItem(ConstantLocalStorage.TICKET_FACTURABLE, true)
     navigate("registrar-facturable")
@@ -119,7 +124,8 @@ export const TicketListTable = ({
       return true
     } else if (
       (user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
-        user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+        user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
+        user?.IdRole === ConstantRoles.JEFE_TECNICO) &&
       selectedTicket?.IsGuaranteeTechnician &&
       selectedTicket?.Status === "En progreso" &&
       selectedTicket?.Technician === "Técnico de garantía"
@@ -360,7 +366,8 @@ export const TicketListTable = ({
               Ver ticket
             </MenuItem>
             {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
-              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
+              user?.IdRole === ConstantRoles.JEFE_TECNICO) &&
               selectedTicket?.Status === "Pendiente" && (
                 <MenuItem onClick={handleAssignTechnician}>
                   <HiOutlineUser size={"20"} className="mr-2" />
@@ -368,7 +375,8 @@ export const TicketListTable = ({
                 </MenuItem>
               )}
             {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
-              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
+              user?.IdRole === ConstantRoles.JEFE_TECNICO) &&
               selectedTicket?.Status === "En progreso" && (
                 <MenuItem onClick={handleReassignTechnician}>
                   <HiOutlineUsers size={"20"} className="mr-2" />
@@ -381,7 +389,8 @@ export const TicketListTable = ({
                 Completar formulario
               </MenuItem>
             )}
-            {user?.IdRole === ConstantRoles.LIDER_FUNCIONAL &&
+            {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
+              user?.IdRole === ConstantRoles.JEFE_TECNICO) &&
               (selectedTicket?.Status === "Atendido" ||
                 selectedTicket?.Status === "Abierto" ||
                 selectedTicket?.Status === "En espera") && (
@@ -397,8 +406,18 @@ export const TicketListTable = ({
                   Revisar formulario
                 </MenuItem>
               )}
+            {user?.IdRole === ConstantRoles.ASISTENTE_ADMINISTRATIVO &&
+              selectedTicket?.Status === "En espera" &&
+              selectedTicket?.RequiresOrder && (
+                <MenuItem onClick={handleRequiresOrder}>
+                  <HiOutlineClipboardCheck size={"20"} className="mr-2" />
+                  Agregar orden de compra
+                </MenuItem>
+              )}
             {(user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
-              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI) &&
+              user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
+              user?.IdRole === ConstantRoles.JEFE_TECNICO ||
+              user?.IdRole === ConstantRoles.ASISTENTE_ADMINISTRATIVO) &&
               selectedTicket?.Status !== "Finalizado" &&
               selectedTicket?.Status !== "Cancelado" && (
                 <MenuItem onClick={handleCancelTicket}>

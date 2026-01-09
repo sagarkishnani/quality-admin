@@ -112,6 +112,7 @@ export interface GetTicketById {
     IdUser: string;
     User: GetTicketByIdUser;
     RecordCreationDate: Date;
+    ScheduledAppointmentDate: Date | null;
     AppointmentDate: Date | null;
     AppointmentInitTime: Date | null;
     AppointmentEndTime: Date | null;

@@ -89,6 +89,7 @@ export const ServicesRegisterContainer = () => {
 
   const formik = useFormik({
     initialValues: {
+      Code: "",
       Name: "",
       Cost: 0,
     },
@@ -114,6 +115,21 @@ export const ServicesRegisterContainer = () => {
           <div className="grid grid-cols-12 gap-4">
             <div className="col-span-12">
               <h2 className="font-semibold text-xl pb-2">Registrar servicio</h2>
+            </div>
+            <div className="col-span-12 md:col-span-6">
+              <TextField
+                color="primary"
+                className="w-full"
+                required
+                id="Code"
+                name="Code"
+                value={formik.values.Code}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.Code && Boolean(formik.errors.Code)}
+                helperText={formik.touched.Code && formik.errors.Code}
+                label="Código"
+              />
             </div>
             <div className="col-span-12 md:col-span-6">
               <TextField
@@ -161,7 +177,7 @@ export const ServicesRegisterContainer = () => {
                 >
                   {services?.map((item: ServiceInterface) => (
                     <MenuItem key={item.IdService} value={item.IdService}>
-                      {item.Name}
+                      {item.Code} - {item.Name}
                     </MenuItem>
                   ))}
                 </Select>

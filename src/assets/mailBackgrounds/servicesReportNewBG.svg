@@ -217,10 +217,8 @@
          id="path664"
          d="M 480.64001,798.40002 H 490.88 v 18.23999 h -10.23999 z" /></clipPath><clipPath
        id="clipPath674"
-       clipPathUnits="userSpaceOnUse"><path
-         style="clip-rule:evenodd"
-         id="path672"
-         d="m 490.88,798.40002 h 44.79999 v 18.23999 H 490.88 Z" /></clipPath><clipPath
+       clipPathUnits="userSpaceOnUse"><path style="clip-rule:evenodd" id="path672" 
+      d="m 490.88,798.40002 h 94 v 18.23999 H 490.88 Z" /></clipPath><clipPath
        id="clipPath686"
        clipPathUnits="userSpaceOnUse"><path
          style="clip-rule:evenodd"
@@ -736,10 +734,7 @@
          id="g670"><text
            id="text678"
            style="font-variant:normal;font-weight:normal;font-size:15.01150036px;font-family:F1;-inkscape-font-specification:F1;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-           transform="translate(490.88,812.64001)"><tspan
-             id="tspan676"
-             y="0"
-             x="0 7.7549644 16.01129 23.341124 31.147104 35.050095">PRECIO</tspan></text>
+           transform="translate(490.88,812.64001)"><tspan id="tspan676" x="0 7.7549644 16.01129 23.341124 31.147104 35.050095 42.854 50.658 58.462 66.266 74.070 81.874">PRECIO + IGV</tspan></text>
 </g></g><g
        id="g680"><g
          clip-path="url(#clipPath686)"

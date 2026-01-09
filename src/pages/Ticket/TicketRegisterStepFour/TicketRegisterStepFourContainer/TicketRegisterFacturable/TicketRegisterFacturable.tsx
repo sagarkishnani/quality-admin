@@ -64,6 +64,8 @@ export const TicketRegisterFacturable = () => {
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false)
   const [isLoadingActionAgree, setIsLoadingActionAgree] =
     useState<boolean>(false)
+  const [isLoadingActionPurchase, setIsLoadingActionPurchase] =
+    useState<boolean>(false)
   const [isLoadingActionDeny, setIsLoadingActionDeny] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [ticket, setTicket] = useState<GetTicketById>(null)
@@ -72,6 +74,7 @@ export const TicketRegisterFacturable = () => {
   const [selectedServices, setSelectedServices] = useState<any[]>([])
   const [isView, setIsView] = useState(false)
   const [isConfirm, setIsConfirm] = useState(false)
+  const [isRequireOrder, setIsRequireOrder] = useState(false)
   const [total, setTotal] = useState<number>()
   // const [ticketServices, setTicketServices] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -121,7 +124,7 @@ export const TicketRegisterFacturable = () => {
 
     const pdfData = {
       CodeTicket: ticket.CodeTicket.toString(),
-      RecordCreationDate: moment(ticket?.AppointmentInitTime).format(
+      RecordCreationDate: moment(ticket?.ScheduledAppointmentDate).format(
         "DD/MM/YYYY"
       ),
       AppointmentInitTime: moment(ticket?.AppointmentInitTime).format("HH:mm"),
@@ -265,6 +268,7 @@ export const TicketRegisterFacturable = () => {
 
   const mailOptionsServices = () => {
     const pdfCostServices: CostService[] = selectedServices.map((service) => ({
+      Code: service.Code,
       Name: service.Name,
       Price: service.Cost,
       Quantity: (1).toString(),
@@ -319,6 +323,34 @@ export const TicketRegisterFacturable = () => {
 
   const handleCloseServiceModal = () => {
     setIsServiceModalOpen(false)
+  }
+
+  const handleRequiresOrder = async () => {
+    setIsLoadingActionPurchase(true)
+    const { status }: any = await TicketService.registerPurchaseOrder(
+      ticket.IdTicket,
+      formik.values.PurchaseOrder
+    )
+
+    if (status === ConstantHttpErrors.OK) {
+      setIsModalOpen(true)
+      setModalType("success")
+      setModalMessage(ConstantTicketMessage.TICKET_PURCHASE_ORDER_SUCCESS)
+      setIsLoadingActionPurchase(false)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
+    } else {
+      setIsLoadingActionPurchase(false)
+      setIsModalOpen(true)
+      setModalType("error")
+      setModalMessage(ConstantTicketMessage.TICKET_REGISTER_ERROR)
+      setTimeout(() => {
+        navigate("/tickets")
+      }, 2000)
+      return
+    }
   }
 
   const handleConfirm = async () => {
@@ -536,6 +568,7 @@ export const TicketRegisterFacturable = () => {
           await TicketServicesService.registerTicketService(
             ticket.IdTicket,
             service.IdService,
+            service.Code,
             service.Name,
             service.Cost
           )
@@ -724,6 +757,7 @@ export const TicketRegisterFacturable = () => {
   const formik = useFormik({
     initialValues: {
       Service: "",
+      PurchaseOrder: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {},
@@ -741,18 +775,41 @@ export const TicketRegisterFacturable = () => {
   }, [])
 
   useEffect(() => {
+    setIsLoading(true)
+    if (ticket) {
+      formik.setValues({
+        PurchaseOrder: ticket?.PurchaseOrder || "",
+      })
+    }
+    setIsLoading(false)
+  }, [ticket])
+
+  useEffect(() => {
     // return () => {
     //   secureLocalStorage.removeItem(ConstantLocalStorage.TICKET_FACTURABLE)
     // }
     setIsView(location.pathname.includes("/ver"))
     setIsConfirm(location.pathname.includes("/confirmar-facturable"))
-  }, [])
+    setIsRequireOrder(
+      location.pathname.includes("/registrar-orden") ||
+        ((location.pathname.includes("/registrar-facturable") ||
+          location.pathname.includes("/ver") ||
+          location.pathname.includes("/confirmar-facturable")) &&
+          ticket?.PurchaseOrder)
+    )
+  }, [ticket])
 
   const columns: GridColDef[] = [
     {
       field: "IdService",
       headerName: "Service ID",
       width: 10,
+      disableColumnMenu: true,
+    },
+    {
+      field: "Code",
+      headerName: "Código",
+      width: 300,
       disableColumnMenu: true,
     },
     {
@@ -763,7 +820,7 @@ export const TicketRegisterFacturable = () => {
     },
     {
       field: "Cost",
-      headerName: "Precio + IGV",
+      headerName: "Precio",
       width: 100,
       disableColumnMenu: true,
       renderCell: (params) => {
@@ -822,7 +879,9 @@ export const TicketRegisterFacturable = () => {
                       formik.setFieldValue("Service", newValue?.Name || "")
                     }}
                     value={selectedService ? selectedService : {}}
-                    getOptionLabel={(option) => option?.Name || ""}
+                    getOptionLabel={(option) =>
+                      `${option?.Code || ""} ${option?.Name || ""}` || ""
+                    }
                     renderInput={(params) => (
                       <TextField
                         name="Service"
@@ -941,7 +1000,51 @@ export const TicketRegisterFacturable = () => {
             </Tooltip>
           </div>
         )}
-      {user?.IdRole === ConstantRoles.USUARIO &&
+      {isRequireOrder && (
+        <div className="col-span-12 mt-4">
+          <TextField
+            disabled={
+              isView || user?.IdRole !== ConstantRoles.ASISTENTE_ADMINISTRATIVO
+            }
+            color="primary"
+            className="w-full"
+            required
+            id="PurchaseOrder"
+            name="PurchaseOrder"
+            value={formik.values.PurchaseOrder}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={
+              formik.touched.PurchaseOrder &&
+              Boolean(formik.errors.PurchaseOrder)
+            }
+            helperText={
+              formik.touched.PurchaseOrder && formik.errors.PurchaseOrder
+            }
+            label="Orden de compra"
+          />
+        </div>
+      )}
+      {(user?.IdRole === ConstantRoles.USUARIO ||
+        user?.IdRole === ConstantRoles.ASISTENTE_ADMINISTRATIVO) &&
+        isRequireOrder &&
+        !isView &&
+        ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA && (
+          <div className="w-full mt-12 flex justify-end">
+            <Button
+              className="px-8"
+              label="Ingresar orden de compra"
+              color="#74C947"
+              disabled={
+                isLoadingActionPurchase || formik.values.PurchaseOrder === ""
+              }
+              isLoading={isLoadingActionPurchase}
+              onClick={handleRequiresOrder}
+              type="button"
+            />
+          </div>
+        )}
+      {(user?.IdRole === ConstantRoles.USUARIO) &&
         ticket?.IdTicketStatus === ConstantTicketStatus.EN_ESPERA &&
         !isView && (
           <div className="w-full mt-12 flex justify-end">

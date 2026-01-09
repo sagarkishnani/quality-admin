@@ -199,7 +199,11 @@ export const TicketRegisterViewFormFour = ({ ticket }) => {
         </div>
         <div className="col-span-12 md:col-span-4 justify-end flex">
           <h2 className="font-semibold text-qGray pb-2">
-            {moment(ticket?.RecordCreationDate).format("DD/MM/YYYY")}
+            {moment(
+              ticket?.ScheduledAppointmentDate
+                ? ticket?.ScheduledAppointmentDate
+                : ticket?.RecordCreationDate
+            ).format("DD/MM/YYYY")}
           </h2>
         </div>
         <div className="col-span-12">

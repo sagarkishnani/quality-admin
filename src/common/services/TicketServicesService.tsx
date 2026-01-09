@@ -8,6 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 async function registerTicketService(
   idTicket: string,
   idService: string,
+  code: string,
   name: string,
   cost: number
 ) {
@@ -18,6 +19,7 @@ async function registerTicketService(
         {
           IdTicket: idTicket,
           IdService: idService,
+          Code: code,
           Name: name,
           Cost: cost,
         },

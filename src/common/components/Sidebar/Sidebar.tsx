@@ -46,6 +46,8 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
       Roles: [
         ConstantRoles.ADMINISTRADOR_TI,
         ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.ASISTENTE_ADMINISTRATIVO,
+        ConstantRoles.JEFE_TECNICO,
         ConstantRoles.TECNICO,
         ConstantRoles.USUARIO,
       ],
@@ -58,6 +60,8 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
       Roles: [
         ConstantRoles.ADMINISTRADOR_TI,
         ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.ASISTENTE_ADMINISTRATIVO,
+        ConstantRoles.JEFE_TECNICO,
         ConstantRoles.TECNICO,
         ConstantRoles.USUARIO,
       ],
@@ -67,28 +71,45 @@ export const Sidebar = ({ open, onToggleSidebar }) => {
       Name: "Empresas",
       Link: "empresas",
       Icon: <HiOutlineOfficeBuilding className="inline" size={"20"} />,
-      Roles: [ConstantRoles.LIDER_FUNCIONAL],
+      Roles: [
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.ASISTENTE_ADMINISTRATIVO,
+        ConstantRoles.JEFE_TECNICO,
+      ],
     },
     {
       Id: 4,
       Name: "Usuarios",
       Link: "usuarios",
       Icon: <HiOutlineUserGroup className="inline" size={"20"} />,
-      Roles: [ConstantRoles.LIDER_FUNCIONAL, ConstantRoles.ADMINISTRADOR_TI],
+      Roles: [
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.ADMINISTRADOR_TI,
+        ConstantRoles.ASISTENTE_ADMINISTRATIVO,
+        ConstantRoles.JEFE_TECNICO,
+      ],
     },
     {
       Id: 5,
       Name: "Servicios",
       Link: "servicios",
       Icon: <HiOutlineClipboardList className="inline" size={"20"} />,
-      Roles: [ConstantRoles.LIDER_FUNCIONAL],
+      Roles: [
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.ASISTENTE_ADMINISTRATIVO,
+        ConstantRoles.JEFE_TECNICO,
+      ],
     },
     {
       Id: 6,
       Name: "Configuración",
       Link: "configuracion",
       Icon: <HiOutlineCog className="inline" size={"20"} />,
-      Roles: [ConstantRoles.LIDER_FUNCIONAL],
+      Roles: [
+        ConstantRoles.LIDER_FUNCIONAL,
+        ConstantRoles.ASISTENTE_ADMINISTRATIVO,
+        ConstantRoles.JEFE_TECNICO,
+      ],
     },
   ]
 

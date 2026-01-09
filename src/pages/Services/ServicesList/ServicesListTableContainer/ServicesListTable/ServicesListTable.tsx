@@ -28,6 +28,7 @@ interface ServicesListTableInterface {
 }
 
 interface Row {
+  Code: string
   IdService: string
   Name: string
   Cost: number
@@ -107,6 +108,11 @@ export const ServicesListTable = ({
 
   const columns = useMemo<MRT_ColumnDef<Row>[]>(
     () => [
+      {
+        accessorFn: (row) => row.Code,
+        header: "Código",
+        grow: true,
+      },
       {
         accessorFn: (row) => row.Name,
         header: "Nombre",

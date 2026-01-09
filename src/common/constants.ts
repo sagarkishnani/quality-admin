@@ -18,7 +18,9 @@ export const ConstantRoles = {
     LIDER_FUNCIONAL: '103305bc-58b9-40c2-a017-7dcae0b07028',
     ADMINISTRADOR_TI: '7a4af493-d279-4dd8-be2c-afb56c08e480',
     TECNICO: '508ed316-0aef-47e7-b4a8-655c44b45630',
-    USUARIO: 'aee6e3c3-1843-4b0e-a0c1-0a2165a5c9be'
+    USUARIO: 'aee6e3c3-1843-4b0e-a0c1-0a2165a5c9be',
+    JEFE_TECNICO: '89bf6db0-b323-49f8-ad39-82474eefb44a',
+    ASISTENTE_ADMINISTRATIVO: '6f86e9f9-e09f-422c-8550-1ed0c4670e13'
 }
 
 export const ConstantTicketStatus = {
@@ -58,6 +60,7 @@ export const ConstantTicketMessage = {
     TICKET_WAITING_SUCCESS: 'El ticket se encuentra a espera de confirmación',
     TICKET_OPEN_SUCCESS: 'El ticket se estableció como abierto',
     TICKET_FINISHED_SUCCESS: 'El ticket se finalizó correctamente',
+    TICKET_PURCHASE_ORDER_SUCCESS: 'Se agregó orden de compra',
     TICKET_CANCEL_QUESTION: '¿Está seguro de cancelar el ticket?',
     TICKET_CONFIRM_QUESTION: '¿Está de acuerdo con el costo de los servicios?',
     TICKET_FACTURABLE: 'El servicio técnico debe ser',
@@ -133,6 +136,7 @@ export const ConstantLocalStorage = {
     TICKET_STEP_THREE_FORM_FOUR: 'localStorageTicketStepThreeFormFour',
     TICKET_STEP_THREE_FORM_FIVE: 'localStorageTicketStepThreeFormFive',
     TICKET_FACTURABLE: 'localStorageFacturable',
+    TICKET_REQUIRES_ORDER: 'localStorageRequiresOrder',
     USER: 'localStorageUser',
     LOCATION: 'localStorageLocation'
 }

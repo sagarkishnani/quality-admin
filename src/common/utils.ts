@@ -80,6 +80,7 @@ export const generateTableHTML = (serviceList: any[]) => {
   serviceList.forEach((service) => {
     tableRows += `
         <tr>
+          <td>${service.Code}</td>
           <td>${service.Name}</td>
           <td>$${service.Cost}</td>
         </tr>
@@ -90,6 +91,7 @@ export const generateTableHTML = (serviceList: any[]) => {
       <table border="1">
         <thead>
           <tr>
+            <th>Código</th>
             <th>Nombre del Servicio</th>
             <th>Costo</th>
           </tr>

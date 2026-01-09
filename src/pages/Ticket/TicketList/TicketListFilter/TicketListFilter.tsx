@@ -49,7 +49,8 @@ export const TicketListFilter = () => {
       IdCompany:
         user?.IdRole === ConstantRoles.LIDER_FUNCIONAL ||
         user?.IdRole === ConstantRoles.ADMINISTRADOR_TI ||
-        user?.IdRole === ConstantRoles.TECNICO
+        user?.IdRole === ConstantRoles.TECNICO ||
+        user?.IdRole === ConstantRoles.ASISTENTE_ADMINISTRATIVO
           ? null
           : user?.IdCompany,
       IdTechnician:

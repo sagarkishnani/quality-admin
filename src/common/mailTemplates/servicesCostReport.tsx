@@ -13,6 +13,7 @@ export interface ServicePdfData {
 }
 
 export interface CostService {
+  Code: string
   Name: string
   Quantity: string
   Price: string
@@ -68,9 +69,20 @@ export default function CostServiceReport({ data }: { data: ServicePdfData }) {
 
       {/* Tabla de servicios */}
       {data.CostService.map((item, index) => {
-        const topOffset = 535 + index * 32
+        const topOffset = 468 + index * 35
         return (
           <React.Fragment key={index}>
+            <div
+              style={{
+                position: "absolute",
+                top: `${topOffset}px`,
+                left: "70px",
+                width: "200px",
+                lineHeight: "14px",
+              }}
+            >
+              {item.Code}
+            </div>
             <div
               style={{
                 position: "absolute",

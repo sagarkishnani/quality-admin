@@ -26,7 +26,10 @@ export const ServicesListTableContainer = () => {
 
   const filteredServices = servicesTableValues.filter((service: any) => {
     const searchText = searchValue.toLowerCase()
-    return service?.Name.toLowerCase().includes(searchText)
+    return (
+      service?.Name.toLowerCase().includes(searchText) ||
+      service?.Code.toLowerCase().includes(searchText)
+    )
   })
 
   useEffect(() => {
@@ -47,7 +50,7 @@ export const ServicesListTableContainer = () => {
               <HiSearch color="#989898" size={"16"} />
             </div>
             <input
-              placeholder="Busca por Id o Nombre"
+              placeholder="Busca por Código o Nombre"
               className="flex-1 bg-transparent focus:outline-none text-sm"
               type="text"
               value={searchValue}
